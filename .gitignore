@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+wwwroot/images/koupelny-jas.cz
+wwwroot/images/www.mamekoupelny.eu
+
