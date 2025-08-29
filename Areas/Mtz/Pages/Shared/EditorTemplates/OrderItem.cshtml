@@ -1,0 +1,97 @@
+﻿@using Jas.Globals.Mtz
+@model Jas.Models.Mtz.OrderItem
+
+@{
+    bool isAdmin = User.IsInRole("MTZ - admin");
+    bool showStore = (bool)ViewData["ShowStore"];
+}
+
+<tr class="cart-table-row-1">
+    <td rowspan="2">
+        <img src="@Html.DisplayFor(modelItem => Model.Product.Image)" />
+    </td>
+    <td colspan="@(showStore ? 8 : 7)">
+        @Html.DisplayFor(modelItem => Model.Name)
+    </td>
+</tr>
+<tr class="cart-table-row-2">
+    @if (showStore)
+    {
+        <td>
+            @Html.Raw(Model.UserName)
+        </td>
+    }
+    <td>
+        @Html.DisplayFor(modelItem => Model.ProductCode)
+    </td>
+    <td class="cart-table-size">
+        @Html.DisplayFor(modelItem => Model.Amount)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => Model.PackageSize) @Html.DisplayFor(modelItem => Model.OrderUnit)
+    </td>
+    <td>
+        @if (Model.Product.MtzProductAttributes != null)
+        {
+            @Html.DisplayFor(modelItem => Model.SelectedSize)
+        }
+    </td>
+    <td>
+        @if (Model.Product.MtzProductAttributes != null || Model.Product.Code == "MTZ-0010299")
+        {
+            @Html.DisplayFor(modelItem => Model.NamesOfEmployees)
+        }
+    </td>
+    <td>
+        @if (isAdmin)
+        {
+            <form asp-page-handler="UpdateItemState" asp-page="orderdetail" asp-area="Mtz" data-ajax="true" data-ajax-method="POST" data-ajax-update="#navbar" class="auto-submit">
+                @Html.HiddenFor(modelItem => Model.Id)
+                @Html.HiddenFor(modelItem => Model.IdOrder)
+                <select id="@Html.DisplayNameFor(modelItem => Model.State)" name="@Html.DisplayNameFor(modelItem => Model.State)" class="order-item-state">
+                    @{
+                        foreach (SelectListItem option in OrderStates.OrderItemStateSelectList(Model.State))
+                        {
+                            if (option.Value == "1")
+                            {
+                                <option value="@option.Value" selected="@option.Selected" disabled="disabled">@option.Text</option>
+                            }
+                            else
+                            {
+                                <option value="@option.Value" selected="@option.Selected">@option.Text</option>
+                            }
+
+                        }
+                    }
+                    </select>
+            </form>
+        }
+        else
+        {
+            @OrderStates.OrderItemStateLabel(Model.State)
+        }
+    </td>
+    <td>
+        @if (isAdmin)
+        {
+            <form asp-area="Mtz"
+                  asp-page="OrderDetail"
+                  asp-page-handler="UpdateOrderItem"
+                  method="post"
+                  data-ajax="true"
+                  data-ajax-method="post"
+                  class="auto-submit">
+                @Html.HiddenFor(modelItem => Model.Id)
+                @Html.TextBoxFor(modelItem => Model.Comment, new { @class = "form-control" })
+            </form>
+        }
+        else
+        {
+            @Html.DisplayFor(modelItem => Model.Comment)
+        }
+    </td>
+</tr>
+<tr class="cart-table-row-3">
+    <td>
+    </td>
+</tr>

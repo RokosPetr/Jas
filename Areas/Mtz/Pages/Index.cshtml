@@ -1,0 +1,61 @@
+﻿@page
+@model Jas.Areas.Mtz.Pages.IndexModel
+@{
+    ViewData["Title"] = "Materiálně technické zabezpečení";
+}
+
+<div class="mtz-hlavni">
+    <main role="main">
+        <div class="search">
+            <form asp-area="Mtz" asp-page="Search" method="get">
+                <div class="input-group">
+                    <input type="text" id="search-product" class="form-control" name="SearchString" placeholder="zadejte hledaný výraz" autofocus />
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <br/>
+       <div class="row">
+            <div class="col-lg-8 hlavni-rada">
+                <div class="row">
+                    @foreach (var item in Model.Categories.Where(w => w.IdParent == null))
+                    {
+                        <div class="col-1 mtz-sloupec">
+                            <div>
+                                <a asp-area="mtz" asp-page="category" asp-route-id="@item.Id" id="mtz-sloupec-odkaz">
+                                    <img id="mtz-sloupec-odkaz-img" src="@Html.DisplayFor(modelItem => item.Image)" />
+                                </a>
+                            </div>
+                            <ul id="mtz-seznam-main">
+                                <li>
+                                    <h2 id="mtz-seznam-main-nadpis">
+                                        <a id="mtz-seznam-main-nadpis-odkaz" asp-area="mtz" asp-page="category" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
+                                    </h2>
+                                    <ul id="mtz-seznam-sub">
+                                        @foreach (var child in Model.Categories.Where(w => w.IdParent == item.Id && w.MtzProducts.Count > 0).OrderBy(o => o.Name))
+                                        {
+                                            <li class="vertical">
+                                                <img class="mtz-list-arrow" src="/content/images/mtz/arrow-list.png" />
+                                                <div>
+                                                    <h3 id="mtz-seznam-sub-nadpis">
+                                                        <a id="mtz-seznam-sub-nadpis-odkaz" asp-area="mtz" asp-page="category" asp-route-id="@child.Id">@Html.DisplayFor(modelItem => child.Name)</a>
+                                                    </h3>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+

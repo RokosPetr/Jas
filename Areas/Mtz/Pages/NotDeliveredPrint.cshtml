@@ -1,0 +1,106 @@
+﻿@page
+@using Jas.Globals.Mtz
+@model Jas.Areas.Mtz.Pages.NotDeliveredPrintModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html lang="cz" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>MTZ - nedodané položky</title>
+    <link rel="stylesheet" href="~/css/print.css" />
+</head>
+<body>
+    <table class="not-delivered items">
+        <thead>
+            <tr>
+                <th class="col0">
+                    Pobočka
+                </th>
+                <th class="col1">
+                    Katalogové číslo
+                </th>
+                <th class="col2">
+                    Počet
+                </th>
+                <th class="col3">
+                    Jednotka
+                </th>
+                <th class="col4">
+                    Velikost
+                </th>
+                <th class="col5">
+                    Jméno zaměstnance
+                </th>
+                <th class="col6">
+                    Stav položky
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var orderItemMtz in Model.OrderItems)
+        {
+                <tr>
+                    <td colspan="7" style="padding: 0px;">
+                        <table class="order-item">
+                            <tr class="first">
+                                <td colspan="7">
+                                    @orderItemMtz.Name
+                                </td>
+                            </tr>
+                            <tr class="@(string.IsNullOrEmpty(orderItemMtz.Comment) ? "last" : "")">
+                                <td class="col0">
+                                    @Html.Raw(orderItemMtz.UserName)
+                                </td>
+                                <td class="col1">
+                                    @orderItemMtz.ProductCode
+                                </td>
+                                <td class="col2">
+                                    @orderItemMtz.Amount
+                                </td>
+                                <td class="col3">
+                                    @orderItemMtz.PackageSize @orderItemMtz.OrderUnit
+                                </td>
+                                <td class="col4">
+                                    @if (orderItemMtz.Product.MtzProductAttributes != null)
+                                    {
+                                        @orderItemMtz.SelectedSize
+                                    }
+                                </td>
+                                <td class="col5">
+                                    @if (orderItemMtz.Product.MtzProductAttributes != null)
+                                    {
+                                        @orderItemMtz.NamesOfEmployees
+                                    }
+                                </td>
+                                <td class="col6">
+                                    @OrderStates.OrderItemStateLabel(orderItemMtz.State)
+                                </td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(orderItemMtz.Comment))
+                            {
+                                <tr class="last">
+                                    <td colspan="7">
+                                        <i><b>Poznámka: </b>@orderItemMtz.Comment</i>
+                                    </td>
+                                </tr>
+
+                            }
+                        </table>
+                    </td>
+                </tr>
+        }
+        </tbody>
+    </table>
+</body>
+</html>
+
+
+<script>
+    window.print();
+    setTimeout("window.close()",1000);
+</script>

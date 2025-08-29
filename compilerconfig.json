@@ -1,0 +1,18 @@
+﻿[
+  {
+    "outputFile": "Pages/Shared/_Layout.cshtml.css",
+    "inputFile": "Pages/Shared/_Layout.cshtml.less"
+  },
+  {
+    "outputFile": "wwwroot/css/mtz.css",
+    "inputFile": "wwwroot/css/mtz.less"
+  },
+  {
+    "outputFile": "wwwroot/css/site.css",
+    "inputFile": "wwwroot/css/site.less"
+  },
+  {
+    "outputFile": "wwwroot/css/ptg.css",
+    "inputFile": "wwwroot/css/ptg.less"
+  }
+]

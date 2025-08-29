@@ -1,0 +1,325 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 200px) {
+    .navbar-brand img {
+        width: auto;
+        max-height: 40px;
+    }
+}
+
+@media (min-width: 576px) {
+    html {
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 992px) {
+    html {
+        font-size: 16px;
+    }
+
+    .navbar-brand img {
+        width: auto;
+        max-height: 60px;
+    }
+}
+
+@media (min-width: 1200px) {
+    html {
+        font-size: 18px;
+    }
+}
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+}
+
+body.flipbook-body {
+    /* Margin bottom by footer height */
+    margin-top: 30px;
+    margin-bottom: 0px;
+    xoverflow: hidden;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 50px;
+}
+
+.container div {
+    padding: 3px;
+    margin: 0px;
+}
+
+#flipbook, #flipbook div {
+    padding: 0px;
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1500px;
+    }
+}
+
+.bg-dark {
+    background-image: linear-gradient(to right, #8c0000, #fd0100) !important;
+}
+
+.navbar {
+    padding: 0px !important;
+}
+
+.nav-link {
+    color: white !important;
+    font-family: Arial;
+    font-weight: 400;
+    border-right: 1px solid #b04040;
+}
+
+.contacts {
+    fill: #FF0303;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.display-partneri {
+    display: none;
+}
+
+/* login form */
+#login-form {
+    font-size: large;
+    background: rgba(136,0,0,1);
+    background: -moz-linear-gradient(45deg, rgba(136,0,0,1) 0%, rgba(204,0,0,1) 100%);
+    background: -webkit-gradient(linear, left bottom, right top, color-stop(0%, rgba(136,0,0,1)), color-stop(100%, rgba(204,0,0,1)));
+    background: -webkit-linear-gradient(45deg, rgba(136,0,0,1) 0%, rgba(204,0,0,1) 100%);
+    background: -o-linear-gradient(45deg, rgba(136,0,0,1) 0%, rgba(204,0,0,1) 100%);
+    background: -ms-linear-gradient(45deg, rgba(136,0,0,1) 0%, rgba(204,0,0,1) 100%);
+    background: linear-gradient(45deg, rgba(136,0,0,1) 0%, rgba(204,0,0,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#880000', endColorstr='#cc0000', GradientType=1 );
+    margin: 0 auto;
+    width: 290px;
+    padding: 15px 35px 25px 35px;
+    color: white;
+    margin-top: 10px;
+}
+
+#login-form h1 {
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#login-form label {
+    padding-left: 5px;
+    font-size: 17px;
+    margin-bottom: 2px;
+    font-weight: normal;
+}
+
+#login-form input {
+    width: 100%;
+    color: black;
+}
+
+#login-form a {
+    color: white;
+}
+
+#login-form input[type="submit"] {
+    background-color: inherit;
+    border: 1px solid white;
+    transition-property: all;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    transition-delay: 0.0s;
+    color: white;
+    padding: 14px 25px !important;
+    font-weight: 700;
+    font-size: medium;
+    cursor: pointer;
+    margin-top: 15px;
+    border-radius: 0;
+}
+
+#login-form input[type="submit"]:hover {
+    border: 1px solid #4b4b4b;
+    background-color: white;
+    color: #4b4b4b !important;
+}
+
+#login-form .login-form-footer {
+    display: block;
+    font-size: 0.83em;
+    margin-block-start: 1.67em;
+    margin-block-end: 1.67em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    font-weight: bold;
+}
+
+/* flash messages */
+.flash-message {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    font-size: 21px;
+    font-weight: bold;
+    padding: 20px;
+    color: white;
+    text-align: center;
+    position: relative;
+}
+
+.flash-message .flash-close-btn {
+    position: absolute;
+    top: 1px;
+    right: 6px;
+    cursor: pointer;
+}
+
+.flash-message-info {
+    background-color: #4b4b4b;
+}
+
+.flash-message-success {
+    background-color: #009900;
+}
+
+.flash-message-error {
+    background-color: #b21113;
+}
+
+
+header {
+
+    #top-panel-dropdown {
+
+        .top-panel-dropdown-item {
+            padding: 12px 16px;
+            border-top: 1px solid #880d0e;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .top-panel-dropdown-item:hover > .top-panel-dropdown-sub-menu {
+            display: block;
+        }
+    }
+
+    #top-panel-dropdown-menu {
+        display: none;
+        position: absolute;
+        background-color: #b21113;
+        width: 240px;
+        z-index: 9999;
+        top: 69px;
+
+        a {
+            padding: 12px 16px;
+            display: block;
+            text-align: left;
+            color: white;
+            background-color: #b21113;
+            border-top: 1px solid #880d0e;
+            text-transform: uppercase;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .dropdown-sub-menu {
+            display: none;
+            position: absolute;
+            background-color: #b21113;
+            width: 240px;
+            z-index: 1;
+            border-right: 1px solid #880d0e;
+            top: 0;
+            right: 240px;
+
+            a {
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                text-align: left;
+                color: white;
+                background-color: #b21113;
+                border-top: 1px solid #880d0e;
+                font-size: 15px;
+                cursor: pointer;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

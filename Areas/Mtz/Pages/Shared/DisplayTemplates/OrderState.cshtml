@@ -1,0 +1,22 @@
+﻿@using ENUMS = Jas.Globals.Mtz.Enums
+@using Jas.Services
+@inject IUserService UserService
+@model int?
+@{
+    string stateText = Model switch
+    {
+        (int)ENUMS.OrderStates.InCart => "Košík",
+        (int)ENUMS.OrderStates.InProgress => "Rozpracovaná",
+        (int)ENUMS.OrderStates.ToSend => "K odeslání",
+        (int)ENUMS.OrderStates.Processed => "Vyřízená",
+        (int)ENUMS.OrderStates.Cancelled => "Stornovaná",
+        (int)ENUMS.OrderStates.ProcessedCancelled => "Vyřízená (storno)",
+        _ => "Unknown"
+    };
+
+    if (UserService.IsMtzAdmin && Model == (int)ENUMS.OrderStates.Received) stateText = "Přijatá";
+    if (!UserService.IsMtzAdmin && Model == (int)ENUMS.OrderStates.Received) stateText = "Odeslaná";
+}
+
+@stateText
+

@@ -1,0 +1,159 @@
+﻿@page
+@model Jas.Areas.Mtz.Pages.CategoryModel
+@{
+    ViewData["Title"] = "Materiálně technické zabezpečení";
+}
+
+<div class="mtz-hlavni">
+    <main role="main">
+        <div class="mtz-categories-navbar">
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="/mtz/">MTZ</a></li>
+                @foreach(var item in Model.Categories)
+                {
+                    <li class="list-inline-item">&gt;&nbsp; <a asp-area="Mtz" asp-page="Category" asp-route-id="@item.Id">@item.Name</a></li>
+                }
+            </ul>
+        </div>
+@*        <h1 class="nadpis-hlavni">
+            <a href="#" class="nadpis-hlavni-odkaz">Materiálně technické zabezpečení</a>
+        </h1>
+        <div class="zobrazovani">
+            zde bude slider na cenu + možnost změnit styl zobrazování produktů
+        </div>
+*@        <div class="row vypis-produktu">
+
+            <div class="col-lg-12 p-0 hlavni-rada">
+@*                <div class="sort">
+                    <span id="doporucene">doporučené</span>
+                    <span id="nejlevnejsi">od nejlevnějšího</span>
+                    <span id="nejdrazsi">od nejdražšího</span>
+                </div>
+*@                <div class="mtz-product-wrap">
+                    @{
+                        int index = 1;
+                        foreach (var productMtz in Model.Products)
+                        {
+                            <div class="@((index % 6) == 0 ? " mtz-product-last" : "") @(productMtz.MtzProductAttributes != null ? " mtz-product-clothingsize" : " mtz-product")">
+                                <a asp-page="Product" asp-area="Mtz" asp-route-id="@productMtz.Id">
+                                    <img src="@Html.DisplayFor(modelItem => productMtz.Image)" />
+                                </a>
+                                <div class="mtz-product-popis-wrap">
+                                    <h2 id="mtz-product-popis">
+                                        <a asp-page="Product" asp-area="Mtz" asp-route-id="@productMtz.Id">
+                                            @Html.DisplayFor(modelItem => productMtz.Name)
+                                        </a>
+                                    </h2>
+                                    <div class="mtz-product-select-size-wrap">
+                                        <form asp-page="Product" asp-area="Mtz" method="get">
+                                            <input type="hidden" name="id" value="@productMtz.Id" />
+                                            <input class="mtz-product-objednat" type="submit" value="detail" />
+                                        </form>
+                                    </div>
+                                    @*<div class="mtz-product-select-size-wrap">
+                                        <form asp-page-handler="AddItem" asp-page="cart" asp-area="Mtz" data-ajax="true" data-ajax-method="POST" data-ajax-update="#cart-holder" data-ajax-begin="return CheckClothingSize(this, '@Html.DisplayFor(modelItem => productMtz.Name)')" data-ajax-success="ItemAddedToCart">
+                                            @Html.HiddenFor(modelItem => productMtz.Id)
+                                            @if (productMtz.MtzProductAttributes != null)
+                                            {
+                                                //@Html.LabelFor(modelItem => productMtz.SelectedSize)
+                                                <select style="display:none;" class="clothing-size" asp-for="@productMtz.SelectedSize" asp-items="@(new SelectList(@productMtz.MtzProductAttributes,"Value","Value"))"></select>
+                                            }
+                                            <div class="mtz-product-size-unit">
+                                                <input type="number" id="productMtz_Amount" value="@Html.DisplayFor(modelItem => productMtz.MinAmount)" min="0" step="@Html.DisplayFor(modelItem => productMtz.MinAmount)" name="@Html.NameFor(modelItem => productMtz.Amount)" />
+                                                @Html.DisplayFor(modelItem => productMtz.OrderUnit)
+                                            </div>
+                                            <input class="mtz-product-objednat" type="submit" value="objednat" />
+                                        </form>
+                                    </div>*@
+                                </div>
+                            </div>
+                            index++;
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Modal -->
+<div id="modalChooseSize" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <form id="formChooseSize" asp-page-handler="AddItem" asp-page="cart" asp-area="Mtz" data-ajax="true" data-ajax-method="POST" data-ajax-update="#cart-holder" data-ajax-success="ItemAddedToCart">
+                <input id="productMtz_Id" name="productMtz.Id" type="hidden" value="">
+                <input id="productMtz_Amount" name="productMtz.Amount" type="hidden" value="">
+                <div class="modal-body modal-body-unselected">
+                    <span id="productMtz_Name"></span>
+                    <div class="modal-body-unselected-size">
+                        <div>
+                            <label>Velikost</label>
+                            <select class="clothing-size" id="productMtz_SelectedSize" name="productMtz.SelectedSize"></select>
+                        </div>
+                        <div>
+                            <label>Poznámka:</label>
+                        </div>
+                        <div>
+                            <textarea id="productMtz_NamesOfEmployees" name="productMtz.NamesOfEmployees"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer modal-footer-unselected">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Zavřít</button>
+                    <input class="mtz-product-objednat" type="submit" value="objednat" disabled="disabled" />
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div id="modalAddToCart" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header modal-header-added">
+                <form asp-page="cart" asp-area="Mtz" method="get">
+                    <button type="submit" class="btn btn-default">Do košíku</button>
+                </form>
+            </div>
+            <div class="modal-body modal-body-added">
+                <div class="modal-body">
+                    <p>Položka byla řidána do košíku.</p>
+                </div>
+                <div class="modal-footer modal-footer-added">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Zavřít</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function ItemAddedToCart(){
+        $('#modalChooseSize').modal('hide');
+        $('#modalAddToCart').modal('show');
+    }
+    function CheckClothingSize(form, productName) {
+        form = $(form);
+        var clSize = form.find(".clothing-size");
+        //if (clSize.val() != undefined && clSize.val() == "vyberte") {
+        if (clSize.val() != undefined) {
+            $("#formChooseSize").find("#productMtz_Name").text(productName);
+            var productId = $("#formChooseSize").find("#productMtz_Id");
+            var selectedSize = $("#formChooseSize").find("#productMtz_SelectedSize");
+            var amount = $("#formChooseSize").find("#productMtz_Amount");
+            selectedSize.find("option").remove();
+            productId.val(form.find("#productMtz_Id").val());
+            amount.val(form.find("#productMtz_Amount").val());
+            selectedSize.append(form.find("option").clone());
+            $('#modalChooseSize').modal('show');
+            return false;
+        }
+    }
+</script>

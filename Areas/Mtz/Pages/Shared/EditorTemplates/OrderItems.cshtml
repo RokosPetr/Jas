@@ -1,0 +1,31 @@
+﻿@model List<Jas.Models.Mtz.OrderItem>
+
+<table class="table" id="cart-table">
+    <thead>
+        <tr>
+            <th>
+            </th>
+            <th>
+                Katalogové číslo
+            </th>
+            <th>
+                Počet
+            </th>
+            <th>
+                Jednotka
+            </th>
+            <th>
+                Velikost
+            </th>
+            <th>
+                Stav položky
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var xxx in Model)
+        {
+            @Html.EditorFor(item => xxx, "OrderItemMtz", "", new {ShowStore = ViewData["ShowStore"]})
+        }
+    </tbody>
+</table>

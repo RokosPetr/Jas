@@ -1,0 +1,94 @@
+﻿@page
+@model Jas.Areas.Mtz.Pages.CartModel
+@{
+    ViewData["Title"] = "Košík";
+}
+
+@if (Model.Order is not null)
+{
+    <div class="mtz-hlavni">
+        <table class="table" id="cart-table">
+            <thead>
+                <tr>
+                    <th>
+                    </th>
+                    <th>
+                        Katalogové číslo
+                    </th>
+                    <th>
+                        Počet
+                    </th>
+                    <th>
+                        Jednotka
+                    </th>
+                    <th>
+                        Velikost
+                    </th>
+                    <th>
+                        Poznámka
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var orderItemMtz in Model.Order.OrderItems)
+                {
+                    <tr class="cart-table-row-1">
+                        <td rowspan="2">
+                            <img src="@Html.DisplayFor(modelItem => orderItemMtz.Product.Image)" />
+                        </td>
+                        <td colspan="6">
+                            @Html.DisplayFor(modelItem => orderItemMtz.Name)
+                        </td>
+                    </tr>
+                    <tr class="cart-table-row-2">
+                        <td>
+                            @Html.DisplayFor(modelItem => orderItemMtz.ProductCode)
+                        </td>
+                        <td class="cart-table-size">
+                            <form asp-page-handler="UpdateItem" asp-page="cart" asp-area="Mtz" class="auto-submit">
+                                @Html.HiddenFor(modelItem => orderItemMtz.Id)
+                                <input type="hidden" name="field" value="AmountUpdate" />
+                                <input type="number" value="@Html.DisplayFor(modelItem => orderItemMtz.Amount)" min="0" step="@Html.DisplayFor(modelItem => orderItemMtz.Product.MinAmount)" name="@Html.NameFor(modelItem => orderItemMtz.AmountUpdate)" />
+                            </form>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => orderItemMtz.PackageSize) @Html.DisplayFor(modelItem => orderItemMtz.OrderUnit)
+                        </td>
+                        <td>
+                            @if (orderItemMtz.Product.MtzProductAttributes.Count > 0)
+                            {
+                                <form asp-page-handler="UpdateItem" asp-page="cart" asp-area="Mtz" class="auto-submit">
+                                    @Html.HiddenFor(modelItem => orderItemMtz.Id)
+                                    @Html.HiddenFor(modelItem => orderItemMtz.IdOrder)
+                                    <input type="hidden" name="field" value="SelectedSize" />
+                                    <select class="clothing-size" asp-for="@orderItemMtz.Product.SelectedSize" asp-items="@(new SelectList(@orderItemMtz.Product.MtzProductAttributes,"Value","Value",orderItemMtz.SelectedSize))"></select>
+                                </form>
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => orderItemMtz.NamesOfEmployees)
+                        </td>
+                        <td class="cart-table-x">
+                            <form asp-page-handler="UpdateItem" asp-page="cart" asp-area="Mtz">
+                                @Html.HiddenFor(modelItem => orderItemMtz.Id)
+                                <input type="hidden" name="field" value="AmountUpdate" />
+                                @Html.HiddenFor(modelItem => orderItemMtz.AmountUpdate, new { value = 0 })
+                                <input class="cart-x" type="submit" value="" />
+                            </form>
+                        </td>
+                    </tr>
+                    <tr class="cart-table-row-3">
+                        <td>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <form asp-page-handler="OrderCreate" asp-page="cart" asp-area="Mtz">
+            <input type="hidden" name="OrderId" value="@Html.DisplayFor(model => model.Order.Id)" />
+            <input class="cart-odeslat-objednavku" type="submit" value="odeslat objednávku" />
+        </form>
+    </div>
+}

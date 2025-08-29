@@ -1,0 +1,77 @@
+﻿@using Jas.Services.Mtz
+@using ENUMS = Jas.Globals.Mtz.Enums
+@inject INavbarServiceMtz NavbarService
+@{
+    Layout = null;
+    await NavbarService.InitializeAsync();
+}
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item">
+                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1" href="/mtz/">MTZ</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap" href="/mtz/received-orders/">
+                        @if (User.IsInRole("MTZ - admin"))
+                        {
+                            <span>PŘIJATÉ</span>
+                        }
+                        else
+                        {
+                            <span>ODESLANÉ</span>
+                        }
+                        <span class="badge">@NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.Received)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap" href="/mtz/inprogress-orders/">ROZPRACOVANÉ<span class="badge">@NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.InProgress)</span></a>
+                </li>
+                @if (User.IsInRole("MTZ - admin"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap" asp-area="mtz" asp-page="notdelivereditems">NEDODANÉ POLOŽKY<span class="badge">@NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.NotDeliveredItem)</span></a>
+                    </li>
+                }
+                <li class="nav-item">
+                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap" href="/mtz/processed-orders/">
+                        <span>VYŘÍZENÉ</span>
+                        @{
+                            int? count = NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.Processed) ?? 0 + NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.ProcessedCancelled) ?? 0 + NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.Cancelled) ?? 0;
+                            count = count == 0 ? null : count;
+                        }
+                        <span class="badge">@count</span>
+                    </a>
+                </li>
+                @if (User.IsInRole("MTZ - shipper"))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap" href="/mtz/tosend-orders/">K ODESLÁNÍ<span class="badge">@NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.ToSend)</span></a>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div id="top-panel-dropdown">
+            <div id="cart-holder">
+                <span class="user">@NavbarService.JasUser.Name</span>
+                <a asp-area="mtz" asp-page="cart" class="cart">
+                    <img src="/content/images/mtz/cart.png" />
+                    <span class="badge badge-cart">@NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.InCart)</span>
+                </a>
+            </div>
+            <div id="top-panel-dropdown-menu">
+                @if (NavbarService.IsExternalLoggedIn)
+                {
+                    <a href="https://www.mamekoupelny.eu">Zpět intranet</a>
+                }
+                <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")">Odhlásit</a>
+            </div>
+        </div>
+    </div>
+</nav>
+

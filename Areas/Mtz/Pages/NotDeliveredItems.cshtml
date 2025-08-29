@@ -1,0 +1,141 @@
+﻿@page
+@using Jas.Globals.Mtz
+@model Jas.Areas.Mtz.Pages.NotDeliveredItemsModel
+
+@{
+    ViewData["Title"] = "Nedodané položky";
+}
+
+<div class="mtz-hlavni">
+    @using (Html.BeginForm(FormMethod.Get))
+    {
+        <div class="input-group col-4 px-0">
+            <input asp-for="SearchString" type="text" class="form-control" autocomplete="off" />
+            <div class="input-group-append">
+                <button class="btn btn-secondary" type="submit" name="submit" value="search">Hledat</button>
+                <button class="btn btn-light" type="submit" name="submit" value="cancel">Zrušit</button>
+                <button class="btn btn-light" type="submit" name="submit" value="print" formtarget="_blank">Tisk</button>
+            </div>
+        </div>
+    }
+
+    <table class="not-delivered" id="cart-table">
+        <thead>
+            <tr>
+                <th>
+                </th>
+                <th>
+                    Pobočka
+                </th>
+                <th>
+                    Katalogové číslo
+                </th>
+                <th>
+                    Počet
+                </th>
+                <th>
+                    Jednotka
+                </th>
+                <th>
+                    Velikost
+                </th>
+                <th>
+                    Jméno zaměstnance
+                </th>
+                <th>
+                    Stav položky
+                </th>
+                <th>
+                    Poznámka
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in Model.OrderItems.GroupBy(item => item.ProductCode))
+            {
+                var orderItem = group.First();
+                var orderItems = Model.OrderItems.Where(w => w.ProductCode == orderItem.ProductCode).ToList();
+                var rowspan = orderItems.Count + 1;
+                <tr class="cart-table-row-1">
+                    <td rowspan="@rowspan">
+                        <img src="@Html.DisplayFor(modelItem => orderItem.Product.Image)" />
+                    </td>
+                    <td colspan="8">
+                        @Html.DisplayFor(modelItem => orderItem.Name)
+                    </td>
+                </tr>
+                int count = orderItems.Count;
+                int i = 1;
+                foreach (var orderItemMtz in orderItems)
+                {
+                    <tr class="cart-table-row-2 @(count == i ? "last" : "")">
+                        <td>
+                            @Html.Raw(orderItemMtz.UserName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => orderItemMtz.ProductCode)
+                        </td>
+                        <td class="cart-table-size">
+                            @Html.DisplayFor(modelItem => orderItemMtz.Amount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => orderItemMtz.PackageSize) @Html.DisplayFor(modelItem => orderItemMtz.OrderUnit)
+                        </td>
+                        <td>
+                            @if (orderItemMtz.Product.MtzProductAttributes != null)
+                            {
+                                @Html.DisplayFor(modelItem => orderItemMtz.SelectedSize)
+                            }
+                        </td>
+                        <td>
+                            @if (orderItemMtz.Product.MtzProductAttributes != null || orderItemMtz.Product.Code == "MTZ-0010299")
+                            {
+                                @Html.DisplayFor(modelItem => orderItemMtz.NamesOfEmployees)
+                            }
+                        </td>
+                        <td>
+                            <form asp-page-handler="UpdateItemState" asp-page="orderdetail" asp-area="Mtz" data-ajax="true" data-ajax-method="POST" data-ajax-update="#navbar" class="auto-submit">
+                                @Html.HiddenFor(modelItem => orderItemMtz.Id)
+                                @Html.HiddenFor(modelItem => orderItemMtz.IdOrder)
+                                <select id="orderItemMtz_State" name="orderItemMtz.State" class="order-item-state">
+                                    @{
+                                        foreach (SelectListItem option in OrderStates.OrderItemStateSelectList(orderItemMtz.State))
+                                        {
+                                            if (option.Value == "1")
+                                            {
+                                                <option value="@option.Value" selected="@option.Selected" disabled="disabled">@option.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@option.Value" selected="@option.Selected">@option.Text</option>
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </form>
+                        </td>
+                        <td>
+                            <form asp-area="Mtz"
+                                  asp-page="OrderDetail"
+                                  asp-page-handler="UpdateOrderItem"
+                                  method="post"
+                                  data-ajax="true"
+                                  data-ajax-method="post"
+                                  class="auto-submit">
+                                @Html.HiddenFor(modelItem => orderItemMtz.Id)
+                                @Html.TextBoxFor(modelItem => orderItemMtz.Comment, new { @class = "form-control" })
+                            </form>
+                        </td>
+                    </tr>
+                    i++;
+                }
+                <tr class="cart-table-row-3">
+                    <td colspan="9">
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

@@ -1,0 +1,126 @@
+﻿@page
+@using Jas.Globals.Mtz
+@model Jas.Areas.Mtz.Pages.OrderPrintModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html lang="cz" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>MTZ - objednávka č. @Model.Order.Id</title>
+    <link rel="stylesheet" href="~/css/print.css" />
+</head>
+<body>
+    <table class="top">
+        <tr>
+            <td><b>Číslo objednávky:</b> @Model.Order.Id</td>
+            <td><b>Datum přijetí objednávky: </b> @Html.DisplayFor(model => Model.Order.OrderDate)</td>
+        </tr>
+    </table>
+    <table class="address">
+        <tr>
+            <th><b>Dodavatel</b></th>
+            <th><b>Odběratel</b></th>
+        </tr>
+        <tr>
+            <td>
+                Koupelny JaS, s.r.o.<br />
+                Na Jízdárně 3118/34<br />
+                702 00 Ostrava<br />
+                Česká republika<br />
+                Telefon: +420 841 02 02 02<br />
+                IČO: 27792803<br />
+                DIČ: CZ27792803<br />
+
+            </td>
+            <td>
+                @Html.Raw(Model.Order.AddressHtml)
+            </td>
+        </tr>
+    </table>
+    <table class="order items">
+        <thead>
+            <tr>
+                <th class="col1">
+                    Katalogové číslo
+                </th>
+                <th class="col2">
+                    Počet
+                </th>
+                <th class="col3">
+                    Jednotka
+                </th>
+                <th class="col4">
+                    Velikost
+                </th>
+                <th class="col5">
+                    Jméno zaměstnance
+                </th>
+                <th class="col6">
+                    Stav položky
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var orderItemMtz in Model.Order.OrderItems)
+            {
+                <tr>
+                    <td colspan="6" style="padding: 0px;">
+                        <table class="order-item">
+                            <tr class="first">
+                                <td colspan="6">
+                                    @orderItemMtz.Name
+                                </td>
+                            </tr>
+                            <tr class="@(string.IsNullOrEmpty(orderItemMtz.Comment) ? "last" : "")">
+                                <td class="col1">
+                                    @orderItemMtz.ProductCode
+                                </td>
+                                <td class="col2">
+                                    @orderItemMtz.Amount
+                                </td>
+                                <td class="col3">
+                                    @orderItemMtz.PackageSize @orderItemMtz.OrderUnit
+                                </td>
+                                <td class="col4">
+                                    @if (@orderItemMtz.Product.MtzProductAttributes != null)
+                                    {
+                                        @orderItemMtz.SelectedSize
+                                    }
+                                </td>
+                                <td class="col5">
+                                    @if (@orderItemMtz.Product.MtzProductAttributes != null || @orderItemMtz.Product.Code == "MTZ-0010299")
+                                    {
+                                        @orderItemMtz.NamesOfEmployees
+                                    }
+                                </td>
+                                <td class="col6">
+                                    @OrderStates.OrderItemStateLabel(@orderItemMtz.State)
+                                </td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(orderItemMtz.Comment))
+                            {
+                                <tr class="last">
+                                    <td colspan="6">
+                                        <i><b>Poznámka: </b>@orderItemMtz.Comment</i>
+                                    </td>
+                                </tr>
+
+                            }
+                        </table>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
+
+
+<script>
+    setTimeout("window.close()",1000);
+</script>

@@ -1,0 +1,207 @@
+﻿@page "/mtz/{OrderStatus}-orders/{PageNumber?}"
+@using Jas.Globals.Mtz;
+@using X.PagedList.Mvc.Core
+@model Jas.Areas.Mtz.Pages.OrderModel
+@{
+    ViewData["Title"] = "Materiálně technické zabezpečení";
+    var neco = Url.Page("", pageHandler: null, values: new { pageNumber = Model.PageNumber, Detailed = Model.Detailed });
+}
+
+<div class="mtz-hlavni">
+    @if (Model.Detailed)
+    {
+        <a asp-route-pagenumber="@Model.PageNumber" asp-route-departmentid="@Model.DepartmentId" class="btn btn-outline-light text-dark btn-neaktivni">Základní</a>
+        <a asp-route-detailed="true" asp-route-pagenumber="@Model.PageNumber" asp-route-departmentid="@Model.DepartmentId" class="btn btn-primary btn-aktivni">Rozšířené</a>
+    }
+    else
+    {
+        <a asp-page="order" asp-area="mtz" asp-route-pagenumber="@Model.PageNumber" asp-route-departmentid="@Model.DepartmentId" class="btn btn-primary btn-aktivni">Základní</a>
+        <a asp-route-detailed="true" asp-route-pagenumber="@Model.PageNumber" asp-route-departmentid="@Model.DepartmentId" class="btn btn-outline-light text-dark btn-neaktivni">Rozšířené</a>
+    }
+
+    @if (Model.UserService.IsMtzAdmin || (Model.UserService.IsInRole("MTZ - shipper") && Model.State == 3 ))
+    {
+        <form method="get" class="mb-3 auto-submit">
+            <input type="hidden" name="formsubmitted" value="true" />
+            <label for="SelectedDepartmentId">Oddělení:</label>
+            <select asp-for="DepartmentId" asp-items="Model.DepartmentSelectList" class="form-control">
+                <option value="">-- Všechna oddělení --</option>
+            </select>
+        </form>
+    }
+    
+    @Html.PagedListPager(Model.Orders, page => Url.Page("", pageHandler: null, values: new { pageNumber = page, Detailed = Model.Detailed, DepartmentId = Model.DepartmentId }),
+            new PagedListRenderOptions
+    {
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link" },
+        UlElementClasses = new[] { "pagination" },
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        DisplayLinkToIndividualPages = true
+    })
+
+    <table class="table" id="cart-table">
+        <thead>
+            <tr>
+                <th>
+                    Objednávka
+                </th>
+                @if (Model.UserService.IsMtzAdmin)
+                {
+                    <th>
+                        Pobočka
+                    </th>
+                    <th>
+                        Jméno
+                    </th>
+                }
+                <th>
+                    Počet položek
+                </th>
+                <th>
+                    Stav
+                </th>
+                <th>
+                    Datum vytvoření
+                </th>
+                <th>
+                    Datum odeslání
+                </th>
+                <th>
+                </th>
+            </tr>
+            <tr>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int[] states = OrderStates.StateGroup.Where(w => w.Value == Model.State).Select(w => w.Key).ToArray();
+                foreach (var Order in Model.Orders)
+                {
+                    <tr class="cart-table-row-1 order-prvni-rada">
+                        <td>
+                            <a asp-area="mtz" asp-page="orderdetail" asp-route-OrderId="@Order.Id">
+                                @Html.DisplayFor(modelItem => Order.Id)
+                            </a>
+                        </td>
+                        @if (Model.UserService.IsMtzAdmin || Model.UserService.IsInRole("MTZ - shipper"))
+                        {
+                            <td>
+                                @Order.StoreAndDepartmentName
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Order.UserName)
+                            </td>
+                        }
+                        <td>
+                            @Order.MtzOrderItems.Count
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.State, "OrderState")
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Order.OrderDate)
+                        </td>
+                        <td>
+                            @if (Model.UserService.IsMtzAdmin || Model.UserService.IsInRole("MTZ - shipper"))
+                            {
+                                <form asp-area="Mtz"
+                                      asp-page="Order"
+                                      asp-page-handler="UpdateOrder"
+                                      method="post"
+                                      data-ajax="true"
+                                      data-ajax-method="post"
+                                      data-ajax-update="#navbar"
+                                      class="auto-submit">
+                                    <input type="hidden" asp-for="@Order.Id" />
+                                    <input type="hidden" name="field" value="SentDate" />
+                                    <input asp-for="@Order.SentDate" type="date" />
+                                </form>
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => Order.SentDate)
+                            }
+                        </td>
+                        <td>
+                            <a href="javascript: window.open('@Url.Page("OrderPrint",  new { area = "Mtz", OrderId = Order.Id })').print();">
+                                Tisk
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Poznámka:</th>
+                        <td colspan="@(Model.UserService.IsMtzAdmin ? 7 : 5)">
+                            @if (Model.UserService.IsMtzAdmin)
+                            {
+                                <form asp-area="Mtz"
+                                      asp-page="Order"
+                                      asp-page-handler="UpdateOrder"
+                                      method="post"
+                                      data-ajax="true"
+                                      data-ajax-method="post"
+                                      class="auto-submit">
+                                    <input type="hidden" asp-for="@Order.Id" />
+                                    <input type="hidden" name="field" value="Comment" />
+                                    <input asp-for="@Order.Comment" type="text" class="form-control" />
+                                </form>
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => Order.Comment)
+                            }
+                        </td>
+                    </tr>
+                    @if (Model.Detailed)
+                    {
+                        <tr class="order-margin-bottom">
+                            <td colspan="@(Model.UserService.IsMtzAdmin ? 8 : 6)">
+                                <table class="table" id="cart-table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                            </th>
+                                            <th>
+                                                Katalogové číslo
+                                            </th>
+                                            <th>
+                                                Počet
+                                            </th>
+                                            <th>
+                                                Jednotka
+                                            </th>
+                                            <th>
+                                                Velikost
+                                            </th>
+                                            <th>
+                                                Jméno zaměstnance
+                                            </th>
+                                            <th>
+                                                Stav položky
+                                            </th>
+                                            <th>
+                                                Poznámka
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var orderItemMtz in Order.OrderItems)
+                                        {
+                                            @Html.EditorFor(item => orderItemMtz, "OrderItemMtz", "", new {ShowStore = false})
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                    <tr class="cart-table-row-3">
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+

@@ -1,0 +1,159 @@
+﻿@page
+@model Jas.Areas.Mtz.Pages.ProductModel
+@{
+    ViewData["Title"] = "Materiálně technické zabezpečení";
+    var productMtz = Model.Product;
+}
+
+<div class="mtz-hlavni">
+    <div class="mtz-categories-navbar">
+        <ul class="list-inline">
+            <li class="list-inline-item"><a href="/mtz/">MTZ</a></li>
+            @foreach(var item in Model.Categories)
+            {
+                <li class="list-inline-item">&gt;&nbsp; <a asp-area="Mtz" asp-page="Category" asp-route-id="@item.Id">@item.Name</a></li>
+            }
+        </ul>
+    </div>
+    <div class="mtz-product-detail-main">
+        <div class="mtz-product-detail-img">
+            <img src="@Html.DisplayFor(model => model.Product.Image)" />
+        </div>
+        <div class="mtz-product-detail-table">
+            <table>
+                <tr class="mtz-product-detail-table-first-row">
+                    <td colspan="2">@Html.DisplayFor(model => model.Product.Name)</td>
+                </tr>
+                <tr>
+                    <th>Kód</th>
+                    <td>@Html.DisplayFor(model => model.Product.Code)</td>
+                </tr>
+            </table>
+        </div>
+        <div class="mtz-product-select-size-wrap">
+            <form asp-page-handler="AddItem" asp-page="cart" asp-area="Mtz" data-ajax="true" data-ajax-method="POST" data-ajax-update="#navbar" data-ajax-success="ItemAddedToCart">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="mtz-product-detail-size-select">
+                    <input type="hidden" asp-for="@productMtz.Id"/>
+                    @if (productMtz.MtzProductAttributes.Count > 0)
+                    {
+                        <label asp-for="Product.SelectedSize" class="control-label"></label>
+                        <select class="clothing-size" asp-for="@productMtz.SelectedSize"
+                                asp-items="@(new SelectList(
+                                new[] { new { Value = "", Text = "vyberte" } }
+                                .Concat(productMtz.MtzProductAttributes.Select(a => new { Value = a.Value, Text = a.Value })),
+                                "Value", "Text", Model.AttrSize ?? ""))">
+                        </select>
+                    }
+                    <div class="mtz-product-size-unit">
+                        <input asp-for="@productMtz.Amount" value="0" min="0" step="@Html.DisplayFor(modelItem => productMtz.MinAmount)"/>
+                        <div class="mtz-product-detail-unit">@Html.DisplayFor(modelItem => productMtz.OrderUnit)</div>
+                    </div>
+                </div>
+                @if (productMtz.MtzProductAttributes.Count > 0 || productMtz.Code == "MTZ-0010299")
+                {
+                    <div>
+                        <label asp-for="Product.NamesOfEmployees" class="control-label"></label>
+                        <textarea asp-for="@productMtz.NamesOfEmployees" class="form-control" style="max-width: 350px;"></textarea>
+                    </div>
+                }
+                <input class="mtz-product-objednat" type="submit" value="objednat" />
+            </form>
+        </div>
+    </div>
+    <div class="mtz-product-detail-desc">
+        <b>Popis:</b><br />
+        @Html.Raw(Model.Product.Description)
+        <br /><b>Specifikace:</b><br />
+        @Html.Raw(Model.Product.Specification)
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modalChooseSize" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <form id="formChooseSize" asp-page-handler="AddItem" asp-page="cart" asp-area="Mtz" data-ajax="true" data-ajax-method="POST" data-ajax-update="#cart-holder" data-ajax-success="ItemAddedToCart">
+                <input id="productMtz_Id" name="productMtz.Id" type="hidden" value="">
+                <input id="productMtz_Amount" name="productMtz.Amount" type="hidden" value="">
+                <div class="modal-body modal-body-unselected">
+                    <span id="productMtz_Name"></span>
+                    <div class="modal-body-unselected-size">
+                        <div>
+                            <label>Velikost</label>
+                            <select class="clothing-size" id="productMtz_SelectedSize" name="productMtz.SelectedSize"></select>
+                        </div>
+                        <div>
+                            <label>JMÉNO ZAMĚSTNANCE - POVINNĚ VYPLNIT:</label>
+                        </div>
+                        <div>
+                            <textarea id="productMtz_NamesOfEmployees" name="productMtz.NamesOfEmployees"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer modal-footer-unselected">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Zavřít</button>
+                    <input class="mtz-product-objednat" type="submit" value="objednat" disabled="disabled" />
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="modalAddToCart" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header modal-header-added">
+                <form asp-page="cart" asp-area="Mtz" method="get">
+                    <button type="submit" class="btn btn-default">Do košíku</button>
+                </form>
+            </div>
+            <div class="modal-body modal-body-added">
+                <div class="modal-body">
+                    <p>Položka byla řidána do košíku.</p>
+                </div>
+                <div class="modal-footer modal-footer-added">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Zavřít</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<script>
+    function ItemAddedToCart() {
+        $('#modalChooseSize').modal('hide');
+        $('#modalAddToCart').modal('show');
+    }
+    function CheckClothingSize(form, productName) {
+        alert(1);
+        form = $(form);
+        var clSize = form.find(".clothing-size");
+        //if (clSize.val() != undefined && clSize.val() == "vyberte") {
+        if (clSize.val() != undefined) {
+            $("#formChooseSize").find("#productMtz_Name").text(productName);
+            var productId = $("#formChooseSize").find("#productMtz_Id");
+            var selectedSize = $("#formChooseSize").find("#productMtz_SelectedSize");
+            var amount = $("#formChooseSize").find("#productMtz_Amount");
+            selectedSize.find("option").remove();
+            productId.val(form.find("#productMtz_Id").val());
+            amount.val(form.find("#productMtz_Amount").val());
+            selectedSize.append(form.find("option").clone());
+            $('#modalChooseSize').modal('show');
+            return false;
+        }
+    }
+</script>

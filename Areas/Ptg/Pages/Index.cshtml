@@ -1,0 +1,155 @@
+﻿@page "{ProducerName?}"
+@model Jas.Areas.Ptg.Pages.IndexModel
+@{
+    ViewData["Title"] = "Správa cenovek a štítků";
+}
+
+<style>
+    .catalog-img {
+    height: 150px;
+    width: 100%;
+    object-fit: contain;
+    background-color: #f8f9fa;
+    padding: 0.5rem;
+    }
+</style>
+
+<div class="container my-5">
+    <nav aria-label="breadcrumb">
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/ptg">Stojany</a>
+            </li>
+
+            @if (!string.IsNullOrEmpty(Model.ProducerName))
+            {
+                <li class="breadcrumb-item active" aria-current="page">
+                    @Model.ProducerName
+                </li>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.SearchString))
+            {
+                <li class="breadcrumb-item active" aria-current="page">
+                    „@Model.SearchString“
+                </li>
+            }
+        </ul>
+    </nav>
+    <form method="get" class="mb-4 d-flex justify-content-center align-items-center gap-2" role="search">
+        <input type="text"
+               name="SearchString"
+               value="@Model.SearchString"
+               class="form-control w-25"
+               placeholder="Vyhledat..." />
+
+        <button type="submit" class="btn btn-primary">Hledat</button>
+
+        @if (!string.IsNullOrWhiteSpace(Model.SearchString))
+        {
+            <a class="btn btn-outline-secondary"
+               href="@Url.Page("Index", new { area = "Ptg", ProducerName = Model.ProducerName })">
+                Zrušit
+            </a>
+        }
+    </form>
+    <div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
+        @foreach (var producer in Model.Producers)
+        {
+            <a href="/ptg/@producer.Name" class="text-decoration-none">
+                <img src="/images/logos/@producer.LogoImage" alt="@producer.Name" class="img-fluid" style="max-height: 60px;" />
+            </a>
+        }
+    </div>
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-4 g-4">
+        @foreach (var item in Model.Stands)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    @if (item.ImgUrl == null)
+                    {
+                        <img src="/images/no-picture.png" class="card-img-top catalog-img" alt="@item.Name">
+                    }
+                    else
+                    {
+                        <a href="@item.ImgUrl" class="text-decoration-none text-dark" data-lightbox="img_@item.IdStand">
+                            <img src="@item.ImgUrl" class="card-img-top catalog-img" alt="@item.Name">
+                        </a>
+
+                        @if (!string.IsNullOrEmpty(item.SecondPicture))
+                        {
+                            <a href="@item.SecondPicture" data-lightbox="img_@item.IdStand" class="d-none">
+                                <img src="@item.SecondPicture" alt="" />
+                            </a>
+                        }
+                    }
+                    <div class="card-body text-center p-2">
+                        <h6 class="card-title">@item.Name</h6>
+                    </div>
+                    <div class="card-footer text-center bg-white border-0 pb-3">
+                        @if (item.Type == 2)
+                        {
+                            <a asp-area="Ptg"
+                               asp-page="PlateDetail"
+                               asp-route-id="@item.IdStand"
+                               asp-route-page="1"
+                               class="btn btn-sm btn-outline-primary me-2">
+                                Detail
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-area="Ptg"
+                               asp-page="Detail"
+                               asp-route-id="@item.IdStand"
+                               class="btn btn-sm btn-outline-primary me-2">
+                                Detail
+                            </a>
+                        }
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                Stáhnout PDF
+                            </button>
+                            <ul class="dropdown-menu">
+                                @if (item.B2b)
+                                {
+                                    <li>
+                                        @if (item.PiecePriceTag)
+                                        {
+                                            <a class="dropdown-item" href="https://www.koupelnyprokazdeho.cz/PriceTag?company=partneri&catalog=cenovky-vo&idStand=@item.IdMkStand" download>
+                                                VO cenovka
+                                            </a>
+                                        }
+                                        @if (item.PlatePriceTag)
+                                        {
+                                            <a class="dropdown-item" href="https://www.koupelnyprokazdeho.cz/PriceTagPlate?company=partneri&idMkStand=@item.IdMkStand" download>
+                                                VO cenovka
+                                            </a>
+                                        }
+                                    </li>
+                                }
+                                @if (item.B2c)
+                                {
+                                    <li>
+                                        @if (item.PiecePriceTag)
+                                        {
+                                            <a class="dropdown-item" href="https://www.koupelnyprokazdeho.cz/PriceTag?company=koupelny-jas&catalog=cenovky-mo&idStand=@item.IdMkStand" download>
+                                                MO cenovka
+                                            </a>
+                                        }
+                                        @if (item.PlatePriceTag)
+                                        {
+                                            <a class="dropdown-item" href="https://www.koupelnyprokazdeho.cz/PriceTagPlate?company=koupelny-jas&idMkStand=@item.IdMkStand" download>
+                                                MO cenovka
+                                            </a>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

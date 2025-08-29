@@ -1,0 +1,8 @@
+﻿@if (TempData["messageInfo"] != null)
+{
+    <div class="flash-message flash-message-info">
+        <span class="flash-close-btn" onclick="closeFlashMessage(this);">x</span>
+        @TempData["messageInfo"]
+    </div>
+}
+
