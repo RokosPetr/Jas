@@ -16,6 +16,8 @@ namespace Jas.Models.Ptg
         public string? TagName { get; set; }
         public string? Size { get; set; }
         public int? Price { get; set; }
+        public int? PriceJas { get; set; }
+        public int? PriceNn { get; set; }
         public string? Unit { get; set; }
         public string? Orig_Name { get; set; }
         public bool Frost { get; set; }

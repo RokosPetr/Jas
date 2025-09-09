@@ -1,14 +1,43 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@using System.Text.RegularExpressions
+
+@{
+    // 1) Host (za proxy preferuj X-Forwarded-Host)
+    var hostHeader = Context?.Request?.Headers["X-Forwarded-Host"].FirstOrDefault()
+                  ?? Context?.Request?.Host.Value
+                  ?? string.Empty;
+
+    // 2) Očista: port + www
+    var clean = hostHeader.ToLowerInvariant();
+    clean = Regex.Replace(clean, @":\d+$", "");
+    clean = Regex.Replace(clean, @"^www\.", "");
+
+    // 3) Subdoména = první label
+    var sub = clean.Split('.', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
+
+    // 4) Načti mapu a default z configu
+    var defaultTitle = Config["TitleSettings:DefaultTitle"] ?? "Aplikace";
+    var titles = Config.GetSection("TitleSettings:SubdomainTitles")
+                       .GetChildren()
+                       .ToDictionary(s => s.Key, s => s.Value);
+
+    var baseTitle = titles.TryGetValue(sub, out var t) ? t : defaultTitle;
+
+    // 5) Volitelný page-specific titulek z ViewData["Title"]
+    var pageTitle = ViewData["Title"] as string;
+    var fullTitle = string.IsNullOrWhiteSpace(pageTitle) ? baseTitle : $"{pageTitle} – {baseTitle}";
+}
+
+<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow">
-    <title>Materiálně technické zabezpečení</title>
+    <title>@fullTitle</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.min.css" />
-@*     <link rel="stylesheet" href="~/Jas.styles.css" />
- *@     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
     <header>

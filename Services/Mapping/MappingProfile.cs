@@ -3,6 +3,7 @@ using Jas.Data.JasMtzDb;
 using Jas.Models.Mtz;
 using Jas.Models.Ptg;
 using Jas.Services.Mapping.Resolvers;
+using System.Data;
 
 namespace Jas.Services.Mapping
 {
@@ -21,6 +22,14 @@ namespace Jas.Services.Mapping
                 .ForMember(dest => dest.Store, opt => opt.MapFrom<OrderStoreResolver>())
                 .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.MtzOrderItems));
             CreateMap<ViPtgStandCompany, StandCompany>();
+
+            CreateMap<IDataRecord, StandCompany>();
+            CreateMap<IDataRecord, Plate>();
+            CreateMap<IDataRecord, PlateItem>();
+
+            // kdyby DB vracela 0/1 místo bit:
+            CreateMap<int, bool>().ConvertUsing(v => v != 0);
+            CreateMap<int?, bool>().ConvertUsing(v => v.GetValueOrDefault() != 0);
         }
     }
 }

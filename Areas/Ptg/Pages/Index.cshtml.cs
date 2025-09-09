@@ -43,10 +43,11 @@ namespace Jas.Areas.Ptg.Pages
             SqlParameter icoParam = new SqlParameter("@Ico", user.Ico ?? (object)DBNull.Value);
             SqlParameter producerNameParam = new SqlParameter("@ProducerName", ProducerName ?? (object)DBNull.Value);
             SqlParameter searchStringParam = new SqlParameter("@SearchString", SearchString ?? (object)DBNull.Value);
+            SqlParameter vojParam = new SqlParameter("@Voj", user.Mop9Voj ?? (object)DBNull.Value);
 
             Stands = await _context.StandCompany
-                .FromSqlRaw("EXEC sp_ptg_GetStandCompanies @Ico, @ProducerName, @SearchString",
-                    icoParam, producerNameParam, searchStringParam)
+                .FromSqlRaw("EXEC sp_ptg_GetStandCompanies @Ico, @ProducerName, @SearchString, @Voj",
+                    icoParam, producerNameParam, searchStringParam, vojParam)
                 .ToListAsync();
 
             List<int?> producerIds = Stands.Select(s => s.IdMkProducer).Distinct().ToList();

@@ -24,65 +24,48 @@ namespace Jas.Areas.Identity.Pages.Account
             _userManager = userManager;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; }
-
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "Toto pole je povinné")]
+            [StringLength(100, ErrorMessage = "{0} musí být nejméně {2} a maximálně {1} dlouhé.", MinimumLength = 6)]
             [DataType(DataType.Password)]
+            [Display(Name = "Heslo")]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+            [Required(ErrorMessage = "Toto pole je povinné")]
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Heslo znovu")]
+            [Compare("Password", ErrorMessage = "Hesla se neshodují.")]
             public string ConfirmPassword { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Required]
             public string Code { get; set; }
+            public string UserName { get; set; }
+
 
         }
 
-        public IActionResult OnGet(string code = null)
+        public async Task<IActionResult> OnGetAsync(string code = null, string userName = null)
         {
-            if (code == null)
+            if (code == null && userName == null)
             {
-                return BadRequest("A code must be supplied for password reset.");
+                return BadRequest("Pro resetování hesla je nutné zadat kód a uživatelské jméno.");
             }
             else
             {
+                var user = await _userManager.FindByNameAsync(userName);
+                if (user == null)
+                {
+                    // Don't reveal that the user does not exist
+                    return RedirectToPage("./ResetPasswordConfirmation");
+                }
                 Input = new InputModel
                 {
-                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
+                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code)),
+                    UserName = user.UserName
                 };
                 return Page();
             }
@@ -95,7 +78,7 @@ namespace Jas.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            var user = await _userManager.FindByEmailAsync(Input.Email);
+            var user = await _userManager.FindByNameAsync(Input.UserName);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
@@ -105,7 +88,10 @@ namespace Jas.Areas.Identity.Pages.Account
             var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
             if (result.Succeeded)
             {
-                return RedirectToPage("./ResetPasswordConfirmation");
+                //return RedirectToPage("./ResetPasswordConfirmation");
+                TempData["messageInfo"] = "Vaše heslo bylo úspěšně změněno";
+                return RedirectToPage("./Login");
+
             }
 
             foreach (var error in result.Errors)

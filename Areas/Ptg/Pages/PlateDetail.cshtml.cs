@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using AutoMapper;
+using System.Data;
 
 namespace Jas.Areas.Ptg.Pages
 {
@@ -18,12 +20,14 @@ namespace Jas.Areas.Ptg.Pages
         private readonly JasMtzDbContext _context;
         private readonly IMemoryCache _cache;
         private readonly IImageStore _imageStore;   // ⬅ injektované úložiště obrázků
+        private readonly IMapper _mapper;
 
-        public PlateDetailModel(JasMtzDbContext context, IMemoryCache cache, IImageStore imageStore)
+        public PlateDetailModel(JasMtzDbContext context, IMemoryCache cache, IImageStore imageStore, IMapper mapper)
         {
             _context = context;
             _cache = cache;
             _imageStore = imageStore;
+            _mapper = mapper;
         }
 
         public StandCompany? Stand { get; set; }
@@ -75,31 +79,37 @@ namespace Jas.Areas.Ptg.Pages
             return Partial("_PlateContent", vm);
         }
 
-        private async Task LoadAllAsync(int id)
+        private async Task LoadAllAsync(int idStand)
         {
-            var cacheKey = $"ptg:standdetail:{id}";
+            var cacheKey = $"stand:{idStand}:detail";
             if (!_cache.TryGetValue(cacheKey, out StandDetailCache? cached))
             {
-                using var conn = _context.Database.GetDbConnection();
+                await using var conn = (SqlConnection)_context.Database.GetDbConnection();
                 await conn.OpenAsync();
 
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = "EXEC sp_ptg_GetStandDetail @IdStand";
-                cmd.CommandType = System.Data.CommandType.Text;
-                cmd.Parameters.Add(new SqlParameter("@IdStand", id));
+                await using var cmd = new SqlCommand(@"EXEC dbo.sp_ptg_GetStandDetail @IdStand = @id;", conn);
+                cmd.Parameters.AddWithValue("@id", idStand);
 
-                using var reader = await cmd.ExecuteReaderAsync();
+                await using var reader = await cmd.ExecuteReaderAsync();
 
-                var stand = _context.Translate<StandCompany>(reader).FirstOrDefault()
-                           ?? throw new InvalidOperationException("Stand not found");
+                // 1) stand
+                var stand = _mapper
+                    .Map<IDataReader, IEnumerable<StandCompany>>(reader)
+                    .FirstOrDefault() ?? throw new InvalidOperationException("Stand not found");
 
+                // 2) plates
                 await reader.NextResultAsync();
-                var plates = _context.Translate<Plate>(reader).ToList();
+                var plates = _mapper
+                    .Map<IDataReader, IEnumerable<Plate>>(reader)
+                    .ToList();
 
+                // 3) items
                 await reader.NextResultAsync();
-                var items = _context.Translate<PlateItem>(reader).ToList();
+                var items = _mapper
+                    .Map<IDataReader, IEnumerable<PlateItem>>(reader)
+                    .ToList();
 
-                // Základní nastavení: HasImage = mám ne-prázdné ImgUrl (pro rychlé listingy)
+                // rychlý flag – reálnou dostupnost řeší EnsureHasImagesAsync(...)
                 foreach (var it in items)
                     it.HasImage = !string.IsNullOrWhiteSpace(it.ImgUrl);
 
@@ -117,11 +127,55 @@ namespace Jas.Areas.Ptg.Pages
                 _cache.Set(cacheKey, cached, opts);
             }
 
-            // Z cache přiřadíme
             Stand = cached!.Stand;
             Plates = cached.Plates;
             PlateItems = cached.Items;
         }
+        
+        //private async Task LoadAllAsync(int idStand)
+        //{
+        //    var cacheKey = $"stand:{idStand}:detail";
+        //    if (!_cache.TryGetValue(cacheKey, out StandDetailCache? cached))
+        //    {
+        //        using var conn = (SqlConnection)_context.Database.GetDbConnection();
+        //        await conn.OpenAsync();
+        //        using var cmd = new SqlCommand(@"
+        //            EXEC dbo.sp_ptg_GetStandDetail @IdStand = @id;
+        //        ", conn);
+        //        cmd.Parameters.AddWithValue("@id", idStand);
+
+        //        using var reader = await cmd.ExecuteReaderAsync();
+
+        //        var stand = _context.Translate<StandCompany>(reader).FirstOrDefault()
+        //                   ?? throw new InvalidOperationException("Stand not found");
+
+        //        await reader.NextResultAsync();
+        //        var plates = _context.Translate<Plate>(reader).ToList();
+
+        //        await reader.NextResultAsync();
+        //        var items = _context.Translate<PlateItem>(reader).ToList();
+
+        //        foreach (var it in items)
+        //            it.HasImage = !string.IsNullOrWhiteSpace(it.ImgUrl);
+
+        //        cached = new StandDetailCache
+        //        {
+        //            Stand = stand,
+        //            Plates = plates,
+        //            Items = items
+        //        };
+
+        //        var opts = new MemoryCacheEntryOptions()
+        //            .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
+        //            .SetSlidingExpiration(TimeSpan.FromMinutes(3));
+
+        //        _cache.Set(cacheKey, cached, opts);
+        //    }
+
+        //    Stand = cached!.Stand;
+        //    Plates = cached.Plates;
+        //    PlateItems = cached.Items;
+        //}
 
         /// <summary>
         /// Přesně ověří dostupnost pro položky aktuálního plátu:
