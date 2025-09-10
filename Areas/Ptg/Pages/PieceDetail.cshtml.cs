@@ -1,4 +1,5 @@
 using Jas.Application.Abstractions; // IImageStore
+using Jas.Application.Abstractions.Ptg;
 using Jas.Data.JasMtzDb;
 using Jas.Helpers;
 using Jas.Models.Ptg;
@@ -18,12 +19,14 @@ namespace Jas.Areas.Ptg.Pages
         private readonly JasMtzDbContext _context;
         private readonly IMemoryCache _cache;
         private readonly IImageStore _imageStore;
+        private readonly IStandDetailReader _standReader;
 
-        public PieceDetailModel(JasMtzDbContext context, IMemoryCache cache, IImageStore imageStore)
+        public PieceDetailModel(JasMtzDbContext context, IMemoryCache cache, IImageStore imageStore, IStandDetailReader standReader)
         {
             _context = context;
             _cache = cache;
             _imageStore = imageStore;
+            _standReader = standReader;
         }
 
         public StandCompany? Stand { get; set; }
@@ -32,7 +35,10 @@ namespace Jas.Areas.Ptg.Pages
 
         public async Task<IActionResult> OnGetAsync(int id, CancellationToken ct)
         {
-            await LoadAllAsync(id);
+            var data = await _standReader.GetAsync(id, ct);
+            Stand = data.Stand;
+            Plates = data.Plates;
+            PlateItems = data.Items;
 
             var firstPlate = Plates.FirstOrDefault();
             if (firstPlate is null)
@@ -52,6 +58,7 @@ namespace Jas.Areas.Ptg.Pages
                     it.HasImage = false;
                     return;
                 }
+
                 await sem.WaitAsync(ct);
                 try
                 {
@@ -68,51 +75,6 @@ namespace Jas.Areas.Ptg.Pages
             }).ToList();
 
             await Task.WhenAll(tasks);
-        }
-
-        private async Task LoadAllAsync(int idStand)
-        {
-            var cacheKey = $"stand:{idStand}:detail";
-            if (!_cache.TryGetValue(cacheKey, out StandDetailCache? cached))
-            {
-                using var conn = (SqlConnection)_context.Database.GetDbConnection();
-                await conn.OpenAsync();
-                using var cmd = new SqlCommand(@"
-                    EXEC dbo.sp_ptg_GetStandDetail @IdStand = @id;
-                ", conn);
-                cmd.Parameters.AddWithValue("@id", idStand);
-
-                using var reader = await cmd.ExecuteReaderAsync();
-
-                var stand = _context.Translate<StandCompany>(reader).FirstOrDefault()
-                           ?? throw new InvalidOperationException("Stand not found");
-
-                await reader.NextResultAsync();
-                var plates = _context.Translate<Plate>(reader).ToList();
-
-                await reader.NextResultAsync();
-                var items = _context.Translate<PlateItem>(reader).ToList();
-
-                foreach (var it in items)
-                    it.HasImage = !string.IsNullOrWhiteSpace(it.ImgUrl);
-
-                cached = new StandDetailCache
-                {
-                    Stand = stand,
-                    Plates = plates,
-                    Items = items
-                };
-
-                var opts = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(3));
-
-                _cache.Set(cacheKey, cached, opts);
-            }
-
-            Stand = cached!.Stand;
-            Plates = cached.Plates;
-            PlateItems = cached.Items;
         }
 
         private sealed class StandDetailCache

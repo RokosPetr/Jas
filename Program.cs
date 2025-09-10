@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using AutoMapper.Data;
 using Jas.Application.Abstractions;
+using Jas.Application.Abstractions.Ptg;
 using Jas.Data.JasIdentityApp;
 using Jas.Data.JasIdentityDb;
 using Jas.Data.JasMtzDb;
 using Jas.Infrastructure.Images;
+using Jas.Infrastructure.Ptg;
 using Jas.Services;
 using Jas.Services.Mapping;
 using Jas.Services.Mapping.Resolvers;
@@ -66,7 +68,9 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddDataReaderMapping(); // umožní mapování z IDataReader/IDataRecord
     cfg.SourceMemberNamingConvention = new LowerUnderscoreNamingConvention(); // price_jas -> PriceJas (kdyby storca vracela snake_case)
     cfg.DestinationMemberNamingConvention = new PascalCaseNamingConvention();
-}, typeof(MappingProfile).Assembly); 
+}, typeof(MappingProfile).Assembly);
+
+builder.Services.AddScoped<IStandDetailReader, StandDetailReader>(); 
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

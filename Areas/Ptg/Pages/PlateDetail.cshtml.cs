@@ -1,4 +1,6 @@
-﻿using Jas.Application.Abstractions; // ⬅ IImageStore
+﻿using AutoMapper;
+using Jas.Application.Abstractions; // ⬅ IImageStore
+using Jas.Application.Abstractions.Ptg;
 using Jas.Data.JasMtzDb;
 using Jas.Helpers;
 using Jas.Models.Ptg;
@@ -8,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using AutoMapper;
 using System.Data;
 
 namespace Jas.Areas.Ptg.Pages
@@ -21,13 +22,15 @@ namespace Jas.Areas.Ptg.Pages
         private readonly IMemoryCache _cache;
         private readonly IImageStore _imageStore;   // ⬅ injektované úložiště obrázků
         private readonly IMapper _mapper;
+        private readonly IStandDetailReader _standReader;
 
-        public PlateDetailModel(JasMtzDbContext context, IMemoryCache cache, IImageStore imageStore, IMapper mapper)
+        public PlateDetailModel(JasMtzDbContext context, IMemoryCache cache, IImageStore imageStore, IMapper mapper, IStandDetailReader standReader)
         {
             _context = context;
             _cache = cache;
             _imageStore = imageStore;
             _mapper = mapper;
+            _standReader = standReader;
         }
 
         public StandCompany? Stand { get; set; }
@@ -39,9 +42,12 @@ namespace Jas.Areas.Ptg.Pages
         [BindProperty(SupportsGet = true)]
         public int Plate { get; set; } = 1;
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id, CancellationToken ct)
         {
-            await LoadAllAsync(id);
+            var data = await _standReader.GetAsync(id, ct);
+            Stand = data.Stand;
+            Plates = data.Plates;
+            PlateItems = data.Items;
 
             if (Plate < 1) Plate = 1;
             if (Plate > Plates.Count) Plate = Plates.Count;
@@ -51,10 +57,13 @@ namespace Jas.Areas.Ptg.Pages
         }
 
         // AJAX: vrací jen partial s aktuálním platem (obrázek + tabulka)
-        public async Task<IActionResult> OnGetPlateAsync(int id, int plate = 1)
+        public async Task<IActionResult> OnGetPlateAsync(int id, CancellationToken ct, int plate = 1)
         {
-            await LoadAllAsync(id);
-
+            var data = await _standReader.GetAsync(id, ct);
+            Stand = data.Stand;
+            Plates = data.Plates;
+            PlateItems = data.Items;
+            
             if (plate < 1) plate = 1;
             if (plate > Plates.Count) plate = Plates.Count;
 
@@ -73,118 +82,14 @@ namespace Jas.Areas.Ptg.Pages
             };
 
             // ⬇️ Tady přepočítáme HasImage „na tvrdo“ jen pro aktuální plát
-            var ct = HttpContext.RequestAborted;
-            await EnsureHasImageForCurrentPlateAsync(vm.Items, ct);
+            var requestCt = HttpContext.RequestAborted; // nebo použij rovnou 'cancellationToken'
+            await EnsureHasImageForCurrentPlateAsync(vm.Items, requestCt);
 
             return Partial("_PlateContent", vm);
         }
 
-        private async Task LoadAllAsync(int idStand)
-        {
-            var cacheKey = $"stand:{idStand}:detail";
-            if (!_cache.TryGetValue(cacheKey, out StandDetailCache? cached))
-            {
-                await using var conn = (SqlConnection)_context.Database.GetDbConnection();
-                await conn.OpenAsync();
-
-                await using var cmd = new SqlCommand(@"EXEC dbo.sp_ptg_GetStandDetail @IdStand = @id;", conn);
-                cmd.Parameters.AddWithValue("@id", idStand);
-
-                await using var reader = await cmd.ExecuteReaderAsync();
-
-                // 1) stand
-                var stand = _mapper
-                    .Map<IDataReader, IEnumerable<StandCompany>>(reader)
-                    .FirstOrDefault() ?? throw new InvalidOperationException("Stand not found");
-
-                // 2) plates
-                await reader.NextResultAsync();
-                var plates = _mapper
-                    .Map<IDataReader, IEnumerable<Plate>>(reader)
-                    .ToList();
-
-                // 3) items
-                await reader.NextResultAsync();
-                var items = _mapper
-                    .Map<IDataReader, IEnumerable<PlateItem>>(reader)
-                    .ToList();
-
-                // rychlý flag – reálnou dostupnost řeší EnsureHasImagesAsync(...)
-                foreach (var it in items)
-                    it.HasImage = !string.IsNullOrWhiteSpace(it.ImgUrl);
-
-                cached = new StandDetailCache
-                {
-                    Stand = stand,
-                    Plates = plates,
-                    Items = items
-                };
-
-                var opts = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(3));
-
-                _cache.Set(cacheKey, cached, opts);
-            }
-
-            Stand = cached!.Stand;
-            Plates = cached.Plates;
-            PlateItems = cached.Items;
-        }
-        
-        //private async Task LoadAllAsync(int idStand)
-        //{
-        //    var cacheKey = $"stand:{idStand}:detail";
-        //    if (!_cache.TryGetValue(cacheKey, out StandDetailCache? cached))
-        //    {
-        //        using var conn = (SqlConnection)_context.Database.GetDbConnection();
-        //        await conn.OpenAsync();
-        //        using var cmd = new SqlCommand(@"
-        //            EXEC dbo.sp_ptg_GetStandDetail @IdStand = @id;
-        //        ", conn);
-        //        cmd.Parameters.AddWithValue("@id", idStand);
-
-        //        using var reader = await cmd.ExecuteReaderAsync();
-
-        //        var stand = _context.Translate<StandCompany>(reader).FirstOrDefault()
-        //                   ?? throw new InvalidOperationException("Stand not found");
-
-        //        await reader.NextResultAsync();
-        //        var plates = _context.Translate<Plate>(reader).ToList();
-
-        //        await reader.NextResultAsync();
-        //        var items = _context.Translate<PlateItem>(reader).ToList();
-
-        //        foreach (var it in items)
-        //            it.HasImage = !string.IsNullOrWhiteSpace(it.ImgUrl);
-
-        //        cached = new StandDetailCache
-        //        {
-        //            Stand = stand,
-        //            Plates = plates,
-        //            Items = items
-        //        };
-
-        //        var opts = new MemoryCacheEntryOptions()
-        //            .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
-        //            .SetSlidingExpiration(TimeSpan.FromMinutes(3));
-
-        //        _cache.Set(cacheKey, cached, opts);
-        //    }
-
-        //    Stand = cached!.Stand;
-        //    Plates = cached.Plates;
-        //    PlateItems = cached.Items;
-        //}
-
-        /// <summary>
-        /// Přesně ověří dostupnost pro položky aktuálního plátu:
-        /// - prázdná URL → HasImage = false
-        /// - pokud lokál neexistuje, zkusí stáhnout; při 404/403 apod. → HasImage = false
-        /// </summary>
         private async Task EnsureHasImageForCurrentPlateAsync(List<PlateItem> items, CancellationToken ct)
         {
-            // Mírné omezení souběhu, ať to nedělá špičky (stačí 4–6)
             var sem = new SemaphoreSlim(4);
             var tasks = items.Select(async it =>
             {
@@ -197,7 +102,6 @@ namespace Jas.Areas.Ptg.Pages
                 await sem.WaitAsync(ct);
                 try
                 {
-                    // IImageStore umí absolutní URL i "host/path?query"
                     it.HasImage = await _imageStore.TryEnsureLocalAsync(it.ImgUrl!, ct);
                 }
                 catch
