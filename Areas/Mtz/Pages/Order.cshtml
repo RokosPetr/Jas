@@ -1,13 +1,26 @@
 ﻿@page "/mtz/{OrderStatus}-orders/{PageNumber?}"
 @using Jas.Globals.Mtz;
 @using X.PagedList.Mvc.Core
+@using ENUMS = Jas.Globals.Mtz.Enums
 @model Jas.Areas.Mtz.Pages.OrderModel
 @{
-    ViewData["Title"] = "Materiálně technické zabezpečení";
-    var neco = Url.Page("", pageHandler: null, values: new { pageNumber = Model.PageNumber, Detailed = Model.Detailed });
+    ViewData["Title"] = Model.State switch
+    {
+        (int)ENUMS.OrderStates.Received => User.IsInRole("MTZ - admin") ? "Přijaté objednávky " : "Odeslané objednávky",
+        (int)ENUMS.OrderStates.InProgress => "Rozpracované objednávky",
+        (int)ENUMS.OrderStates.ToSend => "Objednávky k odeslání",
+        (int)ENUMS.OrderStates.Processed => "Vyřízené objednávky",
+        _ => null
+    };
+    var notComment = new[] {
+                        (int)Jas.Globals.Mtz.Enums.OrderStates.Processed,
+                        (int)Jas.Globals.Mtz.Enums.OrderStates.ProcessedCancelled,
+                        (int)Jas.Globals.Mtz.Enums.OrderStates.Cancelled
+                    };
 }
 
 <div class="mtz-hlavni">
+    <h1>@ViewData["Title"]</h1>
     @if (Model.Detailed)
     {
         <a asp-route-pagenumber="@Model.PageNumber" asp-route-departmentid="@Model.DepartmentId" class="btn btn-outline-light text-dark btn-neaktivni">Základní</a>
@@ -79,31 +92,31 @@
         <tbody>
             @{
                 int[] states = OrderStates.StateGroup.Where(w => w.Value == Model.State).Select(w => w.Key).ToArray();
-                foreach (var Order in Model.Orders)
+                foreach (var order in Model.Orders)
                 {
                     <tr class="cart-table-row-1 order-prvni-rada">
                         <td>
-                            <a asp-area="mtz" asp-page="orderdetail" asp-route-OrderId="@Order.Id">
-                                @Html.DisplayFor(modelItem => Order.Id)
+                            <a asp-area="mtz" asp-page="orderdetail" asp-route-OrderId="@order.Id">
+                                @Html.DisplayFor(modelItem => order.Id)
                             </a>
                         </td>
                         @if (Model.UserService.IsMtzAdmin || Model.UserService.IsInRole("MTZ - shipper"))
                         {
                             <td>
-                                @Order.StoreAndDepartmentName
+                                @order.StoreAndDepartmentName
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => Order.UserName)
+                                @Html.DisplayFor(modelItem => order.UserName)
                             </td>
                         }
                         <td>
-                            @Order.MtzOrderItems.Count
+                            @order.MtzOrderItems.Count
                         </td>
                         <td>
-                            @Html.DisplayFor(model => model.State, "OrderState")
+                            @Html.DisplayFor(modelItem => order.State, "OrderState")
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => Order.OrderDate)
+                            @Html.DisplayFor(modelItem => order.OrderDate)
                         </td>
                         <td>
                             @if (Model.UserService.IsMtzAdmin || Model.UserService.IsInRole("MTZ - shipper"))
@@ -116,26 +129,26 @@
                                       data-ajax-method="post"
                                       data-ajax-update="#navbar"
                                       class="auto-submit">
-                                    <input type="hidden" asp-for="@Order.Id" />
+                                    <input type="hidden" asp-for="@order.Id" />
                                     <input type="hidden" name="field" value="SentDate" />
-                                    <input asp-for="@Order.SentDate" type="date" />
+                                    <input asp-for="@order.SentDate" type="date" />
                                 </form>
                             }
                             else
                             {
-                                @Html.DisplayFor(modelItem => Order.SentDate)
+                                @Html.DisplayFor(modelItem => order.SentDate)
                             }
                         </td>
                         <td>
-                            <a href="javascript: window.open('@Url.Page("OrderPrint",  new { area = "Mtz", OrderId = Order.Id })').print();">
+                            <a href="javascript: window.open('@Url.Page("OrderPrint",  new { area = "Mtz", OrderId = order.Id })').print();">
                                 Tisk
                             </a>
                         </td>
                     </tr>
                     <tr>
-                        <th>Poznámka:</th>
+                        <th><label asp-for="@order.Comment" class="form-label">Poznámka:</label></th>
                         <td colspan="@(Model.UserService.IsMtzAdmin ? 7 : 5)">
-                            @if (Model.UserService.IsMtzAdmin)
+                            @if (Model.UserService.IsMtzAdmin || !notComment.Contains(order.State))
                             {
                                 <form asp-area="Mtz"
                                       asp-page="Order"
@@ -144,14 +157,21 @@
                                       data-ajax="true"
                                       data-ajax-method="post"
                                       class="auto-submit">
-                                    <input type="hidden" asp-for="@Order.Id" />
+
+                                    <input type="hidden" asp-for="@order.Id" />
                                     <input type="hidden" name="field" value="Comment" />
-                                    <input asp-for="@Order.Comment" type="text" class="form-control" />
+
+                                    <textarea asp-for="@order.Comment"
+                                              class="form-control js-autogrow"
+                                              rows="1"
+                                              style="overflow:hidden;resize:none;"></textarea>
+
+                                    <span asp-validation-for="@order.Comment" class="text-danger"></span>
                                 </form>
                             }
                             else
                             {
-                                @Html.DisplayFor(modelItem => Order.Comment)
+                                @Html.DisplayFor(modelItem => order.Comment)
                             }
                         </td>
                     </tr>
@@ -188,7 +208,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var orderItemMtz in Order.OrderItems)
+                                        @foreach (var orderItemMtz in order.OrderItems)
                                         {
                                             @Html.EditorFor(item => orderItemMtz, "OrderItemMtz", "", new {ShowStore = false})
                                         }

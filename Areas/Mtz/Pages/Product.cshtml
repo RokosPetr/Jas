@@ -1,8 +1,8 @@
 ﻿@page
 @model Jas.Areas.Mtz.Pages.ProductModel
 @{
-    ViewData["Title"] = "Materiálně technické zabezpečení";
     var productMtz = Model.Product;
+    ViewData["Title"] = productMtz.Name;
 }
 
 <div class="mtz-hlavni">

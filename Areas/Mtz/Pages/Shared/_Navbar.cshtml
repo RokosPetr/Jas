@@ -16,42 +16,131 @@
                 <li class="nav-item">
                     <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1" href="/mtz/">MTZ</a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap" href="/mtz/received-orders/">
-                        @if (User.IsInRole("MTZ - admin"))
+                    @{
+                        int? receivedCount = NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.Received);
+                        string receivedText = User.IsInRole("MTZ - admin") ? "PŘIJATÉ" : "ODESLANÉ";
+
+                        if (receivedCount == null)
                         {
-                            <span>PŘIJATÉ</span>
+                            <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                  aria-disabled="true" tabindex="-1">
+                                <span>@receivedText</span>
+                                <span class="badge"></span>
+                            </span>
                         }
                         else
                         {
-                            <span>ODESLANÉ</span>
+                            <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap"
+                               href="/mtz/received-orders/">
+                                <span>@receivedText</span>
+                                <span class="badge">@receivedCount</span>
+                            </a>
                         }
-                        <span class="badge">@NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.Received)</span>
-                    </a>
+                    }
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap" href="/mtz/inprogress-orders/">ROZPRACOVANÉ<span class="badge">@NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.InProgress)</span></a>
+                    @{
+                        int? inProgressCount = NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.InProgress);
+
+                        if (inProgressCount == null)
+                        {
+                            <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                  aria-disabled="true" tabindex="-1">
+                                ROZPRACOVANÉ
+                                <span class="badge"></span>
+                            </span>
+                        }
+                        else
+                        {
+                            <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap"
+                               href="/mtz/inprogress-orders/">
+                                ROZPRACOVANÉ
+                                <span class="badge">@inProgressCount</span>
+                            </a>
+                        }
+                    }
                 </li>
+
                 @if (User.IsInRole("MTZ - admin"))
                 {
                     <li class="nav-item">
-                        <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap" asp-area="mtz" asp-page="notdelivereditems">NEDODANÉ POLOŽKY<span class="badge">@NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.NotDeliveredItem)</span></a>
+                        @{
+                            int? notDeliveredCount = NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.NotDeliveredItem);
+
+                            if (notDeliveredCount == null)
+                            {
+                                <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                      aria-disabled="true" tabindex="-1">
+                                    NEDODANÉ POLOŽKY
+                                    <span class="badge"></span>
+                                </span>
+                            }
+                            else
+                            {
+                                <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap"
+                                   asp-area="mtz" asp-page="notdelivereditems">
+                                    NEDODANÉ POLOŽKY
+                                    <span class="badge">@notDeliveredCount</span>
+                                </a>
+                            }
+                        }
                     </li>
                 }
+
                 <li class="nav-item">
-                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap" href="/mtz/processed-orders/">
-                        <span>VYŘÍZENÉ</span>
-                        @{
-                            int? count = NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.Processed) ?? 0 + NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.ProcessedCancelled) ?? 0 + NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.Cancelled) ?? 0;
-                            count = count == 0 ? null : count;
+                    @{
+                        int processedSum =
+                        (NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.Processed) ?? 0)
+                        + (NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.ProcessedCancelled) ?? 0)
+                        + (NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.Cancelled) ?? 0);
+
+                        int? processedCount = processedSum == 0 ? (int?)null : processedSum;
+
+                        if (processedCount == null)
+                        {
+                            <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                  aria-disabled="true" tabindex="-1">
+                                <span>VYŘÍZENÉ</span>
+                                <span class="badge"></span>
+                            </span>
                         }
-                        <span class="badge">@count</span>
-                    </a>
+                        else
+                        {
+                            <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap"
+                               href="/mtz/processed-orders/">
+                                <span>VYŘÍZENÉ</span>
+                                <span class="badge">@processedCount</span>
+                            </a>
+                        }
+                    }
                 </li>
+
                 @if (User.IsInRole("MTZ - shipper"))
                 {
                     <li class="nav-item">
-                        <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap" href="/mtz/tosend-orders/">K ODESLÁNÍ<span class="badge">@NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.ToSend)</span></a>
+                        @{
+                            int? badgeCount = NavbarService.GetOrderCountByState((int)ENUMS.OrderStates.ToSend);
+
+                            if (badgeCount == null)
+                            {
+                                <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                      aria-disabled="true" tabindex="-1">
+                                    K ODESLÁNÍ
+                                    <span class="badge"></span>
+                                </span>
+                            }
+                            else
+                            {
+                                <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap"
+                                   href="/mtz/tosend-orders/">
+                                    K ODESLÁNÍ
+                                    <span class="badge">@badgeCount</span>
+                                </a>
+                            }
+                        }
                     </li>
                 }
             </ul>

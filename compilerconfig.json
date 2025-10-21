@@ -14,5 +14,9 @@
   {
     "outputFile": "wwwroot/css/ptg.css",
     "inputFile": "wwwroot/css/ptg.less"
+  },
+  {
+    "outputFile": "wwwroot/js/site.es5.js",
+    "inputFile": "wwwroot/js/site.js"
   }
 ]

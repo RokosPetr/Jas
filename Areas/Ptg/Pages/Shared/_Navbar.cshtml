@@ -1,9 +1,74 @@
 ﻿@using Jas.Services.Ptg
+@using Jas.Areas.Ptg.Pages
 @inject INavbarServicePtg NavbarService
 @{
     Layout = null;
 }
-<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark">
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="container">
+@*         <a class="navbar-brand" href="/">PTG</a>
+ *@
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Přepnout navigaci">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+
+            @{
+                bool isExpo = false;
+                bool isPort = false;
+
+                if (Model is IndexModel im)
+                {
+                    // null/expozice => Expozice aktivní, "portfolio" => Portfolio aktivní
+                    isPort = string.Equals(im.Available, "portfolio", StringComparison.OrdinalIgnoreCase);
+                    isExpo = !isPort;
+                }
+            }
+
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link @(isExpo ? "active" : null)"
+                       asp-area="Ptg" asp-page="/Index"
+                       asp-route-Available="expozice" asp-route-ProducerName="">
+                        Moje stojany
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(isPort ? "active" : null)"
+                       asp-area="Ptg" asp-page="/Index"
+                       asp-route-Available="portfolio" asp-route-ProducerName="">
+                        Všechny stojany
+                    </a>
+                </li>
+            </ul>
+
+            <!-- user dropdown vpravo -->
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="user">@NavbarService.JasUser.Name</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+@*                         <li><a class="dropdown-item" href="/profil">Můj profil</a></li>
+                        <li><a class="dropdown-item" href="/nastaveni">Nastavení</a></li>
+                        <li><hr class="dropdown-divider"></li>
+ *@                        <li>
+                            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")" method="post">
+                                <button class="dropdown-item">Odhlásit se</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+@* <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark">
     <div class="container">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
         aria-expanded="false" aria-label="Toggle navigation">
@@ -12,7 +77,10 @@
         <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
             <ul class="navbar-nav flex-grow-1">
                 <li class="nav-item">
-                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1" href="/ptg/">Stojany</a>
+                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1" href="/ptg/">Moje stojany</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1" href="/ptg/">Dostupné stojany</a>
                 </li>
             </ul>
         </div>
@@ -27,3 +95,4 @@
     </div>
 </nav>
 
+ *@

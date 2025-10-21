@@ -23,6 +23,8 @@ namespace Jas.Areas.Ptg.Pages
         public string? ProducerName { get; set; }
         [BindProperty(SupportsGet = true)]
         public string? SearchString { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string? Available { get; set; }
         public List<StandCompany> Stands { get; set; }
         public List<JasProducer> Producers { get; set; }
 
@@ -35,6 +37,11 @@ namespace Jas.Areas.Ptg.Pages
 
         public async Task<IActionResult> OnGetAsync(string? ProducerName, string? SearchString)
         {
+            if (string.IsNullOrEmpty(Available))
+            {
+                return RedirectToPage(null, new { Available = "expozice", ProducerName });
+            }
+
             string? userId = _userManager.GetUserId(User); // Získá string ID
             JasUser? user = await _userManager.FindByIdAsync(userId!);
 
@@ -44,15 +51,23 @@ namespace Jas.Areas.Ptg.Pages
             SqlParameter producerNameParam = new SqlParameter("@ProducerName", ProducerName ?? (object)DBNull.Value);
             SqlParameter searchStringParam = new SqlParameter("@SearchString", SearchString ?? (object)DBNull.Value);
             SqlParameter vojParam = new SqlParameter("@Voj", user.Mop9Voj ?? (object)DBNull.Value);
+            
+            SqlParameter ownOrAvailable = new SqlParameter("@OwnOrAvailable", System.Data.SqlDbType.Bit)
+            {
+                Value = string.Equals(Available, "portfolio", StringComparison.OrdinalIgnoreCase) ? 1 : 0
+            };
 
             Stands = await _context.StandCompany
-                .FromSqlRaw("EXEC sp_ptg_GetStandCompanies @Ico, @ProducerName, @SearchString, @Voj",
-                    icoParam, producerNameParam, searchStringParam, vojParam)
+                .FromSqlRaw("EXEC sp_ptg_GetStandCompanies @Ico, @ProducerName, @SearchString, @Voj, @OwnOrAvailable",
+                    icoParam, producerNameParam, searchStringParam, vojParam, ownOrAvailable)
                 .ToListAsync();
 
             List<int?> producerIds = Stands.Select(s => s.IdMkProducer).Distinct().ToList();
             Producers = await _context.JasProducers.Where(w => producerIds.Contains(w.MkId)).ToListAsync();
-
+            if (producerIds.Contains(null))
+            {
+                Producers.Add(new JasProducer() { Name = "MIX" });
+            }
 
             return Page();
         }

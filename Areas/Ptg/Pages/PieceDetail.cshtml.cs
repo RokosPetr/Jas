@@ -1,14 +1,9 @@
 using Jas.Application.Abstractions; // IImageStore
 using Jas.Application.Abstractions.Ptg;
-using Jas.Data.JasMtzDb;
-using Jas.Helpers;
 using Jas.Models.Ptg;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Jas.Areas.Ptg.Pages
 {
@@ -16,15 +11,11 @@ namespace Jas.Areas.Ptg.Pages
     [Authorize(Roles = "Administrator,PTG - admin,PTG - uživatel")]
     public class PieceDetailModel : PageModel
     {
-        private readonly JasMtzDbContext _context;
-        private readonly IMemoryCache _cache;
         private readonly IImageStore _imageStore;
         private readonly IStandDetailReader _standReader;
 
-        public PieceDetailModel(JasMtzDbContext context, IMemoryCache cache, IImageStore imageStore, IStandDetailReader standReader)
+        public PieceDetailModel(IImageStore imageStore, IStandDetailReader standReader)
         {
-            _context = context;
-            _cache = cache;
             _imageStore = imageStore;
             _standReader = standReader;
         }
@@ -44,7 +35,7 @@ namespace Jas.Areas.Ptg.Pages
             if (firstPlate is null)
                 return Page();
 
-            await EnsureHasImagesAsync(PlateItems.Where(i => i.Id_Pt_Plate == firstPlate.Id), ct);
+            await EnsureHasImagesAsync(PlateItems.Where(i => i.IdPtPlate == firstPlate.Id), ct);
             return Page();
         }
 

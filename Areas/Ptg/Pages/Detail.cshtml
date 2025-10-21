@@ -16,7 +16,7 @@ else
             <div class="accordion" id="plateAccordion">
                 @foreach (var plate in Model.Plates)
                 {
-                    var items = Model.PlateItems.Where(i => i.Id_Pt_Plate == plate.Id).ToList();
+                    var items = Model.PlateItems.Where(i => i.IdPtPlate == plate.Id).ToList();
                     var plateId = $"plate_{plate.Id}";
 
                     <div class="accordion-item">
@@ -46,7 +46,7 @@ else
                                             @foreach (var item in items)
                                             {
                                                 <tr>
-                                                    <td>@item.Item_Order</td>
+                                                    <td>@item.ItemOrder</td>
                                                     <td>@item.TagName</td>
                                                     <td>@item.Size</td>
                                                     <td>@(item.Price.HasValue ? item.Price.Value.ToString("N0") : "-")</td>

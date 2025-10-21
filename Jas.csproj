@@ -18,6 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Areas\Ptg\Pages\_PlateContent.cshtml_" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Areas\Ptg\Pages\_PlateContent.cshtml" />
     <None Include="compilerconfig.json" />
   </ItemGroup>
 
@@ -33,6 +38,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16" />
     <PackageReference Include="Microsoft.jQuery.Unobtrusive.Ajax" Version="3.2.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="QRCoder" Version="1.6.0" />
     <PackageReference Include="X.PagedList" Version="10.5.7" />
     <PackageReference Include="X.PagedList.EF" Version="10.5.7" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
@@ -54,7 +60,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Ptg\Pages\Shared\DisplayTemplates\" />
     <Folder Include="Areas\Ptg\Pages\Shared\EditorTemplates\" />
   </ItemGroup>
 

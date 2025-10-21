@@ -1,8 +1,12 @@
 ﻿@page
 @model Jas.Areas.Mtz.Pages.CategoryModel
 @{
-    ViewData["Title"] = "Materiálně technické zabezpečení";
+    var names = Model.Categories?.Select(c => c?.Name).Where(n => !string.IsNullOrWhiteSpace(n)) ?? Enumerable.Empty<string>();
+    ViewData["Title"] = names.Any()
+        ? $"{string.Join(", ", names)}"
+        : null;
 }
+
 
 <div class="mtz-hlavni">
     <main role="main">

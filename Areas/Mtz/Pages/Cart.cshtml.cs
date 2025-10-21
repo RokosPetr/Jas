@@ -25,11 +25,8 @@ namespace Jas.Areas.Mtz.Pages
         private readonly IUserService _userService;
 
 
-        [BindProperty(SupportsGet = true)]
-        public int NewOrderId { get; set; }
-        [BindProperty(SupportsGet = true)]
-        public int OrderId { get; set; }
-        public Order Order { get; set; }
+        [BindProperty]
+        public Order Order { get; set; } = default!;
 
         public CartModel(JasMtzDbContext context, IMapper mapper, UserManager<JasUser> userManager, IUserService userService)
         {
@@ -55,16 +52,17 @@ namespace Jas.Areas.Mtz.Pages
             }
 
             Order = _mapper.Map<Order>(mtzOrder);
-            OrderId = Order.Id;
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostOrderCreateAsync()
         {
-            MtzOrder? mtzOrder = await _context.MtzOrders.Include(i => i.MtzOrderItems).FirstOrDefaultAsync(i => i.Id == OrderId);
+            MtzOrder? mtzOrder = await _context.MtzOrders.Include(i => i.MtzOrderItems).FirstOrDefaultAsync(i => i.Id == Order.Id);
             if (mtzOrder != null)
             {
+                await TryUpdateModelAsync(mtzOrder, "Order", o => o.Comment);
+                
                 mtzOrder.State = (int)ENUMS.OrderStates.Received;
                 mtzOrder.OrderDate = DateTime.Now;
                 mtzOrder.StoreId = _userService.JasUser.StoreId;
@@ -205,7 +203,6 @@ namespace Jas.Areas.Mtz.Pages
                 .FirstOrDefaultAsync(o => o.IdUser == _userService.UserId && o.State == 0);
 
             Order = _mapper.Map<Order>(mtzOrder);
-            OrderId = Order.Id;
 
             ModelState.Clear();
             return Page();

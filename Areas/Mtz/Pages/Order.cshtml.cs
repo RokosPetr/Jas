@@ -121,7 +121,8 @@ namespace Jas.Areas.Mtz.Pages
                 {
                     allowedStates = new[] {
                         (int)ENUMS.OrderStates.Processed,
-                        (int)ENUMS.OrderStates.ProcessedCancelled
+                        (int)ENUMS.OrderStates.ProcessedCancelled,
+                        (int)ENUMS.OrderStates.Cancelled
                     };
                 }
                 else

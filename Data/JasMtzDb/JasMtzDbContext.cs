@@ -35,6 +35,8 @@ public partial class JasMtzDbContext : DbContext
 
     public virtual DbSet<ViMtzUser> ViMtzUsers { get; set; }
 
+    public virtual DbSet<ViPtgPdfPtPlate> ViPtgPdfPtPlates { get; set; }
+
     public virtual DbSet<ViPtgStandCompany> ViPtgStandCompanies { get; set; }
 
     public virtual DbSet<ViPtgStandCompany1> ViPtgStandCompanies1 { get; set; }
@@ -310,6 +312,74 @@ public partial class JasMtzDbContext : DbContext
             entity.Property(e => e.Email).HasMaxLength(256);
             entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
             entity.Property(e => e.UserName).HasMaxLength(256);
+        });
+
+        modelBuilder.Entity<ViPtgPdfPtPlate>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vi_ptg_pdf_pt_plate");
+
+            entity.Property(e => e.Abrasion)
+                .HasMaxLength(5)
+                .HasColumnName("abrasion");
+            entity.Property(e => e.Antislip)
+                .HasMaxLength(5)
+                .HasColumnName("antislip");
+            entity.Property(e => e.Description)
+                .HasMaxLength(255)
+                .HasColumnName("description");
+            entity.Property(e => e.Discarded).HasColumnName("discarded");
+            entity.Property(e => e.Discount).HasColumnName("discount");
+            entity.Property(e => e.Frost).HasColumnName("frost");
+            entity.Property(e => e.IdMkStand).HasColumnName("id_mk_stand");
+            entity.Property(e => e.IdPtPlate).HasColumnName("id_pt_plate");
+            entity.Property(e => e.IdPtStand).HasColumnName("id_pt_stand");
+            entity.Property(e => e.Inserted).HasColumnName("inserted");
+            entity.Property(e => e.ItemOrder).HasColumnName("item_order");
+            entity.Property(e => e.Name)
+                .HasMaxLength(4000)
+                .HasColumnName("name");
+            entity.Property(e => e.OrigName)
+                .HasMaxLength(255)
+                .HasColumnName("orig_name");
+            entity.Property(e => e.Outlet).HasColumnName("outlet");
+            entity.Property(e => e.OutletQr)
+                .HasMaxLength(255)
+                .HasColumnName("outlet_qr");
+            entity.Property(e => e.Picture)
+                .HasMaxLength(255)
+                .HasColumnName("picture");
+            entity.Property(e => e.PlateOrder).HasColumnName("plate_order");
+            entity.Property(e => e.PlateQr)
+                .HasMaxLength(1000)
+                .HasColumnName("plate_qr");
+            entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.PriceJas).HasColumnName("price_jas");
+            entity.Property(e => e.PriceNn).HasColumnName("price_nn");
+            entity.Property(e => e.ProductType)
+                .HasMaxLength(8)
+                .IsUnicode(false)
+                .HasColumnName("product_type");
+            entity.Property(e => e.Qr)
+                .HasMaxLength(255)
+                .HasColumnName("qr");
+            entity.Property(e => e.Rectification).HasColumnName("rectification");
+            entity.Property(e => e.RegNumber)
+                .HasMaxLength(10)
+                .HasColumnName("reg_number");
+            entity.Property(e => e.SeriesItem).HasColumnName("series_item");
+            entity.Property(e => e.Size)
+                .HasMaxLength(4000)
+                .HasColumnName("size");
+            entity.Property(e => e.SourceType).HasColumnName("source_type");
+            entity.Property(e => e.Surface)
+                .HasMaxLength(3)
+                .HasColumnName("surface");
+            entity.Property(e => e.TypeOrder).HasColumnName("type_order");
+            entity.Property(e => e.Unit)
+                .HasMaxLength(9)
+                .HasColumnName("unit");
         });
 
         modelBuilder.Entity<ViPtgStandCompany>(entity =>

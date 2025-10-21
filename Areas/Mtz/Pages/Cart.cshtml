@@ -86,8 +86,21 @@
                 }
             </tbody>
         </table>
-        <form asp-page-handler="OrderCreate" asp-page="cart" asp-area="Mtz">
-            <input type="hidden" name="OrderId" value="@Html.DisplayFor(model => model.Order.Id)" />
+        <form asp-page-handler="OrderCreate" asp-page="cart" asp-area="Mtz" class="js-enter-submit">
+            @Html.HiddenFor(m => m.Order.Id)
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Order.Comment, "Poznámka", new { @class = "form-label" })
+                @Html.TextAreaFor(
+                    m => m.Order.Comment,
+                    new {
+                        @class = "form-control js-autogrow",
+                        rows = "1",
+                        style = "overflow:hidden;resize:none"
+                    })
+                @Html.ValidationMessageFor(m => m.Order.Comment, "", new { @class = "text-danger" })
+            </div>
+
             <input class="cart-odeslat-objednavku" type="submit" value="odeslat objednávku" />
         </form>
     </div>

@@ -1,11 +1,24 @@
-﻿@model Jas.Areas.Ptg.Pages.PlateContentVm
+﻿@using Jas.Helpers
+@using Jas.Globals.Ptg.Enums
+@model Jas.Areas.Ptg.Pages.PlateContentVm
+
+
+@{
+    if (Model.StandType != (int)StandType.Plate)
+    {
+        <h1>@Model.StandName</h1>
+    }
+    else
+    {
+        <h2>@Model.PlateIndex. @Model.PlateDescription</h2>
+    }
+}
 
 <div id="plate-meta" data-plate="@Model.PlateIndex" data-total="@Model.TotalPlates"></div>
 
 <div class="row">
     <!-- Obrázek + navigace -->
     <div class="col-md-6 text-center mb-4">
-        <h5>Plato @Model.PlateIndex / @Model.TotalPlates</h5>
 
         <div class="plate-zoom mx-auto shadow rounded"
              role="img"
@@ -53,14 +66,13 @@
 
     <!-- Tabulka: pořadí, reg_number, name, price + ikonka náhledu -->
     <div class="col-md-6">
-        <h5 class="mb-3">Položky</h5>
         @if (Model.Items.Any())
         {
             var lightboxGroup = $"plate_{Model.StandId}_{Model.PlateIndex}";
             var uniqueImages = Model.Items
             .Where(x => x.HasImage && !string.IsNullOrEmpty(x.ImgUrl))
             .GroupBy(x => x.ImgUrl!)
-            .Select(g => new { ImgUrl = g.Key, Title = $"{g.First().Reg_Number} – {g.First().TagName}" })
+            .Select(g => new { ImgUrl = g.Key, Title = $"{g.First().RegNumber} – {g.First().TagName}" })
             .ToList();
 
             <!-- skrytý seznam JEN unikátních odkazů pro Lightbox -->
@@ -71,40 +83,102 @@
                 }
             </div>
 
-            <table class="table table-sm table-bordered align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Reg. číslo</th>
-                        <th>Název</th>
-                        <th class="text-end">Cena</th>
-                        <th class="text-center" style="width:60px;">Náhled</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Items)
-                    {
-                        <tr>
-                            <td>@item.Item_Order</td>
-                            <td>@item.Reg_Number</td>
-                            <td>@item.TagName</td>
-                            <td class="text-end">@((item.Price.HasValue) ? item.Price.Value.ToString("N0") : "-")</td>
-                            <td class="text-center">
-                                @if (item.HasImage && !string.IsNullOrEmpty(item.ImgUrl))
+            <ul class="nav nav-tabs" id="itemsTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-pane" type="button" role="tab" aria-controls="list-pane" aria-selected="false">
+                        Seznam
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="thumbs-tab" data-bs-toggle="tab" data-bs-target="#thumbs-pane" type="button" role="tab" aria-controls="thumbs-pane" aria-selected="false">
+                        Náhledy
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="thumbs-tab" data-bs-toggle="tab" data-bs-target="#vo-pane" type="button" role="tab" aria-controls="vo-pane" aria-selected="false">
+                        VO štítek
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="thumbs-tab" data-bs-toggle="tab" data-bs-target="#mo-pane" type="button" role="tab" aria-controls="mo-pane" aria-selected="false">
+                        MO štítek
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3" id="itemsTabContent">
+                <div class="tab-pane fade" id="list-pane" role="tabpanel" aria-labelledby="list-tab">
+                    <table class="table table-sm table-bordered align-middle plate-item">
+                        <tbody>
+                            @{
+                                // Reg_Number -> jednotné pořadí (vezme se z prvního výskytu)
+                                var orderByReg = new Dictionary<string, int>();
+                            }
+
+                            @foreach (var item in Model.Items)
+                            {
+                                var regKey = item.RegNumber?.ToString() ?? "";
+                                if (!orderByReg.TryGetValue(regKey, out var displayOrder))
                                 {
-                                    <a href="javascript:void(0)"
-                                       class="lightbox-open text-decoration-none"
-                                       title="Zvětšit náhled"
-                                       data-group="@lightboxGroup"
-                                       data-img="@item.ImgUrl">
-                                        <i class="bi bi-image" style="font-size:1.2rem;"></i>
-                                    </a>
+                                    // použijeme pořadí z prvního kusu s tímto Reg_Number
+                                    displayOrder = item.ItemOrder;
+                                    orderByReg[regKey] = displayOrder;
                                 }
-                            </td>
-                        </tr>
+
+                                <tr>
+                                    <td class="item-order">
+                                        <span class="order-dot">@displayOrder</span>
+                                    </td>
+                                    <td class="name">
+                                        <a href="@($"https://www.koupelny-jas.cz/eshop/p/{TextUtils.Slugify(item.TagName!)}-i{item.RegNumber}")" target="_blank">
+                                            @item.TagName
+                                        </a>
+                                    </td>
+                                    <td class="price">@((item.Price.HasValue) ? $"{item.Price:N0} {item.Unit}" : "")</td>
+                                    @*<td class="text-center">
+                                        @if (item.HasImage && !string.IsNullOrEmpty(item.ImgUrl))
+                                        {
+                                            <a href="javascript:void(0)"
+                                               class="lightbox-open text-decoration-none"
+                                               title="Zvětšit náhled"
+                                               data-group="@lightboxGroup"
+                                               data-img="@item.ImgUrl">
+                                                <i class="bi bi-image" style="font-size:1.2rem;"></i>
+                                            </a>
+                                        }
+                                    </td>*@
+                                    <td class="reg">@item.RegNumber</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="thumbs-pane" role="tabpanel" aria-labelledby="thumbs-tab">
+                    @if (uniqueImages.Any())
+                    {
+                        <div class="row row-cols-2 row-cols-md-3 g-2">
+                            @foreach (var u in uniqueImages)
+                            {
+                                <div class="col">
+                                    <a href="@u.ImgUrl" data-lightbox="@lightboxGroup" data-title="@u.Title">
+                                        <img src="@u.ImgUrl" alt="@u.Title" class="img-fluid rounded border" style="box-shadow: 0 .25rem .75rem rgba(0,0,0,.4), 0 1rem 2rem rgba(0,0,0,.25);" />
+                                    </a>
+                                </div>
+                            }
+                        </div>
                     }
-                </tbody>
-            </table>
+                    else
+                    {
+                        <p class="text-muted">Žádné náhledy.</p>
+                    }
+                </div>
+                <div class="tab-pane fade" id="vo-pane" role="tabpanel" aria-labelledby="vo-pane">
+                    @Html.DisplayFor(m => m.Items, "PlatePriceTag", additionalViewData: new { VoTag = true })
+                </div>
+                <div class="tab-pane fade" id="mo-pane" role="tabpanel" aria-labelledby="mo-pane">
+                    @Html.DisplayFor(m => m.Items, "PlatePriceTag", additionalViewData: new { VoTag = false })
+                </div>
+            </div>
         }
         else
         {

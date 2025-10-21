@@ -1,0 +1,74 @@
+﻿@model List<Jas.Models.Ptg.PlateItem>
+@using System.Globalization
+@{
+    var productTypes = Model.GroupBy(g => g.ProductType);
+    var voTag = (bool?)ViewData["VoTag"] ?? false;
+    int i = 1;
+    int j = 1;
+    var plateQr = Model.FirstOrDefault(f => f.SeriesItem);
+    if (plateQr is not null && plateQr.Qr is null)
+    {
+        plateQr = null;
+    }
+    else if (plateQr is null)
+    {
+        plateQr = Model.Where(f => f.PlateQr is not null || f.Qr is not null).OrderBy(o => o.ItemOrder).FirstOrDefault();
+    }
+}
+
+<table class="plate-price-tag">
+    <tbody>
+        <tr>
+            <td colspan="2">
+                @foreach (var productType in productTypes)
+                {
+                    var regNumbers = productType.GroupBy(g => g.RegNumber);
+                    <table class="product-type">
+                        <thead>
+                            <tr>
+                                <th class="@(i == 1 ? "first" : "")" colspan="2">@productType.Key</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var items in regNumbers)
+                            {
+
+                                var item = items.First(); // teď už nespadne
+
+                                <tr>
+                                    <td class="left">
+                                        <span class="series">@(j). @item.ItemName@(item.Surface is not null && item.Surface.Contains('S') ? " struktura" : "")</span>
+                                        <span class="size">@item.Size</span>
+                                        <span class="reg">@item.RegNumber</span>
+                                    </td>
+                                    <td class="price">
+                                        <span class="price">@(!item.Discarded ? string.Format(new CultureInfo("cs-CZ"), "{0:N0}", item.PriceNn) : "VYŘAZENO")</span> <span class="unit">@item.Unit</span>
+                                    </td>
+                                </tr>
+                                j++;
+                            }
+                        </tbody>
+                    </table>
+                    i++; 
+                }
+            </td>
+        </tr>
+    </tbody>
+    <tfoot class="@(plateQr is null || voTag ? "noqr" : "")">
+        <tr>
+            <td class="dph">Uvedená cena je včetně DPH.</td>
+            <td class="qr" rowspan="2">
+                @if (plateQr != null)
+                {
+                    <img src="@plateQr.QrBase64" />
+                }
+            </td>
+        </tr>
+        <tr>
+            <td class="info">
+                Pro podrobnější informace naskenujte do mobilního telefonu QR kód, kontaktujte prodejce u pultu nebo použijte dotykový panel na prodejně.
+            </td>
+        </tr>
+    </tfoot>
+</table>
+

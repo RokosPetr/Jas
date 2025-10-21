@@ -65,7 +65,7 @@ namespace Jas.Services.Mtz
         {
             if (_ordersCount is null) return null;
 
-            return _ordersCount.TryGetValue(state, out var count) ? count : null;
+            return _ordersCount.TryGetValue(state, out var count) ? (count == 0 ? null : count) : null;
         }
         public bool IsAdmin
         {

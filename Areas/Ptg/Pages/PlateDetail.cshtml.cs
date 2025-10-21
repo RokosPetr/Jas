@@ -1,15 +1,9 @@
-﻿using AutoMapper;
-using Jas.Application.Abstractions; // ⬅ IImageStore
+﻿using Jas.Application.Abstractions;
 using Jas.Application.Abstractions.Ptg;
-using Jas.Data.JasMtzDb;
-using Jas.Helpers;
 using Jas.Models.Ptg;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using System.Data;
 
 namespace Jas.Areas.Ptg.Pages
@@ -18,18 +12,12 @@ namespace Jas.Areas.Ptg.Pages
     [Authorize(Roles = "Administrator,PTG - admin,PTG - uživatel")]
     public class PlateDetailModel : PageModel
     {
-        private readonly JasMtzDbContext _context;
-        private readonly IMemoryCache _cache;
-        private readonly IImageStore _imageStore;   // ⬅ injektované úložiště obrázků
-        private readonly IMapper _mapper;
+        private readonly IImageStore _imageStore;
         private readonly IStandDetailReader _standReader;
 
-        public PlateDetailModel(JasMtzDbContext context, IMemoryCache cache, IImageStore imageStore, IMapper mapper, IStandDetailReader standReader)
+        public PlateDetailModel(IImageStore imageStore, IStandDetailReader standReader)
         {
-            _context = context;
-            _cache = cache;
             _imageStore = imageStore;
-            _mapper = mapper;
             _standReader = standReader;
         }
 
@@ -72,16 +60,19 @@ namespace Jas.Areas.Ptg.Pages
             var vm = new PlateContentVm
             {
                 StandId = Stand!.IdStand,
+                StandName = Stand!.Name,
+                StandType = Stand!.Type,
                 PlateIndex = plate,
+                PlateDescription = Plates[plate - 1].Description!,
                 TotalPlates = Plates.Count,
                 ImgUrl = string.IsNullOrEmpty(current.ImgUrl) ? "/images/no-picture.png" : current.ImgUrl,
                 Items = PlateItems
-                    .Where(i => i.Id_Pt_Plate == current.Id)
-                    .OrderBy(i => i.Item_Order)
+                    .Where(i => i.IdPtPlate == current.Id)
+                    .OrderBy(i => i.ItemOrder)
                     .ToList()
             };
 
-            // ⬇️ Tady přepočítáme HasImage „na tvrdo“ jen pro aktuální plát
+            // Tady přepočítáme HasImage „na tvrdo“ jen pro aktuální plát
             var requestCt = HttpContext.RequestAborted; // nebo použij rovnou 'cancellationToken'
             await EnsureHasImageForCurrentPlateAsync(vm.Items, requestCt);
 
@@ -130,7 +121,10 @@ namespace Jas.Areas.Ptg.Pages
     public class PlateContentVm
     {
         public int StandId { get; set; }
+        public string StandName { get; set; }
+        public int StandType { get; set; }
         public int PlateIndex { get; set; }
+        public string PlateDescription { get; set; }
         public int TotalPlates { get; set; }
         public string? ImgUrl { get; set; }
         public List<PlateItem> Items { get; set; } = new();

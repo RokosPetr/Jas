@@ -11,14 +11,16 @@
         var firstPlate = Model.Plates.FirstOrDefault();
         var items = firstPlate is null
             ? new List<Jas.Models.Ptg.PlateItem>()
-            : Model.PlateItems.Where(x => x.Id_Pt_Plate == firstPlate.Id)
-                              .OrderBy(x => x.Item_Order)
+            : Model.PlateItems.Where(x => x.IdPtPlate == firstPlate.Id)
+                              .OrderBy(x => x.ItemOrder)
                               .ToList();
     }
 
     @await Html.PartialAsync("_PlateContent", new Jas.Areas.Ptg.Pages.PlateContentVm
     {
         StandId = Model.Stand!.IdStand,
+        StandName = Model.Stand!.Name,
+        StandType = Model.Stand!.Type,
         PlateIndex = 1,
         TotalPlates = 1,
         ImgUrl = img,
@@ -27,59 +29,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        (function () {
-            // Zoom na obrázek stojanu (stejné chování jako u plátového)
-            function initPlateZoom() {
-                const zoomEl = document.querySelector('.plate-zoom');
-                if (!zoomEl) return;
-
-                const bg = getComputedStyle(zoomEl).backgroundImage;
-                const imgUrl = bg.replace(/^url\(["']?(.+?)["']?\)$/, '$1');
-
-                let modalEl = document.getElementById('plateModal');
-                let modalImg = modalEl?.querySelector('img');
-
-                let natW = 0, natH = 0;
-                const img = new Image();
-                img.onload = function () {
-                    natW = this.naturalWidth;
-                    natH = this.naturalHeight;
-                };
-                img.src = imgUrl;
-
-                zoomEl.addEventListener('mousemove', function (e) {
-                    if (!natW || !natH) return;
-                    const rect = zoomEl.getBoundingClientRect();
-                    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
-                    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
-                    zoomEl.style.backgroundSize = natW + 'px auto';
-                    zoomEl.style.backgroundPosition = xPct + '% ' + yPct + '%';
-                });
-                zoomEl.addEventListener('mouseleave', function () {
-                    zoomEl.style.backgroundSize = 'contain';
-                    zoomEl.style.backgroundPosition = 'center';
-                });
-                zoomEl.addEventListener('click', function () {
-                    if (!modalEl || !modalImg) return;
-                    modalImg.src = imgUrl || '';
-                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-                    modal.show();
-                });
-            }
-
-            // Globální handler pro .lightbox-open (stejně jako u plátového)
-            $(document).on('click', '.lightbox-open', function (e) {
-                e.preventDefault();
-                const imgUrl = this.getAttribute('data-img');
-                const group  = this.getAttribute('data-group');
-                if (!imgUrl || !group) return;
-                const selector = `a[data-lightbox="${group}"][href="${CSS.escape(imgUrl)}"]`;
-                const a = document.querySelector(selector);
-                if (a) a.click();
-            });
-
-            initPlateZoom();
-        })();
-    </script>
+    <script src="~/js/ptg/stand-detail.js" asp-append-version="true"></script>
 }

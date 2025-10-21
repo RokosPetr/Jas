@@ -6,6 +6,7 @@
 
 <div class="container my-5">
 
+    <h1>@Model.Stand.Code @Model.Stand.Name</h1>
     <!-- Thumbnaily plat (AJAX do #plate-content) -->
     <div class="d-flex flex-wrap justify-content-center gap-2 mt-2 mb-4">
         @for (int i = 0; i < Model.Plates.Count; i++)
@@ -36,98 +37,21 @@
     <!-- Sem se vkládá partial s obrázkem, tabulkou i TLAČÍTKY -->
     <div id="plate-content">
         @await Html.PartialAsync("_PlateContent", new Jas.Areas.Ptg.Pages.PlateContentVm
-   {
-       StandId = Model.Stand!.IdStand,
-       PlateIndex = Model.Plate,
-       TotalPlates = Model.Plates.Count,
-       ImgUrl = string.IsNullOrEmpty(Model.CurrentPlate?.ImgUrl) ? "/images/no-picture.png" : Model.CurrentPlate!.ImgUrl,
-       Items = Model.PlateItems.Where(x => x.Id_Pt_Plate == Model.CurrentPlate!.Id)
-        .OrderBy(x => x.Item_Order)
-        .ToList()
-   })
+        {
+            StandId = Model.Stand!.IdStand,
+                StandName = Model.Stand!.Name,
+                StandType = Model.Stand!.Type,
+                PlateIndex = Model.Plate,
+                PlateDescription = Model.Plates[Model.Plate - 1].Description!,
+                TotalPlates = Model.Plates.Count,
+                ImgUrl = string.IsNullOrEmpty(Model.CurrentPlate?.ImgUrl) ? "/images/no-picture.png" : Model.CurrentPlate!.ImgUrl,
+                Items = Model.PlateItems.Where(x => x.IdPtPlate == Model.CurrentPlate!.Id)
+                .OrderBy(x => x.ItemOrder)
+                .ToList()
+                })
     </div>
 </div>
 
 @section Scripts {
-    <script>
-        (function () {
-            function initPlateZoom() {
-                const zoomEl = document.querySelector('.plate-zoom');
-                if (!zoomEl) return;
-
-                const imgUrl = zoomEl.getAttribute('data-img');
-                const modalEl = document.getElementById('plateModal');
-                const modalImg = document.getElementById('plateModalImg');
-
-                // výchozí zobrazení
-                zoomEl.style.backgroundImage = `url('${imgUrl}')`;
-                zoomEl.style.backgroundSize = 'contain';
-                zoomEl.style.backgroundPosition = 'center';
-
-                // 1) zjisti přirozené rozměry obrázku
-                const img = new Image();
-                let natW = 0, natH = 0;
-                img.onload = function () {
-                    natW = this.naturalWidth;
-                    natH = this.naturalHeight;
-                };
-                img.src = imgUrl;
-
-                // 2) lupa = 100% (tj. skutečné pixely obrázku)
-                zoomEl.addEventListener('mousemove', function (e) {
-                    if (!natW || !natH) return; // ještě se nenačetly rozměry
-                    const rect = zoomEl.getBoundingClientRect();
-                    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
-                    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
-
-                    // nastavit na originální velikost (1:1) v pixelech
-                    // výška se dopočítá automaticky, držíme poměr stran
-                    zoomEl.style.backgroundSize = natW + 'px auto';
-                    zoomEl.style.backgroundPosition = `${xPct}% ${yPct}%`;
-                });
-
-                zoomEl.addEventListener('mouseleave', function () {
-                    zoomEl.style.backgroundSize = 'contain';
-                    zoomEl.style.backgroundPosition = 'center';
-                });
-
-                // klik => modal s originálem (už máš nastaveno na 100 % v modalu)
-                zoomEl.addEventListener('click', function () {
-                    if (!modalEl || !modalImg) return;
-                    modalImg.src = imgUrl || '';
-                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-                    modal.show();
-                });
-            }
-
-            document.addEventListener('DOMContentLoaded', initPlateZoom);
-
-            // po AJAX načtení partialu znovu inicializuj
-            $(document).on('ajaxSuccess', function () {
-                initPlateZoom();
-
-                // (ponecháváme tvůj zvýrazňovací kód thumbnailů a update URL)
-                const meta = document.getElementById('plate-meta');
-                if (!meta) return;
-                const newPlate = parseInt(meta.dataset.plate || '1', 10);
-                const newUrl = `${location.pathname}?plate=${newPlate}`;
-                window.history.replaceState({}, '', newUrl);
-                $('.thumb img').removeClass('border-primary border-3').addClass('border border-secondary');
-                $(`.thumb[data-plate="${newPlate}"] img`)
-                    .removeClass('border-secondary')
-                    .addClass('border-primary border-3');
-            });
-
-            // Otevírání lightboxu na konkrétní obrázek v unikátní skupině
-            $(document).on('click', '.lightbox-open', function (e) {
-                e.preventDefault();
-                const imgUrl = this.getAttribute('data-img');
-                const group  = this.getAttribute('data-group');
-                const selector = `a[data-lightbox="${group}"][href="${CSS.escape(imgUrl)}"]`;
-                const a = document.querySelector(selector);
-                if (a) a.click(); // otevře Lightbox a skupina bude bez duplicit
-            });
-
-        })();
-    </script>
+    <script src="~/js/ptg/stand-detail.js" asp-append-version="true"></script>
 }
