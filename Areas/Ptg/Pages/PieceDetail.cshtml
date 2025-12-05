@@ -5,13 +5,12 @@
 }
 
 <div class="container my-5">
-    @* Reuse the same partial as plátový: one "plate" only *@
     @{
         var img = string.IsNullOrWhiteSpace(Model.Stand?.Picture) ? "/images/no-picture.png" : Model.Stand!.Picture;
         var firstPlate = Model.Plates.FirstOrDefault();
         var items = firstPlate is null
             ? new List<Jas.Models.Ptg.PlateItem>()
-            : Model.PlateItems.Where(x => x.IdPtPlate == firstPlate.Id)
+            : Model.PlateItems.Where(x => x.IdPlate == firstPlate.IdPlate)
                               .OrderBy(x => x.ItemOrder)
                               .ToList();
     }
@@ -20,6 +19,7 @@
     {
         StandId = Model.Stand!.IdStand,
         StandName = Model.Stand!.Name,
+        StandCode = Model.Stand!.Code,
         StandType = Model.Stand!.Type,
         PlateIndex = 1,
         TotalPlates = 1,

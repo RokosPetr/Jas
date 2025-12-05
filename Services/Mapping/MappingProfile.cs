@@ -30,6 +30,8 @@ namespace Jas.Services.Mapping
             // kdyby DB vracela 0/1 místo bit:
             CreateMap<int, bool>().ConvertUsing(v => v != 0);
             CreateMap<int?, bool>().ConvertUsing(v => v.GetValueOrDefault() != 0);
+
+            CreateMap<IDataRecord, SearchStandItem>();
         }
     }
 }

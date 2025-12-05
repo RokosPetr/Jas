@@ -49,23 +49,63 @@
             }
         </ul>
     </nav>
-    <form method="get" class="mb-4 d-flex justify-content-center align-items-center gap-2" role="search">
+<form method="get" class="mb-4 d-flex flex-column gap-2" role="search">
+    <div class="d-flex justify-content-center align-items-center gap-2">
         <input type="text"
                name="SearchString"
                value="@Model.SearchString"
                class="form-control w-25"
-               placeholder="Vyhledat..." />
+               placeholder="Vyhledat..."
+               id="searchBox"
+               autocomplete="on" />
 
         <button type="submit" class="btn btn-primary">Hledat</button>
 
         @if (!string.IsNullOrWhiteSpace(Model.SearchString))
         {
             <a class="btn btn-outline-secondary"
-               href="@Url.Page("Index", new { area = "Ptg", ProducerName = Model.ProducerName })">
+               href="@Url.Page("Index", new { area = "Ptg", ProducerName = Model.ProducerName, Available = Model.Available })">
                 Zrušit
             </a>
         }
-    </form>
+    </div>
+
+    <!-- ✅ filtry typů položek ve stojanu -->
+    <div class="d-flex justify-content-center gap-4 mt-2">
+
+        <!-- Obklady / Dlažby (typ 1,2) -->
+        <div class="form-check">
+            <input class="form-check-input stand-type-cb"
+                   type="checkbox"
+                   id="type12"
+                   data-types="1,2"
+                   @(Model.StandTypes.Contains(1) ? "checked" : "") />
+            <label class="form-check-label" for="type12">
+                Obklady / Dlažby (typ 1,2)
+            </label>
+        </div>
+
+        <!-- Koupelnové vybavení (typ 3) -->
+        <div class="form-check">
+            <input class="form-check-input stand-type-cb"
+                   type="checkbox"
+                   id="type3"
+                   data-types="3"
+                   @(Model.StandTypes.Contains(3) ? "checked" : "") />
+            <label class="form-check-label" for="type3">
+                Koupelnové vybavení (typ 3)
+            </label>
+        </div>
+
+    </div>
+
+    <!-- sem budeme generovat StandTypes hidden inputs -->
+    <div id="standTypesHidden"></div>
+
+    <!-- ✅ zachovat ostatní filtry v URL -->
+    <input type="hidden" name="Available" value="@Model.Available" />
+    <input type="hidden" name="ProducerName" value="@Model.ProducerName" />
+</form>
     <div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
         @foreach (var producer in Model.Producers)
         {
@@ -93,7 +133,7 @@
         @foreach (var item in Model.Stands)
         {
             <div class="col">
-                <div class="card h-100">
+                <div class="card h-100 @(item.B2b ? "ptg-mo-stand" : "") @(item.B2c ? "ptg-vo-stand" : "")">
                     @if (item.ImgUrl == null)
                     {
                         <img src="/images/no-picture.png" class="card-img-top catalog-img" alt="@item.Name">
@@ -121,6 +161,7 @@
                                asp-page="PlateDetail"
                                asp-route-id="@item.IdStand"
                                asp-route-page="1"
+                               asp-route-idplate="@item.IdPlate"
                                class="btn btn-sm btn-outline-primary me-2">
                                 Detail
                             </a>
@@ -181,3 +222,149 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(function () {
+
+            let currentRequest = null;
+
+            // default: jen moje stojany podle Model.Available
+            let onlyMyStands = @((Model.Available == "expozice").ToString().ToLower());
+
+            $("#searchBox").autocomplete({
+                minLength: 3,
+                source: function (request, response) {
+
+                    if (currentRequest) {
+                        currentRequest.abort();
+                        currentRequest = null;
+                    }
+
+                    currentRequest = $.ajax({
+                        url: "@Url.Page("Index", new { area = "Ptg", handler = "Search" })",
+                        type: "GET",
+                        data: {
+                            q: request.term,
+                            onlyMine: onlyMyStands
+                        },
+                        success: function (data) {
+                            currentRequest = null;
+
+                            let items = data || [];
+
+                            // 🔴 TRIK: pokud nic nepřišlo, nacpeme 1 dummy položku,
+                            // aby autocomplete otevřel menu a zavolal _renderMenu
+                            if (items.length === 0) {
+                                items = [{ __empty: true }];
+                            }
+
+                            response(items);
+                        },
+                        error: function (xhr, status) {
+                            if (status !== "abort") console.error(status);
+                            currentRequest = null;
+                        }
+                    });
+                },
+                select: function (event, ui) {
+                    // ignorujeme dummy položku (prázdný výsledek) i případné "filter" položky
+                    if (ui.item.__empty) {
+                        return false;
+                    }
+
+                    if (ui.item.url) {
+                        window.location.href = ui.item.url;
+                        return false;
+                    }
+
+                    if (ui.item.value) {
+                        $("#searchBox").val(ui.item.value);
+                    }
+
+                    return false;
+                }
+            });
+
+            // 🔵 vlastní _renderMenu: vždy checkbox + případné výsledky / info
+            $("#searchBox").autocomplete("instance")._renderMenu = function (ul, items) {
+                const self = this;
+
+                // 1) checkbox "Jen moje stojany"
+                const id = "chkOnlyMyStands";
+                const $liFilter = $("<li>")
+                    .addClass("ui-autocomplete-filter")
+                    .appendTo(ul);
+
+                const $wrapper = $("<div>")
+                    .addClass("px-2 py-1 d-flex align-items-center gap-2");
+
+                const $cb = $("<input>", {
+                    type: "checkbox",
+                    id: id,
+                    checked: onlyMyStands
+                });
+
+                const $label = $("<label>", {
+                    for: id,
+                    text: "Jen moje stojany"
+                });
+
+                $wrapper.append($cb).append($label);
+                $liFilter.append($wrapper);
+
+                $cb.off("change").on("change", function () {
+                    onlyMyStands = this.checked;
+                    // znovu spustíme hledání se stejným textem
+                    $("#searchBox").autocomplete("search", $("#searchBox").val());
+                });
+
+                // 2) pokud máme jen dummy položku → žádné výsledky
+                if (items.length === 1 && items[0].__empty) {
+                    $("<li>")
+                        .addClass("px-2 py-1 text-muted")
+                        .text("Žádné výsledky…")
+                        .appendTo(ul);
+                    return;
+                }
+
+                // 3) normální render položek
+                $.each(items, function (index, item) {
+                    self._renderItemData(ul, item);
+                });
+            };
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form[role='search']");
+            const hiddenContainer = document.getElementById("standTypesHidden");
+            const checkboxes = document.querySelectorAll(".stand-type-cb");
+
+            function rebuildStandTypesHidden() {
+                hiddenContainer.innerHTML = "";
+
+                checkboxes.forEach(cb => {
+                    if (!cb.checked) return;
+
+                    const types = cb.dataset.types.split(",");
+                    types.forEach(t => {
+                        const input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = "StandTypes";
+                        input.value = t;
+                        hiddenContainer.appendChild(input);
+                    });
+                });
+            }
+
+            rebuildStandTypesHidden();
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener("change", function () {
+                    rebuildStandTypesHidden();
+                    form.submit();
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,8 @@
+﻿@page "/ptg/print/{id:int}"
+@model Jas.Areas.Ptg.Pages.PlateStandPrintModel
+
+@{
+    Layout = null;
+}
+
+@await Html.PartialAsync("_PlateStandPrint", Model)

@@ -131,6 +131,12 @@ public class LocalImageStore : IImageStore
         return await DownloadAsync(remoteUrl, full, ct);
     }
 
+    public string ProductPath(string regNumber)
+    {
+        var basePath = _options.ProductBasePath?.TrimEnd('/') ?? "/images";
+        return $"{basePath}/{regNumber}/{regNumber}_1.jpg";
+    }
+    
     /// <summary>
     /// Převede vstup (absolutní URL / "host[/port]/path?query" / "/images/host[/port]/path?query") na (remoteUrl, localRel).
     /// localRel neobsahuje query; remoteUrl query zachovává.

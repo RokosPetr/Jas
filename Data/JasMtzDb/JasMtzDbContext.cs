@@ -31,11 +31,15 @@ public partial class JasMtzDbContext : DbContext
 
     public virtual DbSet<PtgStandCompany> PtgStandCompanies { get; set; }
 
+    public virtual DbSet<PtgStandSearch> PtgStandSearches { get; set; }
+
     public virtual DbSet<ViMkMtzUser> ViMkMtzUsers { get; set; }
 
     public virtual DbSet<ViMtzUser> ViMtzUsers { get; set; }
 
     public virtual DbSet<ViPtgPdfPtPlate> ViPtgPdfPtPlates { get; set; }
+
+    public virtual DbSet<ViPtgStand> ViPtgStands { get; set; }
 
     public virtual DbSet<ViPtgStandCompany> ViPtgStandCompanies { get; set; }
 
@@ -68,6 +72,9 @@ public partial class JasMtzDbContext : DbContext
             entity.ToTable("jas_producer");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Alias)
+                .HasMaxLength(50)
+                .HasColumnName("alias");
             entity.Property(e => e.FilterGroup).HasColumnName("filter_group");
             entity.Property(e => e.K2Code)
                 .HasMaxLength(3)
@@ -280,6 +287,31 @@ public partial class JasMtzDbContext : DbContext
             entity.Property(e => e.IdStand).HasColumnName("id_stand");
         });
 
+        modelBuilder.Entity<PtgStandSearch>(entity =>
+        {
+            entity.ToTable("ptg_stand_search");
+
+            entity.HasIndex(e => e.Code, "IX_ptg_stand_search_Code");
+
+            entity.HasIndex(e => e.RegNumber, "IX_ptg_stand_search_RegNum");
+
+            entity.HasIndex(e => e.Size, "IX_ptg_stand_search_Size");
+
+            entity.Property(e => e.Code).HasMaxLength(50);
+            entity.Property(e => e.ItemName).HasMaxLength(200);
+            entity.Property(e => e.K2producerName)
+                .HasMaxLength(200)
+                .HasColumnName("K2ProducerName");
+            entity.Property(e => e.K2seriesName)
+                .HasMaxLength(200)
+                .HasColumnName("K2SeriesName");
+            entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.RegNumber).HasMaxLength(50);
+            entity.Property(e => e.Size).HasMaxLength(100);
+            entity.Property(e => e.StandProducerAlias).HasMaxLength(200);
+            entity.Property(e => e.StandProducerName).HasMaxLength(200);
+        });
+
         modelBuilder.Entity<ViMkMtzUser>(entity =>
         {
             entity
@@ -380,6 +412,30 @@ public partial class JasMtzDbContext : DbContext
             entity.Property(e => e.Unit)
                 .HasMaxLength(9)
                 .HasColumnName("unit");
+        });
+
+        modelBuilder.Entity<ViPtgStand>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vi_ptg_stand");
+
+            entity.Property(e => e.Code).HasMaxLength(50);
+            entity.Property(e => e.ItemName).HasMaxLength(255);
+            entity.Property(e => e.K2producerName)
+                .HasMaxLength(50)
+                .HasColumnName("K2ProducerName");
+            entity.Property(e => e.K2seriesName)
+                .HasMaxLength(100)
+                .HasColumnName("K2SeriesName");
+            entity.Property(e => e.Name).HasMaxLength(255);
+            entity.Property(e => e.Picture).HasMaxLength(255);
+            entity.Property(e => e.Qr).HasMaxLength(1000);
+            entity.Property(e => e.RegNumber).HasMaxLength(30);
+            entity.Property(e => e.SecondPicture).HasMaxLength(255);
+            entity.Property(e => e.Size).HasMaxLength(4000);
+            entity.Property(e => e.StandProducerAlias).HasMaxLength(50);
+            entity.Property(e => e.StandProducerName).HasMaxLength(50);
         });
 
         modelBuilder.Entity<ViPtgStandCompany>(entity =>

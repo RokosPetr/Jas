@@ -1,5 +1,6 @@
 using Jas.Application.Abstractions; // IImageStore
 using Jas.Application.Abstractions.Ptg;
+using Jas.Infrastructure.Images;
 using Jas.Models.Ptg;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace Jas.Areas.Ptg.Pages
 {
     [Area("Ptg")]
-    [Authorize(Roles = "Administrator,PTG - admin,PTG - uživatel")]
+    [Authorize(Roles = "PTG - admin,PTG - user")]
     public class PieceDetailModel : PageModel
     {
         private readonly IImageStore _imageStore;
@@ -35,7 +36,11 @@ namespace Jas.Areas.Ptg.Pages
             if (firstPlate is null)
                 return Page();
 
-            await EnsureHasImagesAsync(PlateItems.Where(i => i.IdPtPlate == firstPlate.Id), ct);
+            var firstPlateItems = PlateItems.Where(i => i.IdPlate == firstPlate.IdPlate).ToList();
+            foreach (var it in firstPlateItems)
+                it.Picture = _imageStore.ProductPath(it.RegNumber);
+            
+            await EnsureHasImagesAsync(PlateItems.Where(i => i.IdPlate == firstPlate.IdPlate), ct);
             return Page();
         }
 

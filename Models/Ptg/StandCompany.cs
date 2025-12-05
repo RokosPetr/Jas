@@ -37,6 +37,7 @@ namespace Jas.Models.Ptg
 
         public string? SecondPicture { get; set; }
         public string? ProducerName { get; set; }
+        public int? IdPlate { get; set; }
 
         public string? ImgUrl => ImageHelper.NormalizeImageUrl(Picture);
         public string? ImgUrlSecond => ImageHelper.NormalizeImageUrl(SecondPicture);

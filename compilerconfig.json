@@ -18,5 +18,9 @@
   {
     "outputFile": "wwwroot/js/site.es5.js",
     "inputFile": "wwwroot/js/site.js"
+  },
+  {
+    "outputFile": "wwwroot/css/ptg-plate-tag.css",
+    "inputFile": "wwwroot/css/ptg-plate-tag.less"
   }
 ]

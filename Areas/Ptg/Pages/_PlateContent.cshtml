@@ -6,7 +6,7 @@
 @{
     if (Model.StandType != (int)StandType.Plate)
     {
-        <h1>@Model.StandName</h1>
+        <h1>@Model.StandCode - @Model.StandName</h1>
     }
     else
     {
@@ -14,11 +14,51 @@
     }
 }
 
+<style>
+.image-hover {
+    position: relative;
+    overflow: hidden;
+    min-height: 100px; /* 🔸 nastav minimální výšku */
+}
+
+.image-hover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 🔸 roztáhne obrázek, aby vyplnil celý prostor */
+    transition: transform 0.3s ease;
+}
+
+.image-hover:hover img {
+    transform: scale(1.05);
+}
+
+.image-hover .overlay {
+/*     position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+ */    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    text-align: center;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    border-bottom-left-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+    line-height: 1.3;
+}
+
+.image-hover:hover .overlay {
+    opacity: 1;
+}
+</style>
+
 <div id="plate-meta" data-plate="@Model.PlateIndex" data-total="@Model.TotalPlates"></div>
 
 <div class="row">
     <!-- Obrázek + navigace -->
-    <div class="col-md-6 text-center mb-4">
+    <div class="col-md-4 text-center mb-4">
 
         <div class="plate-zoom mx-auto shadow rounded"
              role="img"
@@ -65,14 +105,14 @@
     </div>
 
     <!-- Tabulka: pořadí, reg_number, name, price + ikonka náhledu -->
-    <div class="col-md-6">
+    <div class="col-md-8">
         @if (Model.Items.Any())
         {
             var lightboxGroup = $"plate_{Model.StandId}_{Model.PlateIndex}";
             var uniqueImages = Model.Items
             .Where(x => x.HasImage && !string.IsNullOrEmpty(x.ImgUrl))
             .GroupBy(x => x.ImgUrl!)
-            .Select(g => new { ImgUrl = g.Key, Title = $"{g.First().RegNumber} – {g.First().TagName}" })
+            .Select(g => new { ImgUrl = g.Key, Title = $"{g.First().RegNumber} <br/> {g.First().TagName}" })
             .ToList();
 
             <!-- skrytý seznam JEN unikátních odkazů pro Lightbox -->
@@ -96,12 +136,12 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="thumbs-tab" data-bs-toggle="tab" data-bs-target="#vo-pane" type="button" role="tab" aria-controls="vo-pane" aria-selected="false">
-                        VO štítek
+                        VO @(Model.StandType == (int)StandType.Plate ? "štítek" : "cenovka")
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="thumbs-tab" data-bs-toggle="tab" data-bs-target="#mo-pane" type="button" role="tab" aria-controls="mo-pane" aria-selected="false">
-                        MO štítek
+                        MO @(Model.StandType == (int)StandType.Plate ? "štítek" : "cenovka")
                     </button>
                 </li>
             </ul>
@@ -111,23 +151,29 @@
                     <table class="table table-sm table-bordered align-middle plate-item">
                         <tbody>
                             @{
-                                // Reg_Number -> jednotné pořadí (vezme se z prvního výskytu)
                                 var orderByReg = new Dictionary<string, int>();
+                                var currentOrder = 1;
+                                var items = Model.Items /* volitelné: */.OrderBy(i => i.ItemOrder);
                             }
 
-                            @foreach (var item in Model.Items)
+                            @foreach (var item in items)
                             {
-                                var regKey = item.RegNumber?.ToString() ?? "";
-                                if (!orderByReg.TryGetValue(regKey, out var displayOrder))
+                                int? displayOrder = null;
+
+                                var regKey = item.RegNumber?.ToString();
+                                if (!string.IsNullOrWhiteSpace(regKey))
                                 {
-                                    // použijeme pořadí z prvního kusu s tímto Reg_Number
-                                    displayOrder = item.ItemOrder;
-                                    orderByReg[regKey] = displayOrder;
+                                    if (!orderByReg.TryGetValue(regKey, out var num))
+                                    {
+                                        num = currentOrder++;
+                                        orderByReg[regKey] = num;
+                                    }
+                                    displayOrder = num;
                                 }
 
                                 <tr>
                                     <td class="item-order">
-                                        <span class="order-dot">@displayOrder</span>
+                                        <span class="order-dot">@((displayOrder.HasValue) ? displayOrder.Value.ToString() : "")</span>
                                     </td>
                                     <td class="name">
                                         <a href="@($"https://www.koupelny-jas.cz/eshop/p/{TextUtils.Slugify(item.TagName!)}-i{item.RegNumber}")" target="_blank">
@@ -135,18 +181,6 @@
                                         </a>
                                     </td>
                                     <td class="price">@((item.Price.HasValue) ? $"{item.Price:N0} {item.Unit}" : "")</td>
-                                    @*<td class="text-center">
-                                        @if (item.HasImage && !string.IsNullOrEmpty(item.ImgUrl))
-                                        {
-                                            <a href="javascript:void(0)"
-                                               class="lightbox-open text-decoration-none"
-                                               title="Zvětšit náhled"
-                                               data-group="@lightboxGroup"
-                                               data-img="@item.ImgUrl">
-                                                <i class="bi bi-image" style="font-size:1.2rem;"></i>
-                                            </a>
-                                        }
-                                    </td>*@
                                     <td class="reg">@item.RegNumber</td>
                                 </tr>
                             }
@@ -156,13 +190,20 @@
                 <div class="tab-pane fade" id="thumbs-pane" role="tabpanel" aria-labelledby="thumbs-tab">
                     @if (uniqueImages.Any())
                     {
+
                         <div class="row row-cols-2 row-cols-md-3 g-2">
                             @foreach (var u in uniqueImages)
                             {
                                 <div class="col">
-                                    <a href="@u.ImgUrl" data-lightbox="@lightboxGroup" data-title="@u.Title">
-                                        <img src="@u.ImgUrl" alt="@u.Title" class="img-fluid rounded border" style="box-shadow: 0 .25rem .75rem rgba(0,0,0,.4), 0 1rem 2rem rgba(0,0,0,.25);" />
-                                    </a>
+                                    <div class="image-hover">
+                                        <a href="@u.ImgUrl" data-lightbox="@lightboxGroup" data-title="@u.Title">
+                                            <img src="@u.ImgUrl"
+                                                 alt="@u.Title"
+                                                 class="img-fluid rounded border"
+                                                 style="box-shadow: 0 .25rem .75rem rgba(0,0,0,.4), 0 1rem 2rem rgba(0,0,0,.25);" />
+                                            <div class="overlay">@Html.Raw(u.Title)</div>
+                                        </a>
+                                    </div>
                                 </div>
                             }
                         </div>
@@ -173,10 +214,28 @@
                     }
                 </div>
                 <div class="tab-pane fade" id="vo-pane" role="tabpanel" aria-labelledby="vo-pane">
-                    @Html.DisplayFor(m => m.Items, "PlatePriceTag", additionalViewData: new { VoTag = true })
+                    @if (Model.StandType == (int)StandType.Plate)
+                    {
+                        @Html.DisplayFor(m => m.Items, "PlatePriceTag", additionalViewData: new { VoTag = true })
+                    }
+                    else
+                    {
+                        <div class="row gx-4 gy-4">
+                            @Html.DisplayFor(m => m.Items, "PiecePriceTag", additionalViewData: new { VoTag = true })
+                        </div>
+                    }
                 </div>
                 <div class="tab-pane fade" id="mo-pane" role="tabpanel" aria-labelledby="mo-pane">
-                    @Html.DisplayFor(m => m.Items, "PlatePriceTag", additionalViewData: new { VoTag = false })
+                    @if (Model.StandType == (int)StandType.Plate)
+                    {
+                        @Html.DisplayFor(m => m.Items, "PlatePriceTag", additionalViewData: new { VoTag = false })
+                    }
+                    else
+                    {
+                        <div class="row gx-4 gy-4">
+                            @Html.DisplayFor(m => m.Items, "PiecePriceTag", additionalViewData: new { VoTag = false })
+                        </div>
+                    }
                 </div>
             </div>
         }

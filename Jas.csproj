@@ -18,10 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Areas\Ptg\Pages\_PlateContent.cshtml_" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="Areas\Ptg\Pages\_PlateContent.cshtml" />
     <None Include="compilerconfig.json" />
   </ItemGroup>
@@ -29,6 +25,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="AutoMapper.Data" Version="9.0.0" />
+    <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="jQuery.UI.Combined" Version="1.14.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.16" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.16" />

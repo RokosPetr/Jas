@@ -1,0 +1,140 @@
+﻿@model Jas.Areas.Ptg.Pages.PlateStandPrintModel
+
+@{
+    Layout = null;
+}
+
+@{
+    ViewData["VoTag"] = Model.VoTag;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    @{
+        var cssPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/css/ptg-plate-tag.min.css");
+        var css = System.IO.File.ReadAllText(cssPath);
+
+        var match = System.Text.RegularExpressions.Regex.Match(css, @"--ptg-plate-padding\s*:\s*([^;]+);");
+        if (match.Success)
+        {
+            var paddingValue = match.Groups[1].Value.Trim();
+
+            css = System.Text.RegularExpressions.Regex.Replace(css, @"var\(--ptg-plate-padding\)", paddingValue);
+        }
+    }
+    <style>
+        @Html.Raw(css)
+    </style>
+</head>
+<body class="ptg-print">
+
+    @if (Model.PrintPictures)
+    {
+        <div class="front-page">
+            <div class="picture"><img src="@Model.Stand.Picture" /></div>
+            <div class="plates">
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>@Model.Stand.Name</th>
+                    </tr>
+                    @foreach (var item in Model.Plates.OrderBy(o => o.PlateOrder))
+                    {
+                        <tr>
+                            <td>@item.PlateOrder@Html.Raw(".")</td>
+                            <td>@item.Description</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        <div class="front-page">&nbsp;</div>
+    }
+
+    @for (int i = 0; i < Model.Plates.Count(); i += 4)
+    {
+        <table class="page">
+            <tbody>
+                @for (int j = 0; j < 2; j++)
+                {
+                    <tr>
+                        @for (int k = 0; k < 2; k++)
+                        {
+                            int index = i + j * 2 + k;
+                            if (index < Model.Plates.Count())
+                            {
+                                <td class="plate">
+                                    @await Html.PartialAsync(
+                                    "/Areas/Ptg/Pages/_PlateTag.cshtml",
+                                        Model.PlateItems
+                                        .Where(w => w.IdPlate == Model.Plates[index].IdPlate)
+                                        .ToList(),
+                                        ViewData
+                                        )
+                                </td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (Model.PrintPictures)
+        {
+            <table class="page">
+                <tbody>
+                    @for (int j = 0; j < 2; j++)
+                    {
+                        <tr>
+                            @for (int k = 0; k < 2; k++)
+                            {
+                                int index = i + j * 2 + k;
+                                if (index < Model.Plates.Count())
+                                {
+                                    <td>
+                                        @{
+                                            int plateIndex = (index % 2 == 0 ? index + 1 : index - 1);
+                                            if (plateIndex == Model.Plates.Count()) plateIndex--;
+                                        }
+                                        <table class="picture">
+                                            <tr>
+                                                <td>
+                                                    <span>@Model.Plates[plateIndex].PlateOrder.&nbsp;</span>
+                                                    <span>@Model.Plates[plateIndex].Description</span>
+                                                    <br />
+                                                    <img src="@Model.Plates[plateIndex].Picture" />
+                                                </td>
+                                                <td class="reg">
+                                                    @foreach (var item in Model.PlateItems.Where(w => w.IdPlate == Model.Plates[plateIndex].IdPlate))
+                                                    {
+                                                        <span>@item.ItemOrder@Html.Raw(".") @item.RegNumber</span>
+                                                        <br />
+                                                    }
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+
+
+
+</body>
+</html>

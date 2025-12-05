@@ -17,4 +17,5 @@ public interface IImageStore
 
     /// <summary>Vrátí fyzickou cestu na disku (bez otevření souboru).</summary>
     string MapPath(string relativePath);
+    public string ProductPath(string regNumber);
 }

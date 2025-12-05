@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using AutoMapper.Data;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Jas.Application.Abstractions;
 using Jas.Application.Abstractions.Ptg;
 using Jas.Data.JasIdentityApp;
 using Jas.Data.JasIdentityDb;
 using Jas.Data.JasMtzDb;
+using Jas.Globals;
 using Jas.Infrastructure.Images;
 using Jas.Infrastructure.Ptg;
 using Jas.Services;
@@ -70,7 +73,11 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.DestinationMemberNamingConvention = new PascalCaseNamingConvention();
 }, typeof(MappingProfile).Assembly);
 
-builder.Services.AddScoped<IStandDetailReader, StandDetailReader>(); 
+builder.Services.AddScoped<IStandDetailReader, StandDetailReader>();
+builder.Services.AddScoped<IStandSearchReader, StandSearchReader>();
+
+builder.Services.AddScoped<IRazorRenderer, RazorRenderer>();
+builder.Services.AddScoped<IPdfService, PdfService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -88,7 +95,11 @@ builder.Services.AddMemoryCache();
 
 builder.Services.Configure<ImageStoreOptions>(builder.Configuration.GetSection("ImageStore"));
 builder.Services.AddHttpClient(nameof(LocalImageStore));
-builder.Services.AddSingleton<IImageStore, LocalImageStore>(); ;
+builder.Services.AddSingleton<IImageStore, LocalImageStore>();
+
+var context = new CustomAssemblyLoadContext();
+context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "bin", "libwkhtmltox.dll")); 
+builder.Services.AddSingleton<IConverter>(provider => new SynchronizedConverter(new PdfTools()));
 
 var app = builder.Build();
 
