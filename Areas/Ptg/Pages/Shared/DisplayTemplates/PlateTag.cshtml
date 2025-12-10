@@ -2,7 +2,7 @@
 @using System.Globalization
 @{
     var productTypes = Model.GroupBy(g => g.ProductType);
-    var voTag = (bool?)ViewData["VoTag"] ?? false;
+    var printQr = (bool?)ViewData["PrintQr"] ?? false;
     int i = 1;
     int j = 1;
     var plateQr = Model.FirstOrDefault(f => f.SeriesItem);
@@ -39,10 +39,10 @@
                                     <td class="ord-number">@(j).</td>
                                     <td class="reg">@item.RegNumber</td>
                                     <td class="title">
-                                        <span class="name">@item.TagName@(item.Surface is not null && item.Surface.Contains('S') ? " struktura" : "")</span>
+                                        <span class="name">@item.TagName.Replace("\u00A0", " ")@(item.Surface is not null && item.Surface.Contains('S') ? " struktura" : "")</span>
                                         <span class="size">@item.SizeType2</span>
                                     </td>
-                                    <td class="price@(item.Discount && !voTag ? " discount" : "")@(item.Discarded ? " discarded" : "")">
+                                    <td class="price@(item.Discount ? " discount" : "")@(item.Discarded ? " discarded" : "")">
                                         <span class="price">@(!item.Discarded ? string.Format(new CultureInfo("cs-CZ"), "{0:N0}", item.PriceNn) : "VYŘAZENO")</span> <span class="unit">@item.Unit</span>
                                     </td>
                                 </tr>
@@ -55,7 +55,7 @@
             </td>
         </tr>
     </tbody>
-    <tfoot class="@(plateQr is null || voTag ? "noqr" : "")">
+    <tfoot class="@(plateQr is null || !printQr ? "noqr" : "")">
         <tr>
             <td class="dph">Uvedená cena je včetně DPH.</td>
             <td class="qr" rowspan="2">

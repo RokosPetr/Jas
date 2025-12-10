@@ -1,0 +1,74 @@
+﻿@model List<Jas.Models.Ptg.PlateItem>
+@using System.Globalization
+
+@{
+    var printQr = (bool?)ViewData["PrintQr"] ?? false;
+
+    void RenderPieceTag(Jas.Models.Ptg.PlateItem item, bool printQr)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        <text>
+        <table class="piece-price-tag">
+            <thead>
+                <tr>
+                    <th colspan="2" class="name" style="@item.StyleTagName">@item.TagName</th>
+                </tr>
+            </thead>
+            <tbody class="@(item.Discarded ? "discarded" : "")@((item.PlateQr is null && item.Qr is null) || !printQr ? " noqr" : "")">
+                <tr>
+                    <td colspan="2" class="size">
+                        @item.SizeType1 <img src="@item.SymbolsImage" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="price@(item.Discount && !printQr ? " discount" : "")">
+                        <span class="price">
+                            @(!item.Discarded
+                                ? string.Format(new CultureInfo("cs-CZ"), "{0:0}", item.Price) + ",-"
+                                : "VYŘAZENO")
+                        </span>
+                        <span class="unit">@item.Unit</span>
+                    </td>
+                    <td class="qr" rowspan="3">
+                        <img src="@item.QrBase64" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="reg">
+                        <span class="number">Index: @item.RegNumber</span>
+                        <span class="dph">Uvedená cena je včetně DPH.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="info">
+                        Pro podrobnější informace naskenujte do mobilního telefonu QR kód, kontaktujte prodejce u pultu nebo použijte dotykový panel na prodejně.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </text>
+    }
+}
+
+<table class="page">
+    <tbody>
+    @for (int i = 0; i < Model.Count; i += 2)
+    {
+        <tr>
+            <td>
+                @{ RenderPieceTag(Model[i], printQr); }
+            </td>
+            <td>
+                @if (i + 1 < Model.Count)
+                {
+                    RenderPieceTag(Model[i + 1], printQr); 
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

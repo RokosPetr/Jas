@@ -81,7 +81,7 @@
                    data-types="1,2"
                    @(Model.StandTypes.Contains(1) ? "checked" : "") />
             <label class="form-check-label" for="type12">
-                Obklady / Dlažby (typ 1,2)
+                Obklady / Dlažby
             </label>
         </div>
 
@@ -93,7 +93,7 @@
                    data-types="3"
                    @(Model.StandTypes.Contains(3) ? "checked" : "") />
             <label class="form-check-label" for="type3">
-                Koupelnové vybavení (typ 3)
+                Koupelnové vybavení
             </label>
         </div>
 
@@ -176,7 +176,25 @@
                             </a>
                         }
                         <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            @if (item.PiecePriceTag)
+                            {
+                                <button type="button"
+                                        class="btn btn-sm btn-primary open-pdf-dialog"
+                                        data-id="@item.IdStand"
+                                        data-has-pictures="false">
+                                    Stáhnout PDF
+                                </button>
+                            }
+                            @if (item.PlatePriceTag && !item.PiecePriceTag)
+                            {
+                                <button type="button"
+                                        class="btn btn-sm btn-primary open-pdf-dialog"
+                                        data-id="@item.IdStand"
+                                        data-has-pictures="true">
+                                    Stáhnout PDF
+                                </button>
+                            }
+@*                             <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                 Stáhnout PDF
                             </button>
                             <ul class="dropdown-menu">
@@ -215,11 +233,53 @@
                                     </li>
                                 }
                             </ul>
-                        </div>
+ *@                        </div>
                     </div>
                 </div>
             </div>
         }
+    </div>
+</div>
+
+<div class="modal fade" id="pdfOptionsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nastavení PDF</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+            </div>
+            <div class="modal-body">
+                <form id="pdfOptionsForm">
+                    <input type="hidden" id="pdfItemId" />
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="pdfPrintQr" />
+                        <label class="form-check-label" for="pdfPrintQr">
+                            QR
+                        </label>
+                    </div>
+
+                    <div class="form-check mt-2" id="pdfPrintPicturesRow">
+                        <input class="form-check-input" type="checkbox" id="pdfPrintPictures" />
+                        <label class="form-check-label" for="pdfPrintPictures">
+                            obrázky
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Zrušit
+                </button>
+                <button type="button"
+                        class="btn btn-primary"
+                        id="pdfOptionsConfirm">
+                    OK
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -366,5 +426,61 @@
                 });
             });
         });
+    </script>
+    <script>
+        (function () {
+            const modalElement = document.getElementById("pdfOptionsModal");
+            const pdfItemIdInput = document.getElementById("pdfItemId");
+            const pdfPrintQr = document.getElementById("pdfPrintQr");
+            const pdfPrintPictures = document.getElementById("pdfPrintPictures");
+            const pdfPrintPicturesRow = document.getElementById("pdfPrintPicturesRow");
+            const confirmButton = document.getElementById("pdfOptionsConfirm");
+
+            // Pokud používáš Bootstrap 5:
+            const pdfModal = new bootstrap.Modal(modalElement);
+
+            // Klik na "Stáhnout PDF" – otevře modal
+            document.addEventListener("click", function (e) {
+                const btn = e.target.closest(".open-pdf-dialog");
+                if (!btn) return;
+
+                const id = btn.getAttribute("data-id");
+                const hasPictures = btn.getAttribute("data-has-pictures") === "true";
+
+                pdfItemIdInput.value = id;
+                pdfPrintQr.checked = false;
+                pdfPrintPictures.checked = false;
+
+                // schovej / ukaž řádek "s obrázky" podle typu
+                pdfPrintPicturesRow.style.display = hasPictures ? "block" : "none";
+
+                pdfModal.show();
+            });
+
+            // Potvrzení v dialogu – redirect na /ptg/print/{id}?handler=Pdf&PrintQr=...&PrintPicture=...
+            confirmButton.addEventListener("click", function () {
+                const id = pdfItemIdInput.value;
+                if (!id) {
+                    pdfModal.hide();
+                    return;
+                }
+
+                const params = new URLSearchParams();
+                params.append("handler", "Pdf");
+
+                if (pdfPrintQr.checked) {
+                    params.append("PrintQr", "true");
+                }
+                if (pdfPrintPicturesRow.style.display !== "none" && pdfPrintPictures.checked) {
+                    params.append("PrintPictures", "true");
+                }
+
+                const url = `/ptg/print/${id}?` + params.toString();
+
+                pdfModal.hide();
+        
+                window.location.href = url;
+            });
+        })();
     </script>
 }

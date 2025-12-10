@@ -216,25 +216,21 @@
                 <div class="tab-pane fade" id="vo-pane" role="tabpanel" aria-labelledby="vo-pane">
                     @if (Model.StandType == (int)StandType.Plate)
                     {
-                        @Html.DisplayFor(m => m.Items, "PlatePriceTag", additionalViewData: new { VoTag = true })
+                        @Html.DisplayFor(m => m.Items, "PlateTag", additionalViewData: new { PrintQr = true })
                     }
                     else
                     {
-                        <div class="row gx-4 gy-4">
-                            @Html.DisplayFor(m => m.Items, "PiecePriceTag", additionalViewData: new { VoTag = true })
-                        </div>
+                        @Html.DisplayFor(m => m.Items, "PieceTag", additionalViewData: new { PrintQr = true })
                     }
                 </div>
                 <div class="tab-pane fade" id="mo-pane" role="tabpanel" aria-labelledby="mo-pane">
                     @if (Model.StandType == (int)StandType.Plate)
                     {
-                        @Html.DisplayFor(m => m.Items, "PlatePriceTag", additionalViewData: new { VoTag = false })
+                        @Html.DisplayFor(m => m.Items, "PlateTag", additionalViewData: new { PrintQr = false })
                     }
                     else
                     {
-                        <div class="row gx-4 gy-4">
-                            @Html.DisplayFor(m => m.Items, "PiecePriceTag", additionalViewData: new { VoTag = false })
-                        </div>
+                        @Html.DisplayFor(m => m.Items, "PieceTag", additionalViewData: new { PrintQr = false })
                     }
                 </div>
             </div>

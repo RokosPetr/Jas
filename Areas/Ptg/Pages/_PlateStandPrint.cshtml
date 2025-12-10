@@ -1,11 +1,11 @@
-﻿@model Jas.Areas.Ptg.Pages.PlateStandPrintModel
+﻿@model Jas.Areas.Ptg.Pages.StandPrintModel
 
 @{
     Layout = null;
 }
 
 @{
-    ViewData["VoTag"] = Model.VoTag;
+    ViewData["PrintQr"] = Model.PrintQr;
 }
 
 <!DOCTYPE html>
@@ -54,32 +54,151 @@
         <div class="front-page">&nbsp;</div>
     }
 
-    @for (int i = 0; i < Model.Plates.Count(); i += 4)
+    @{
+        var plates      = Model.Plates;
+        var platesCount = plates.Count;
+        var i           = 0;
+        var limit       = Model.PrintQr ? 12 : 15;
+        var twoMode     = false; // false = 4 na stránku (2x2), true = 2 na stránku (1x2)
+    }
+
+    @while (i < platesCount)
     {
+        int baseIndex = i;
+        int pageSize;
+        int nextIndex;
+        bool pageTwoMode; // layout jen pro tuto stránku
+        var batch = new List<Jas.Models.Ptg.Plate>();
+
+        if (!twoMode)
+        {
+            // pokus o stránku po 4 (2x2) – zkontrolujeme, jestli v téhle várce je nějaká "velká"
+            int checkCount = Math.Min(4, platesCount - baseIndex);
+            int firstOversizedOffset = -1;
+
+            for (int offset = 0; offset < checkCount; offset++)
+            {
+                var p = plates[baseIndex + offset];
+                int units = p.ProductGroupCount + p.RegNumberCount;
+
+                if (units > limit)
+                {
+                    firstOversizedOffset = offset;
+                    break;
+                }
+            }
+
+            if (firstOversizedOffset == -1)
+            {
+                // žádná nadrozměrná v této várce → normálně 2x2, až 4 kusy
+                pageSize    = checkCount;
+                pageTwoMode = false;
+                batch       = plates.Skip(baseIndex).Take(pageSize).ToList();
+                nextIndex   = baseIndex + pageSize;
+            }
+            else if (firstOversizedOffset == 0)
+            {
+                // první v této várce je nadrozměrná:
+                //  - od této stránky jedeme po 2
+                //  - vytiskneme ji (a případně další) v twoMode layoutu
+                twoMode     = true;
+                pageTwoMode = true;
+                pageSize    = Math.Min(2, platesCount - baseIndex);
+                batch       = plates.Skip(baseIndex).Take(pageSize).ToList();
+                nextIndex   = baseIndex + pageSize;
+            }
+            else
+            {
+                // před nadrozměrnou jsou "normální" kusy →
+                // ty vytiskneme ještě ve 4-režimu (2x2),
+                // nadrozměrná se vytiskne v DALŠÍ iteraci už v twoMode.
+                pageSize    = firstOversizedOffset;
+                pageTwoMode = false;
+                batch       = plates.Skip(baseIndex).Take(pageSize).ToList();
+
+                twoMode   = true;                      // od příští stránky už po 2
+                nextIndex = baseIndex + firstOversizedOffset; // PŘED nadrozměrnou (tu nevynecháme)
+            }
+        }
+        else
+        {
+            // režim po 2 na stránku (1x2)
+            pageSize    = Math.Min(2, platesCount - baseIndex);
+            pageTwoMode = true;
+            batch       = plates.Skip(baseIndex).Take(pageSize).ToList();
+            nextIndex   = baseIndex + pageSize;
+        }
+
         <table class="page">
             <tbody>
-                @for (int j = 0; j < 2; j++)
+                @if (!pageTwoMode)
                 {
-                    <tr>
-                        @for (int k = 0; k < 2; k++)
-                        {
-                            int index = i + j * 2 + k;
-                            if (index < Model.Plates.Count())
+                    // layout 2×2 (max 4 na stránku) – původní chování
+                    var row = 0;
+                    while (row < 2)
+                    {
+                        <tr>
+                            @{
+                                var col = 0;
+                            }
+                            @while (col < 2)
                             {
-                                <td class="plate">
-                                    @await Html.PartialAsync(
-                                    "/Areas/Ptg/Pages/_PlateTag.cshtml",
-                                        Model.PlateItems
-                                        .Where(w => w.IdPlate == Model.Plates[index].IdPlate)
-                                        .ToList(),
-                                        ViewData
+                                int idxInBatch    = row * 2 + col;
+                                int absoluteIndex = baseIndex + idxInBatch;
+
+                                if (idxInBatch < batch.Count)
+                                {
+                                    var plate = batch[idxInBatch];
+
+                                    <td class="plate">
+                                        @await Html.PartialAsync(
+                                            "/Areas/Ptg/Pages/_PlateTag.cshtml",
+                                            Model.PlateItems
+                                                .Where(w => w.IdPlate == plate.IdPlate)
+                                                .ToList(),
+                                            ViewData
                                         )
-                                </td>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+
+                                col++;
                             }
-                            else
-                            {
-                                <td></td>
-                            }
+                        </tr>
+
+                        row++;
+                    }
+                }
+                else
+                {
+                    // režim po 2: 1 řádek, max 2 plate na stránku
+                    <tr>
+                        @{
+                            var idxInBatch = 0;
+                        }
+                        @while (idxInBatch < batch.Count)
+                        {
+                            var plate = batch[idxInBatch];
+
+                            <td class="plate">
+                                @await Html.PartialAsync(
+                                    "/Areas/Ptg/Pages/_PlateTag.cshtml",
+                                    Model.PlateItems
+                                        .Where(w => w.IdPlate == plate.IdPlate)
+                                        .ToList(),
+                                    ViewData
+                                )
+                            </td>
+
+                            idxInBatch++;
+                        }
+
+                        @if (batch.Count == 1)
+                        {
+                            <td></td>
                         }
                     </tr>
                 }
@@ -90,51 +209,106 @@
         {
             <table class="page">
                 <tbody>
-                    @for (int j = 0; j < 2; j++)
+                    @if (!pageTwoMode)
                     {
-                        <tr>
-                            @for (int k = 0; k < 2; k++)
-                            {
-                                int index = i + j * 2 + k;
-                                if (index < Model.Plates.Count())
+                        // layout 2×2 pro obrázky – původní chování
+                        var row2 = 0;
+                        while (row2 < 2)
+                        {
+                            <tr>
+                                @{
+                                    var col2 = 0;
+                                }
+                                @while (col2 < 2)
                                 {
-                                    <td>
-                                        @{
-                                            int plateIndex = (index % 2 == 0 ? index + 1 : index - 1);
-                                            if (plateIndex == Model.Plates.Count()) plateIndex--;
-                                        }
-                                        <table class="picture">
-                                            <tr>
-                                                <td>
-                                                    <span>@Model.Plates[plateIndex].PlateOrder.&nbsp;</span>
-                                                    <span>@Model.Plates[plateIndex].Description</span>
-                                                    <br />
-                                                    <img src="@Model.Plates[plateIndex].Picture" />
-                                                </td>
-                                                <td class="reg">
-                                                    @foreach (var item in Model.PlateItems.Where(w => w.IdPlate == Model.Plates[plateIndex].IdPlate))
-                                                    {
-                                                        <span>@item.ItemOrder@Html.Raw(".") @item.RegNumber</span>
+                                    int idxInBatch    = row2 * 2 + col2;
+                                    int absoluteIndex = baseIndex + idxInBatch;
+
+                                    if (idxInBatch < batch.Count)
+                                    {
+                                        int plateIndex = (absoluteIndex % 2 == 0 ? absoluteIndex + 1 : absoluteIndex - 1);
+                                        if (plateIndex >= platesCount) plateIndex = platesCount - 1;
+
+                                        <td>
+                                            <table class="picture">
+                                                <tr>
+                                                    <td>
+                                                        <span>@plates[plateIndex].PlateOrder.&nbsp;</span>
+                                                        <span>@plates[plateIndex].Description</span>
                                                         <br />
-                                                    }
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
+                                                        <img src="@plates[plateIndex].Picture" />
+                                                    </td>
+                                                    <td class="reg">
+                                                        @foreach (var item in Model.PlateItems.Where(w => w.IdPlate == plates[plateIndex].IdPlate).OrderBy(o => o.ItemOrder))
+                                                        {
+                                                            <span>@item.ItemOrder@Html.Raw(".") @item.RegNumber</span>
+                                                            <br />
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+
+                                    col2++;
                                 }
-                                else
-                                {
-                                    <td></td>
-                                }
+                            </tr>
+
+                            row2++;
+                        }
+                    }
+                    else
+                    {
+                        // režim po 2 pro obrázky: 1 řádek, max 2
+                        <tr>
+                            @{
+                                var idx2 = 0;
+                            }
+                            @while (idx2 < batch.Count)
+                            {
+                                int absoluteIndex = baseIndex + idx2;
+                                int plateIndex = (absoluteIndex % 2 == 0 ? absoluteIndex + 1 : absoluteIndex - 1);
+                                if (plateIndex >= platesCount) plateIndex = platesCount - 1;
+
+                                <td>
+                                    <table class="picture">
+                                        <tr>
+                                            <td>
+                                                <span>@plates[plateIndex].PlateOrder.&nbsp;</span>
+                                                <span>@plates[plateIndex].Description</span>
+                                                <br />
+                                                <img src="@plates[plateIndex].Picture" />
+                                            </td>
+                                            <td class="reg">
+                                                @foreach (var item in Model.PlateItems.Where(w => w.IdPlate == plates[plateIndex].IdPlate))
+                                                {
+                                                    <span>@item.ItemOrder@Html.Raw(".") @item.RegNumber</span>
+                                                    <br />
+                                                }
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+
+                                idx2++;
+                            }
+
+                            @if (batch.Count == 1)
+                            {
+                                <td></td>
                             }
                         </tr>
                     }
                 </tbody>
             </table>
         }
+
+        i = nextIndex;
     }
-
-
 
 </body>
 </html>

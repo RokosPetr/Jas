@@ -4,7 +4,11 @@
     ViewData["Title"] = "Kusový stojan";
 }
 
-<div class="container my-5">
+@section Styles {
+    <link rel="stylesheet" href="~/css/ptg-piece-tag.min.css" />
+}
+
+<div class="container my-5 ptg-piece-detail">
     @{
         var img = string.IsNullOrWhiteSpace(Model.Stand?.Picture) ? "/images/no-picture.png" : Model.Stand!.Picture;
         var firstPlate = Model.Plates.FirstOrDefault();

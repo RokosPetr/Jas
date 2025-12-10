@@ -1,6 +1,8 @@
 ﻿using Jas.Helpers;
 using QRCoder;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace Jas.Models.Ptg
 {
@@ -105,6 +107,83 @@ namespace Jas.Models.Ptg
                 return $"font-size: {FontSizeHelper.GetFontSizeForOneLine(TagName.ToUpper(), fontPath, 24f, 360)}px;";
             }
         }
+
+        public string? SymbolsImage
+        {
+            get
+            {
+                // --- LOGIKA PRO SBĚR SYMBOLŮ ---
+
+                List<string> symbolKeys = new();
+
+                if (Frost)
+                    symbolKeys.Add("frost");
+
+                if (Surface is not null)
+                {
+                    foreach (char c in Surface)
+                        symbolKeys.Add(c.ToString().ToLower());
+                }
+
+                if (Antislip is not null)
+                    symbolKeys.Add(Antislip.ToString().ToLower().Replace("/", ""));
+
+                if (Abrasion is not null)
+                    symbolKeys.Add(Abrasion.ToString().ToLower());
+
+                if (Rectification)
+                    symbolKeys.Add("rectification");
+
+                if (symbolKeys.Count == 0)
+                    return null;
+
+                // max 7 pozic, stejně jako v tvém kódu
+                const int maxSlots = 7;
+                symbolKeys = symbolKeys.Take(maxSlots).ToList();
+
+                // --- TVOJE LOGIKA PRO SKLÁDÁNÍ OBRÁZKŮ ---
+
+                int imageWidth = 64;
+                int imageHeight = 64;
+                int overlap = 2;
+
+                int totalWidth = (imageWidth - overlap) * maxSlots + overlap;
+                int totalHeight = imageHeight;
+
+                using Bitmap result = new Bitmap(totalWidth, totalHeight);
+                int offsetX = 0;
+
+                using (Graphics g = Graphics.FromImage(result))
+                {
+                    g.Clear(Color.White); // nebo Transparent
+
+                    foreach (var key in symbolKeys)
+                    {
+                        using Image img = Image.FromFile(Path.Combine("wwwroot", "css", "symbols", key + ".jpg"));
+                        if (img == null)
+                            continue;
+
+                        g.DrawImage(img, offsetX, 0, imageWidth, imageHeight);
+                        offsetX += imageWidth - overlap;
+                    }
+                }
+
+                using Bitmap shiftedBitmap = new Bitmap(totalWidth, totalHeight);
+                using (Graphics g = Graphics.FromImage(shiftedBitmap))
+                {
+                    g.Clear(Color.White); // nebo Transparent
+                                          // posun doprava podle offsetX, přesně jako v tvém příkladu
+                    g.DrawImage(result, new Point(totalWidth - 1 - offsetX, 0));
+                }
+
+                using MemoryStream ms = new MemoryStream();
+                shiftedBitmap.Save(ms, ImageFormat.Png);
+                string base64 = Convert.ToBase64String(ms.ToArray());
+
+                return $"data:image/png;base64,{base64}";
+            }
+        }
+
 
     }
 }

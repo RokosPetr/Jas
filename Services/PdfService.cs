@@ -7,7 +7,7 @@ namespace Jas.Services
 {
     public interface IPdfService
     {
-        byte[] ConvertHtmlToPdf(string htmlContent);
+        byte[] ConvertHtmlToPdf(string htmlContent, DinkToPdf.Orientation orientation = Orientation.Landscape);
     }
 
     public class PdfService : IPdfService
@@ -22,14 +22,14 @@ namespace Jas.Services
             _hostingEnvironment = hostingEnvironment;
             _converter = converter;
         }
-        public byte[] ConvertHtmlToPdf(string htmlContent)
+        public byte[] ConvertHtmlToPdf(string htmlContent, DinkToPdf.Orientation orientation = Orientation.Landscape)
         {
             var doc = new HtmlToPdfDocument()
             {
                 GlobalSettings = new GlobalSettings
                 {
                     PaperSize = PaperKind.A4,
-                    Orientation = Orientation.Landscape,
+                    Orientation = orientation,
                     Margins = new MarginSettings { Top = 5, Bottom = 0, Left = 0, Right = 0 }
                 },
                 Objects = {

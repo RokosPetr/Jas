@@ -10,7 +10,7 @@ namespace Jas.Areas.Ptg.Pages
 {
     [Area("Ptg")]
     [Authorize(Roles = "PTG - admin,PTG - user")]
-    public class PlateStandPrintModel : PageModel
+    public class StandPrintModel : PageModel
     {
         private readonly IImageStore _imageStore;
         private readonly IStandDetailReader _standReader;
@@ -18,7 +18,7 @@ namespace Jas.Areas.Ptg.Pages
         private readonly IRazorRenderer _renderer;
 
 
-        public PlateStandPrintModel(IImageStore imageStore, IStandDetailReader standReader, IPdfService pdfService, IRazorRenderer razorRenderer)
+        public StandPrintModel(IImageStore imageStore, IStandDetailReader standReader, IPdfService pdfService, IRazorRenderer razorRenderer)
         {
             _imageStore = imageStore;
             _standReader = standReader;
@@ -30,20 +30,22 @@ namespace Jas.Areas.Ptg.Pages
         public List<Plate> Plates { get; set; } = new();
         public List<PlateItem> PlateItems { get; set; } = new();
         [BindProperty(SupportsGet = true)]
-        public bool VoTag { get; set; } = false;
+        public bool PrintQr { get; set; } = false;
         [BindProperty(SupportsGet = true)]
         public bool PrintPictures { get; set; } = false;
-
+        public string? CssFonts { get; set; }
         public async Task<IActionResult> OnGetAsync(int id, CancellationToken ct)
         {
             var data = await _standReader.GetAsync(id, ct);
             Stand = data.Stand;
             Plates = data.Plates
-                .OrderBy(p => (p.ProductGroupCount + p.RegNumberCount) > (VoTag ? 15 : 12))
+                .OrderBy(p => (p.ProductGroupCount + p.RegNumberCount) > (PrintQr ? 15 : 12))
                 .ThenBy(p => p.PlateOrder)
                 .ToList();
             PlateItems = data.Items;
 
+            CssFonts = GetCssFonts();
+            
             return Page();
         }
 
@@ -53,21 +55,22 @@ namespace Jas.Areas.Ptg.Pages
             var data = await _standReader.GetAsync(id, ct);
             Stand = data.Stand;
             Plates = data.Plates
-                .OrderBy(p => (p.ProductGroupCount + p.RegNumberCount) > (VoTag ? 15 : 12))
+                .OrderBy(p => (p.ProductGroupCount + p.RegNumberCount) > (PrintQr ? 15 : 12))
                 .ThenBy(p => p.PlateOrder)
                 .ToList();
             PlateItems = data.Items;
 
+            CssFonts = GetCssFonts(true);
+
             // 2) vygenerování HTML z Razor view
             // u Razor Pages většinou funguje plná cesta k view
             // případně upravte podle struktury projektu
-            var htmlContent = await _renderer.RenderViewToStringAsync(
-                "/Areas/Ptg/Pages/_PlateStandPrint.cshtml",
-                this
-            );
+            var htmlContent = (Stand.PlatePriceTag && !Stand.PiecePriceTag) ?
+                await _renderer.RenderViewToStringAsync("/Areas/Ptg/Pages/_PlateStandPrint.cshtml", this)
+                : await _renderer.RenderViewToStringAsync("/Areas/Ptg/Pages/_PieceStandPrint.cshtml", this);
 
             // 3) převod HTML -> PDF
-            byte[] pdfContent = _pdfService.ConvertHtmlToPdf(htmlContent);
+            byte[] pdfContent = _pdfService.ConvertHtmlToPdf(htmlContent, (Stand.PlatePriceTag && !Stand.PiecePriceTag) ? DinkToPdf.Orientation.Landscape : DinkToPdf.Orientation.Portrait);
 
             // 4) návrat PDF jako download
             var fileName = $"PlatePrint_{id}.pdf";
@@ -78,6 +81,12 @@ namespace Jas.Areas.Ptg.Pages
         {
             await OnGetAsync(id, ct); // načti data stejně jako normální stránka
             return Page();            // vrátí HTML samotné Razor Page
+        }
+
+        private string  GetCssFonts(bool isPdf = false)
+        {
+            string path = isPdf ? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot") : "";
+            return "@font-face{font-family:\"OpenSansExtrabold\";src:url(\"" + path.Replace("\\","/")  + "/fonts/OpenSans-ExtraBold.ttf\") format(\"truetype\");}";
         }
     }
 }

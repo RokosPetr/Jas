@@ -3,7 +3,6 @@
     "http": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "ptg/print/164",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

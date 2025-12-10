@@ -1,10 +1,6 @@
 ﻿:root {
   --ptg-plate-padding: 8px;
 }
-body {
-  font-family: Open Sans;
-  text-align: center;
-}
 @media print {
   @page {
     margin: 15px 5px;
@@ -97,6 +93,7 @@ table.plate-price-tag > tbody .product-type td.symbols {
   text-align: right;
 }
 table.plate-price-tag > tfoot {
+  font-family: 'Open Sans';
   height: 86px;
 }
 table.plate-price-tag > tfoot .dph {

@@ -1,0 +1,19 @@
+﻿@page "/ptg/print/{id:int}"
+@model Jas.Areas.Ptg.Pages.StandPrintModel
+
+@{
+    Layout = null;
+
+    if (Model.Stand.PiecePriceTag)
+    {
+        <span></span>
+        @await Html.PartialAsync("_PieceStandPrint", Model)
+    }
+    if (Model.Stand.PlatePriceTag && !Model.Stand.PiecePriceTag)
+    {
+        @await Html.PartialAsync("_PlateStandPrint", Model)
+    }
+
+}
+
+
