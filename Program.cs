@@ -7,6 +7,7 @@ using Jas.Application.Abstractions.Ptg;
 using Jas.Data.JasIdentityApp;
 using Jas.Data.JasIdentityDb;
 using Jas.Data.JasMtzDb;
+using Jas.Data.JasPdfDb;
 using Jas.Globals;
 using Jas.Infrastructure.Images;
 using Jas.Infrastructure.Ptg;
@@ -29,6 +30,8 @@ builder.Services.AddDbContext<JasIdentityDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
 builder.Services.AddDbContext<JasMtzDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MtzConnection")));
+builder.Services.AddDbContext<JasPdfDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("PdfConnection")));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -92,6 +95,11 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddRazorPages();
 builder.Services.AddMemoryCache();
+
+builder.Services.AddRouting(o =>
+{
+    o.AppendTrailingSlash = true;
+});
 
 builder.Services.Configure<ImageStoreOptions>(builder.Configuration.GetSection("ImageStore"));
 builder.Services.AddHttpClient(nameof(LocalImageStore));

@@ -1,0 +1,59 @@
+﻿@page "/pdf/{companykey}/{catalogkey}/qrseries"
+@model Jas.Areas.Pdf.Pages.QrSeriesModel
+
+@{
+    Layout = null;
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div style="padding:10px; border:1px solid #d33; margin-bottom:12px;">
+        @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@err.ErrorMessage</div>
+        }
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.FlashMessage))
+{
+    <div style="padding:10px; border:1px solid #3a3; margin-bottom:12px;">
+        @Model.FlashMessage
+    </div>
+}
+
+@foreach (var kv in Model.QrSeries.OrderBy(x => x.Key))
+{
+    var qr = kv.Key;
+    var seriesOptions = kv.Value;
+
+    <form method="post" asp-page-handler="Save" style="margin:12px 0; padding:12px; border:1px solid #ddd;">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="Qr" value="@qr" />
+
+        <div style="display:flex; gap:16px; align-items:center;">
+            <div>
+                <img src="@Url.Page("/QrSeries", "Qr", new { qr = qr })"
+                     alt="QR @qr"
+                     style="width:140px; height:140px; object-fit:contain;" />
+                <div style="font-size:12px; margin-top:6px;"><strong>@qr</strong></div>
+            </div>
+
+            <div style="flex:1;">
+                <label style="display:block; margin-bottom:6px;">Serie kód</label>
+                <select name="SelectedSeries" style="min-width:320px; padding:6px;">
+                    <option value="">-- vyber --</option>
+                    @foreach (var s in seriesOptions)
+                    {
+                        <option value="@s">@s</option>
+                    }
+                </select>
+
+                <div style="margin-top:10px;">
+                    <button type="submit" style="padding:8px 14px;">Uložit</button>
+                </div>
+            </div>
+        </div>
+    </form>
+}

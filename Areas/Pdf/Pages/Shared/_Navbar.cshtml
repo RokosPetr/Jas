@@ -1,0 +1,62 @@
+﻿@using Jas.Services.Ptg
+@using Jas.Areas.Pdf.Pages
+@inject INavbarServicePtg NavbarService
+@{
+    Layout = null;
+}
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="container">
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Přepnout navigaci">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+
+            @{
+                bool isNn = false;
+                bool isJas = false;
+
+                if (Model is IndexModel im)
+                {
+                    isNn = string.Equals(im.CompanyKey, "partneri", StringComparison.OrdinalIgnoreCase);
+                    isJas = !isNn;
+                }
+            }
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link @(isNn ? "active" : null)"
+                       asp-area="Pdf" asp-page="/Index"
+                       asp-route-CompanyKey="partneri">
+                        Partneři
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(isJas ? "active" : null)"
+                       asp-area="Pdf" asp-page="/Index"
+                       asp-route-CompanyKey="koupelny-jas">
+                        Koupelny JaS
+                    </a>
+                </li>
+            </ul>
+
+            <!-- user dropdown vpravo -->
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="user">@NavbarService.JasUser.Name</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")" method="post">
+                                <button class="dropdown-item">Odhlásit se</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

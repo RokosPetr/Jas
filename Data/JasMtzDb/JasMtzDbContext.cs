@@ -29,6 +29,18 @@ public partial class JasMtzDbContext : DbContext
 
     public virtual DbSet<MtzProductAttribute> MtzProductAttributes { get; set; }
 
+    public virtual DbSet<PdfCatalog> PdfCatalogs { get; set; }
+
+    public virtual DbSet<PdfCompany> PdfCompanies { get; set; }
+
+    public virtual DbSet<PdfCompanyCatalog> PdfCompanyCatalogs { get; set; }
+
+    public virtual DbSet<PdfFile> PdfFiles { get; set; }
+
+    public virtual DbSet<PdfQr> PdfQrs { get; set; }
+
+    public virtual DbSet<PdfRegNumber> PdfRegNumbers { get; set; }
+
     public virtual DbSet<PtgStandCompany> PtgStandCompanies { get; set; }
 
     public virtual DbSet<PtgStandSearch> PtgStandSearches { get; set; }
@@ -272,6 +284,166 @@ public partial class JasMtzDbContext : DbContext
                 .HasForeignKey(d => d.IdProduct)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_mtz_product_attribute_mtz_product");
+        });
+
+        modelBuilder.Entity<PdfCatalog>(entity =>
+        {
+            entity.ToTable("pdf_catalog");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CatalogKey)
+                .HasMaxLength(255)
+                .HasColumnName("catalog_key");
+            entity.Property(e => e.Disable).HasColumnName("disable");
+            entity.Property(e => e.Landscape).HasColumnName("landscape");
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .HasColumnName("title");
+        });
+
+        modelBuilder.Entity<PdfCompany>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_pdf_company_1");
+
+            entity.ToTable("pdf_company");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CompanyCode)
+                .HasMaxLength(10)
+                .HasColumnName("company_code");
+            entity.Property(e => e.CompanyKey)
+                .HasMaxLength(255)
+                .HasColumnName("company_key");
+            entity.Property(e => e.CssStyle)
+                .HasMaxLength(255)
+                .HasColumnName("css_style");
+            entity.Property(e => e.Disable).HasColumnName("disable");
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
+                .HasColumnName("email");
+            entity.Property(e => e.ImgLogo)
+                .HasMaxLength(255)
+                .HasColumnName("img_logo");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(255)
+                .HasColumnName("phone");
+            entity.Property(e => e.Url)
+                .HasMaxLength(255)
+                .HasColumnName("url");
+        });
+
+        modelBuilder.Entity<PdfCompanyCatalog>(entity =>
+        {
+            entity.ToTable("pdf_company_catalog");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdCatalog).HasColumnName("id_catalog");
+            entity.Property(e => e.IdCompany).HasColumnName("id_company");
+            entity.Property(e => e.IdFile).HasColumnName("id_file");
+            entity.Property(e => e.PageIndexFrom).HasColumnName("page_index_from");
+            entity.Property(e => e.PageIndexTo).HasColumnName("page_index_to");
+            entity.Property(e => e.PageStartOn).HasColumnName("page_start_on");
+            entity.Property(e => e.PartName)
+                .HasMaxLength(50)
+                .HasColumnName("part_name");
+
+            entity.HasOne(d => d.IdCatalogNavigation).WithMany(p => p.PdfCompanyCatalogs)
+                .HasForeignKey(d => d.IdCatalog)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_pdf_company_catalog_pdf_catalog");
+
+            entity.HasOne(d => d.IdCompanyNavigation).WithMany(p => p.PdfCompanyCatalogs)
+                .HasForeignKey(d => d.IdCompany)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_pdf_company_catalog_pdf_company");
+
+            entity.HasOne(d => d.IdFileNavigation).WithMany(p => p.PdfCompanyCatalogs)
+                .HasForeignKey(d => d.IdFile)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_pdf_company_catalog_pdf_file");
+        });
+
+        modelBuilder.Entity<PdfFile>(entity =>
+        {
+            entity.ToTable("pdf_file");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CompanyCode)
+                .HasMaxLength(50)
+                .HasColumnName("company_code");
+            entity.Property(e => e.Disable).HasColumnName("disable");
+            entity.Property(e => e.Modified)
+                .HasColumnType("datetime")
+                .HasColumnName("modified");
+            entity.Property(e => e.NumberOfPages).HasColumnName("number_of_pages");
+            entity.Property(e => e.PartName)
+                .HasMaxLength(50)
+                .HasColumnName("part_name");
+            entity.Property(e => e.Path)
+                .HasMaxLength(1000)
+                .HasColumnName("path");
+            entity.Property(e => e.Size).HasColumnName("size");
+        });
+
+        modelBuilder.Entity<PdfQr>(entity =>
+        {
+            entity.ToTable("pdf_qr");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Height).HasColumnName("height");
+            entity.Property(e => e.IdFile).HasColumnName("id_file");
+            entity.Property(e => e.PageIndex).HasColumnName("page_index");
+            entity.Property(e => e.PosX).HasColumnName("pos_x");
+            entity.Property(e => e.PosY).HasColumnName("pos_y");
+            entity.Property(e => e.Value)
+                .HasMaxLength(1000)
+                .HasColumnName("value");
+            entity.Property(e => e.Width).HasColumnName("width");
+
+            entity.HasOne(d => d.IdFileNavigation).WithMany(p => p.PdfQrs)
+                .HasForeignKey(d => d.IdFile)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_pdf_qr_pdf_file");
+        });
+
+        modelBuilder.Entity<PdfRegNumber>(entity =>
+        {
+            entity.ToTable("pdf_reg_number", tb => tb.HasTrigger("trg_pdf_reg_number_change_date"));
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ChangeDate)
+                .HasColumnType("datetime")
+                .HasColumnName("change_date");
+            entity.Property(e => e.EshopSeriesCode)
+                .HasMaxLength(50)
+                .HasColumnName("eshop_series_code");
+            entity.Property(e => e.EshopSeriesName)
+                .HasMaxLength(50)
+                .HasColumnName("eshop_series_name");
+            entity.Property(e => e.IdFile).HasColumnName("id_file");
+            entity.Property(e => e.JasPrice)
+                .HasMaxLength(20)
+                .HasColumnName("jas_price");
+            entity.Property(e => e.NnPrice)
+                .HasMaxLength(20)
+                .HasColumnName("nn_price");
+            entity.Property(e => e.PageIndex).HasColumnName("page_index");
+            entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.Rabat).HasColumnName("rabat");
+            entity.Property(e => e.RegNumber)
+                .HasMaxLength(7)
+                .HasColumnName("reg_number");
+            entity.Property(e => e.Unit)
+                .HasMaxLength(10)
+                .HasColumnName("unit");
+
+            entity.HasOne(d => d.IdFileNavigation).WithMany(p => p.PdfRegNumbers)
+                .HasForeignKey(d => d.IdFile)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_pdf_reg_number_pdf_file");
         });
 
         modelBuilder.Entity<PtgStandCompany>(entity =>
