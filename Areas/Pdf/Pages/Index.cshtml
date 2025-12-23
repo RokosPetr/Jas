@@ -40,6 +40,7 @@
         {
             <div class="col">
                 <div class="card h-100">
+                    <img src="/pdf/src/@item.CatalogKey/@Html.Raw(item.CompanyCode + ".jpg")" class="card-img-top catalog-img" alt="@item.CatalogTitle">
                     <a asp-area="Pdf"
                        asp-page="QrSeries"
                        asp-route-CompanyKey="@Model.CompanyKey"

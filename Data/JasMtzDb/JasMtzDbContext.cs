@@ -49,6 +49,8 @@ public partial class JasMtzDbContext : DbContext
 
     public virtual DbSet<ViMtzUser> ViMtzUsers { get; set; }
 
+    public virtual DbSet<ViPdfCompanyCatalog> ViPdfCompanyCatalogs { get; set; }
+
     public virtual DbSet<ViPtgPdfPtPlate> ViPtgPdfPtPlates { get; set; }
 
     public virtual DbSet<ViPtgStand> ViPtgStands { get; set; }
@@ -516,6 +518,28 @@ public partial class JasMtzDbContext : DbContext
             entity.Property(e => e.Email).HasMaxLength(256);
             entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
             entity.Property(e => e.UserName).HasMaxLength(256);
+        });
+
+        modelBuilder.Entity<ViPdfCompanyCatalog>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vi_pdf_company_catalog");
+
+            entity.Property(e => e.CatalogKey)
+                .HasMaxLength(255)
+                .HasColumnName("catalog_key");
+            entity.Property(e => e.CatalogTitle)
+                .HasMaxLength(255)
+                .HasColumnName("catalog_title");
+            entity.Property(e => e.CompanyCode)
+                .HasMaxLength(10)
+                .HasColumnName("company_code");
+            entity.Property(e => e.CompanyKey)
+                .HasMaxLength(255)
+                .HasColumnName("company_key");
+            entity.Property(e => e.IdCatalog).HasColumnName("id_catalog");
+            entity.Property(e => e.IdCompany).HasColumnName("id_company");
         });
 
         modelBuilder.Entity<ViPtgPdfPtPlate>(entity =>

@@ -2,22 +2,17 @@ using AutoMapper;
 using Jas.Data.JasIdentityApp;
 using Jas.Data.JasMtzDb;
 using Jas.Infrastructure.Ptg;
-using Jas.Models.Ptg;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Jas.Areas.Pdf.Pages
 {
     [Area("Pdf")]
     //[Authorize]
-    [Authorize(Roles = "PTG - admin,P - user")]
-    //[Authorize(Roles = "PTG - admin")]
+    [Authorize(Roles = "PDF - admin")]
     public class IndexModel : PageModel
     {
         private readonly JasMtzDbContext _context;
@@ -27,7 +22,7 @@ namespace Jas.Areas.Pdf.Pages
 
         [BindProperty(SupportsGet = true)]
         public string?CompanyKey { get; set; }
-        public List<PdfCatalog> Catalogs { get; set; } = new();
+        public List<ViPdfCompanyCatalog> Catalogs { get; set; } = new();
 
         public IndexModel(JasMtzDbContext context, IMapper mapper, UserManager<JasUser> userManager, IStandSearchReader searchReader)
         {
@@ -45,8 +40,8 @@ namespace Jas.Areas.Pdf.Pages
                 return RedirectToPage(null, new { CompanyKey = "partneri" });
             }
 
-            Catalogs = await _context.PdfCatalogs
-                .Where(c => c.CatalogKey.Equals("akce-koupelnove-vybaveni-2026"))
+            Catalogs = await _context.ViPdfCompanyCatalogs
+                .Where(c => c.CompanyKey == CompanyKey)
                 .ToListAsync();
             return Page();
         }

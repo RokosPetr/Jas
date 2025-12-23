@@ -106,7 +106,7 @@ builder.Services.AddHttpClient(nameof(LocalImageStore));
 builder.Services.AddSingleton<IImageStore, LocalImageStore>();
 
 var context = new CustomAssemblyLoadContext();
-context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "bin", "libwkhtmltox.dll")); 
+context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "bin", "libwkhtmltox.dll"));
 builder.Services.AddSingleton<IConverter>(provider => new SynchronizedConverter(new PdfTools()));
 
 var app = builder.Build();
