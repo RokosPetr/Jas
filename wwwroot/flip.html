@@ -1,377 +1,379 @@
 ﻿<!doctype html>
 <html lang="cs">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Flipbook – koupelny JAS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flipbook – koupelny JAS</title>
 
-<style>
-  html, body { height: 100%; }
-  body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; }
+    <style>
+        html, body {
+            height: 100%;
+        }
 
-  .bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
-  button { padding:6px 10px; cursor:pointer; }
-  input { width:80px; padding:6px; }
-  .spacer { flex:1; }
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 0;
+            padding: 16px;
+        }
 
-  /* bez rámečku */
-  #outer {
-    width: min(100%, 1100px);
-    height: min(82vh, 780px);
-    margin: 0 auto;
-    border: none;
-    border-radius: 0;
-    overflow: hidden;
-    background: transparent;
-  }
+        .bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
 
-  #bookWrap {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    place-items: center;
-    user-select: none;
-    -webkit-user-select: none;
-  }
+        button {
+            padding: 6px 10px;
+            cursor: pointer;
+        }
 
-  /* Pokus o CSS vypnutí stínů (ponecháme, ale hlavní je killShadows() v JS) */
-  [class^="stf__"], [class*=" stf__"] { box-shadow:none !important; filter:none !important; }
-  .stf__shadow, .stf__shadow--left, .stf__shadow--right,
-  .stf__shadow_left, .stf__shadow_right, .stf__shadow_top, .stf__shadow_bottom,
-  .stf__hardShadow, .stf__innerShadow, .stf__outerShadow, .stf__foldShadow,
-  .stf__pageShadow, .stf__shadowWrapper { display:none !important; opacity:0 !important; }
-  .stf__page::before, .stf__page::after,
-  .stf__wrapper::before, .stf__wrapper::after,
-  .stf__block::before, .stf__block::after,
-  .stf__parent::before, .stf__parent::after { content:none !important; display:none !important; opacity:0 !important; }
+        input {
+            width: 80px;
+            padding: 6px;
+        }
 
-  /* ===== FULLSCREEN OVERLAY ===== */
-  #overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.94);
-    display: none;
-    z-index: 2147483647;
-  }
-  #overlay.open { display: block; }
+        .spacer {
+            flex: 1;
+        }
 
-  #viewer { position: fixed; inset: 0; overflow: hidden; }
+        /* bez rámečku */
+        #outer {
+            width: min(100%, 1100px);
+            height: min(82vh, 780px);
+            margin: 0 auto;
+            border: none;
+            border-radius: 0;
+            overflow: hidden;
+            background: transparent;
+        }
 
-  #vimg {
-    position: absolute;
-    left: 0;
-    top: 0;
-    transform-origin: 0 0;
-    will-change: transform;
-    user-select: none;
-    -webkit-user-drag: none;
-    cursor: grab;
-  }
+        #bookWrap {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+        }
 
-  #ovUI {
-    position: fixed;
-    right: 12px;
-    top: 12px;
-    display: none;
-    gap: 8px;
-    z-index: 2147483647;
-  }
-  #overlay.open #ovUI { display: flex; }
+        /* ===== FULLSCREEN OVERLAY ===== */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.94);
+            display: none;
+            z-index: 2147483647;
+        }
 
-  .ovBtn {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(0,0,0,0.35);
-    color: white;
-    font-size: 18px;
-    line-height: 40px;
-    text-align: center;
-    user-select: none;
-    -webkit-user-select: none;
-    backdrop-filter: blur(6px);
-  }
-</style>
+            #overlay.open {
+                display: block;
+            }
+
+        #viewer {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        #vimg {
+            position: absolute;
+            left: 0;
+            top: 0;
+            transform-origin: 0 0;
+            will-change: transform;
+            user-select: none;
+            -webkit-user-drag: none;
+            cursor: grab;
+        }
+
+        /* overlay UI */
+        #ovUI {
+            position: fixed;
+            right: 12px;
+            top: 12px;
+            display: none;
+            gap: 8px;
+            z-index: 2147483647;
+        }
+
+        #overlay.open #ovUI {
+            display: flex;
+        }
+
+        .ovBtn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.35);
+            color: white;
+            font-size: 18px;
+            line-height: 40px;
+            text-align: center;
+            user-select: none;
+            -webkit-user-select: none;
+            backdrop-filter: blur(6px);
+        }
+
+            .ovBtn:active {
+                transform: scale(0.98);
+            }
+    </style>
 </head>
+
 <body>
+    <img src=" http://238554-main-image.branch.koupelny-jas.cz.dev.poski.com/hlavni-obrazek-produktu/6003726"/>
+    <div class="bar">
+        <button id="prev" type="button">←</button>
+        <button id="next" type="button">→</button>
 
-<div class="bar">
-  <button id="prev" type="button">←</button>
-  <button id="next" type="button">→</button>
+        <span>Strana</span>
+        <input id="pageNum" type="number" min="1" value="1">
+        <span id="pageCount">/ ?</span>
 
-  <span>Strana</span>
-  <input id="pageNum" type="number" min="1" value="1">
-  <span id="pageCount">/ ?</span>
+        <div class="spacer"></div>
+        <small>Double-click = fullscreen</small>
+    </div>
 
-  <div class="spacer"></div>
-  <small>Double-click = fullscreen</small>
-</div>
+    <div id="outer"><div id="bookWrap"></div></div>
 
-<div id="outer"><div id="bookWrap"></div></div>
+    <!-- tvoje upravená knihovna bez stínů -->
+    <script src="js/page-flip.browser.noshadow2.js"></script>
 
-<script src="js/page-flip.browser.noshadow2.js"></script>
+    <div id="overlay" aria-hidden="true">
+        <div id="viewer">
+            <img id="vimg" alt="Stránka">
+        </div>
 
-<div id="overlay" aria-hidden="true">
-  <div id="viewer">
-    <img id="vimg" alt="Stránka">
-  </div>
+        <div id="ovUI">
+            <div class="ovBtn" id="btnReset" title="Reset / Fit">⤢</div>
+            <div class="ovBtn" id="btnClose" title="Zavřít">✕</div>
+        </div>
+    </div>
 
-  <div id="ovUI">
-    <div class="ovBtn" id="btnReset" title="Reset / Fit">⤢</div>
-    <div class="ovBtn" id="btnClose" title="Zavřít">✕</div>
-  </div>
-</div>
+    <script>
+        /* ================= IMAGES (bez bílých) ================= */
+        const images = [
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/1s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/2s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/3s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/4s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/5s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/6s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/7s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/8s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/9s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/10s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/11s.jpg",
+            "images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/12s.jpg"
+        ];
 
-<script>
-/* ================= IMAGES (bez nulté) ================= */
-const images = [
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/1s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/2s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/3s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/4s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/5s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/6s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/7s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/8s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/9s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/10s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/11s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/12s.jpg",
-  "koupelny-jas/akce-koupelnove-vybaveni-2026/13s.jpg"
-];
+        function makeWhitePageDataUrl(w = 900, h = 1200) {
+            const c = document.createElement("canvas");
+            c.width = w; c.height = h;
+            const ctx = c.getContext("2d");
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, w, h);
+            return c.toDataURL("image/jpeg", 0.9);
+        }
 
-function makeWhitePageDataUrl(w = 900, h = 1200) {
-  const c = document.createElement("canvas");
-  c.width = w; c.height = h;
-  const ctx = c.getContext("2d");
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0, 0, w, h);
-  return c.toDataURL("image/jpeg", 0.9);
-}
+        /* ================= FLIPBOOK ================= */
+        const bookWrap = document.getElementById("bookWrap");
+        const pageNum = document.getElementById("pageNum");
+        const pageCount = document.getElementById("pageCount");
+        const btnPrev = document.getElementById("prev");
+        const btnNext = document.getElementById("next");
 
-/* ================= FLIPBOOK ================= */
-const bookWrap = document.getElementById("bookWrap");
-const pageNum = document.getElementById("pageNum");
-const pageCount = document.getElementById("pageCount");
+        const pageFlip = new St.PageFlip(bookWrap, {
+            width: 450,
+            height: 600,
+            size: "stretch",
+            autoSize: true,
 
-const pageFlip = new St.PageFlip(bookWrap, {
-  width: 450,
-  height: 600,
-  size: "stretch",
-  autoSize: true,
+            showCover: false,
+            usePortrait: true,
+            disableFlipByClick: true,
 
-  showCover: false,
-  usePortrait: true,
-  disableFlipByClick: true,
+            showPageCorners: true // odchlípnutí rohu
+        });
 
-  // vypnout co jde přímo v knihovně
-  drawShadow: false,
-  maxShadowOpacity: 0,
-  showPageCorners: false
-});
+        let allPages = null;
 
-let allPages = null;
+        (async function init() {
+            // zjisti rozměr podle první reálné stránky, ať bílá sedí
+            const probe = new Image();
+            probe.src = images[0];
+            if (probe.decode) { try { await probe.decode(); } catch { } }
+            else await new Promise(res => { probe.onload = res; probe.onerror = res; });
 
-/* ✅ tvrdé vypnutí stínových vrstev, i když se znovu vytvoří */
-function killShadows() {
-  // Vypni všechny elementy, které mají v className "shadow"
-  const root = bookWrap;
-  const nodes = root.querySelectorAll('[class*="shadow"], [class*="Shadow"], [class*="SHADOW"]');
-  nodes.forEach(n => {
-    n.style.display = "none";
-    n.style.opacity = "0";
-    n.style.filter = "none";
-    n.style.boxShadow = "none";
-  });
+            const iw = probe.naturalWidth || 900;
+            const ih = probe.naturalHeight || 1200;
 
-  // Někdy je stín kreslený přes canvas/svgs vrstvu s "shadow" v class
-  // (necháme jen když má class shadow; viz selektor výš)
-}
+            const whiteFirst = makeWhitePageDataUrl(iw, ih);
+            const whiteLast = makeWhitePageDataUrl(iw, ih);
 
-function scheduleKillShadows() {
-  // vícekrát po sobě, protože knihovna to často přegeneruje v animaci
-  requestAnimationFrame(killShadows);
-  setTimeout(killShadows, 0);
-  setTimeout(killShadows, 60);
-  setTimeout(killShadows, 150);
-  setTimeout(killShadows, 300);
-}
+            // bílá první + reálné stránky + bílá poslední
+            allPages = [whiteFirst, ...images, whiteLast];
 
-(async function init() {
-  const probe = new Image();
-  probe.src = images[0];
-  await new Promise((res) => { probe.onload = res; probe.onerror = res; });
+            pageFlip.loadFromImages(allPages);
 
-  const iw = probe.naturalWidth || 900;
-  const ih = probe.naturalHeight || 1200;
-  const white0 = makeWhitePageDataUrl(iw, ih);
+            // ===== napojení BAR UI =====
+            pageFlip.on("load", () => {
+                const total = pageFlip.getPageCount();
+                pageCount.textContent = "/ " + total;
 
-  allPages = [white0, ...images];
-  pageFlip.loadFromImages(allPages);
+                pageFlip.turnToPage(0); // vždy start na bílé první
+                pageNum.value = 1;
+            });
 
-  pageFlip.on("load", () => {
-    pageCount.textContent = "/ " + pageFlip.getPageCount();
-    pageFlip.turnToPage(0);
-    pageNum.value = 1;
-    scheduleKillShadows();
-  });
+            pageFlip.on("flip", (e) => {
+                pageNum.value = e.data + 1;
+            });
 
-  pageFlip.on("flip", (e) => {
-    pageNum.value = e.data + 1;
-    scheduleKillShadows();
-  });
+            btnPrev.addEventListener("click", () => pageFlip.flipPrev());
+            btnNext.addEventListener("click", () => pageFlip.flipNext());
 
-  // pro jistotu i při změně stavu (některé buildy emitují "changeState")
-  try {
-    pageFlip.on("changeState", scheduleKillShadows);
-  } catch {}
+            pageNum.addEventListener("change", () => {
+                let p = parseInt(pageNum.value, 10);
+                if (Number.isNaN(p)) return;
 
-  document.getElementById("prev").addEventListener("click", () => { pageFlip.flipPrev(); scheduleKillShadows(); });
-  document.getElementById("next").addEventListener("click", () => { pageFlip.flipNext(); scheduleKillShadows(); });
+                const max = pageFlip.getPageCount();
+                p = Math.max(1, Math.min(p, max));
 
-  pageNum.addEventListener("change", () => {
-    let p = parseInt(pageNum.value, 10);
-    if (!Number.isFinite(p)) return;
-    p = Math.max(1, Math.min(p, pageFlip.getPageCount()));
-    pageFlip.turnToPage(p - 1);
-    scheduleKillShadows();
-  });
-})();
+                pageNum.value = p;
+                pageFlip.turnToPage(p - 1);
+            });
+        })();
 
-/* ================= FULLSCREEN VIEWER (PC) ================= */
-const overlay = document.getElementById("overlay");
-const viewer = document.getElementById("viewer");
-const img = document.getElementById("vimg");
-const btnClose = document.getElementById("btnClose");
-const btnReset = document.getElementById("btnReset");
+        /* ================= FULLSCREEN VIEWER (PC) ================= */
+        const overlay = document.getElementById("overlay");
+        const viewer = document.getElementById("viewer");
+        const img = document.getElementById("vimg");
+        const btnClose = document.getElementById("btnClose");
+        const btnReset = document.getElementById("btnReset");
 
-let scale = 1, tx = 0, ty = 0;
-const MIN_SCALE = 0.2, MAX_SCALE = 8;
+        let scale = 1, tx = 0, ty = 0;
+        const MIN_SCALE = 0.2, MAX_SCALE = 8;
 
-function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
-function applyTransform(){ img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`; }
+        function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+        function applyTransform() { img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`; }
 
-function fitAndCenterDesktop() {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const iw = img.naturalWidth;
-  const ih = img.naturalHeight;
+        function fitAndCenterDesktop() {
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const iw = img.naturalWidth;
+            const ih = img.naturalHeight;
 
-  scale = clamp(vh / ih, MIN_SCALE, MAX_SCALE);
-  tx = (vw - iw * scale) / 2;
-  ty = (vh - ih * scale) / 2;
-  applyTransform();
-}
+            scale = clamp(vh / ih, MIN_SCALE, MAX_SCALE);
+            tx = (vw - iw * scale) / 2;
+            ty = (vh - ih * scale) / 2;
+            applyTransform();
+        }
 
-function zoomTo(newScale, mx, my) {
-  newScale = clamp(newScale, MIN_SCALE, MAX_SCALE);
-  const old = scale;
-  if (newScale === old) return;
+        function zoomTo(newScale, mx, my) {
+            newScale = clamp(newScale, MIN_SCALE, MAX_SCALE);
+            const old = scale;
+            if (newScale === old) return;
 
-  tx = mx - (mx - tx) * (newScale / old);
-  ty = my - (my - ty) * (newScale / old);
-  scale = newScale;
-  applyTransform();
-}
+            tx = mx - (mx - tx) * (newScale / old);
+            ty = my - (my - ty) * (newScale / old);
+            scale = newScale;
+            applyTransform();
+        }
 
-/* ✅ fullscreen stránka podle místa dblclicku (kvůli 0+1 na začátku) */
-let lastDblX = null;
+        // vybere stránku do fullscreen podle toho, kam se dblclickne (kvůli dvojstraně)
+        let lastDblX = null;
+        function pageIndexFromClick() {
+            const base = pageFlip.getCurrentPageIndex(); // typicky levá stránka dvojstrany
+            const count = pageFlip.getPageCount();
+            if (lastDblX == null) return base;
 
-function pageIndexFromClick() {
-  const base = pageFlip.getCurrentPageIndex(); // typicky levá stránka dvojstrany
-  const count = pageFlip.getPageCount();
+            const r = bookWrap.getBoundingClientRect();
+            const clickedRight = (lastDblX - r.left) > (r.width / 2);
+            return clickedRight ? Math.min(base + 1, count - 1) : base;
+        }
 
-  if (lastDblX == null) return base;
+        function openFullscreen() {
+            if (!allPages) return;
 
-  const r = bookWrap.getBoundingClientRect();
-  const clickedRight = (lastDblX - r.left) > (r.width / 2);
+            const idx = pageIndexFromClick();
+            const url = allPages[idx];
 
-  // Pokud je vidět dvojstrana, pravá stránka je base+1
-  // Pokud by base+1 neexistovala, zůstaň na base.
-  const idx = clickedRight ? Math.min(base + 1, count - 1) : base;
-  return idx;
-}
+            overlay.classList.add("open");
+            overlay.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
 
-function openFullscreen() {
-  if (!allPages) return;
+            img.src = url;
 
-  const idx = pageIndexFromClick();
-  const url = allPages[idx];           // ✅ může to být i bílá 0 i titulní 1
+            const ready = () => fitAndCenterDesktop();
+            if (img.decode) img.decode().then(ready).catch(ready);
+            else img.onload = ready;
+        }
 
-  overlay.classList.add("open");
-  overlay.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
+        function closeFullscreen() {
+            overlay.classList.remove("open");
+            overlay.setAttribute("aria-hidden", "true");
+            document.body.style.overflow = "";
+        }
 
-  img.src = url;
+        btnClose.addEventListener("click", closeFullscreen);
+        btnReset.addEventListener("click", () => { if (img.naturalWidth) fitAndCenterDesktop(); });
 
-  const ready = () => fitAndCenterDesktop();
-  if (img.decode) img.decode().then(ready).catch(ready);
-  else img.onload = ready;
-}
+        // wheel zoom podle myši
+        viewer.addEventListener("wheel", (e) => {
+            if (!overlay.classList.contains("open")) return;
+            e.preventDefault();
 
-function closeFullscreen() {
-  overlay.classList.remove("open");
-  overlay.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
-}
+            const zoomIntensity = 0.12;
+            const dir = e.deltaY > 0 ? -1 : 1;
+            zoomTo(scale * (1 + zoomIntensity * dir), e.clientX, e.clientY);
+        }, { passive: false });
 
-btnClose.addEventListener("click", closeFullscreen);
-btnReset.addEventListener("click", () => { if (img.naturalWidth) fitAndCenterDesktop(); });
+        // drag myší
+        let dragging = false, lastX = 0, lastY = 0;
 
-viewer.addEventListener("wheel", (e) => {
-  if (!overlay.classList.contains("open")) return;
-  e.preventDefault();
+        viewer.addEventListener("mousedown", (e) => {
+            if (!overlay.classList.contains("open")) return;
+            dragging = true;
+            lastX = e.clientX; lastY = e.clientY;
+            img.style.cursor = "grabbing";
+        });
 
-  const zoomIntensity = 0.12;
-  const dir = e.deltaY > 0 ? -1 : 1;
-  zoomTo(scale * (1 + zoomIntensity * dir), e.clientX, e.clientY);
-}, { passive: false });
+        window.addEventListener("mousemove", (e) => {
+            if (!dragging) return;
+            tx += (e.clientX - lastX);
+            ty += (e.clientY - lastY);
+            lastX = e.clientX; lastY = e.clientY;
+            applyTransform();
+        });
 
-let dragging = false, lastX = 0, lastY = 0;
-viewer.addEventListener("mousedown", (e) => {
-  if (!overlay.classList.contains("open")) return;
-  dragging = true;
-  lastX = e.clientX; lastY = e.clientY;
-  img.style.cursor = "grabbing";
-});
-window.addEventListener("mousemove", (e) => {
-  if (!dragging) return;
-  tx += (e.clientX - lastX);
-  ty += (e.clientY - lastY);
-  lastX = e.clientX; lastY = e.clientY;
-  applyTransform();
-});
-window.addEventListener("mouseup", () => {
-  dragging = false;
-  img.style.cursor = "grab";
-});
+        window.addEventListener("mouseup", () => {
+            if (!dragging) return;
+            dragging = false;
+            img.style.cursor = "grab";
+        });
 
-bookWrap.addEventListener("dblclick", (e) => {
-  e.preventDefault();
-  lastDblX = e.clientX;
-  openFullscreen();
-}, true);
+        // dblclick: otevřít / zavřít fullscreen
+        bookWrap.addEventListener("dblclick", (e) => {
+            e.preventDefault();
+            lastDblX = e.clientX;
+            openFullscreen();
+        }, true);
 
-overlay.addEventListener("dblclick", (e) => {
-  e.preventDefault();
-  closeFullscreen();
-}, true);
+        overlay.addEventListener("dblclick", (e) => {
+            e.preventDefault();
+            closeFullscreen();
+        }, true);
 
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") { closeFullscreen(); return; }
-  if (overlay.classList.contains("open")) return;
-  if (document.activeElement === pageNum) return;
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") closeFullscreen();
+        });
 
-  if (e.key === "ArrowLeft") { e.preventDefault(); pageFlip.flipPrev(); scheduleKillShadows(); }
-  if (e.key === "ArrowRight") { e.preventDefault(); pageFlip.flipNext(); scheduleKillShadows(); }
-}, true);
-
-window.addEventListener("resize", () => {
-  scheduleKillShadows();
-  if (overlay.classList.contains("open") && img.naturalWidth) fitAndCenterDesktop();
-});
-</script>
-
+        window.addEventListener("resize", () => {
+            if (overlay.classList.contains("open") && img.naturalWidth) fitAndCenterDesktop();
+        });
+    </script>
 </body>
 </html>
