@@ -21,6 +21,7 @@ public class ImageStoreOptions
 
     /// <summary>Pokud https selže, povolit fallback na http.</summary>
     public bool AllowHttpFallback { get; set; } = true;
+    //public string ProductBasePath { get; set; } = "/images/238554-main-image.branch.koupelny-jas.cz.dev.poski.com/hlavni-obrazek-produktu";
     public string ProductBasePath { get; set; } = "/images/www.koupelny-jas.cz/data/storage/images/_product";
 
 }

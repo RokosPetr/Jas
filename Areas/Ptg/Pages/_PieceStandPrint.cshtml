@@ -14,8 +14,7 @@
     <meta charset="utf-8" />
     <title></title>
     @{
-        var cssPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/css/ptg-piece-tag.min.css");
-        var css = System.IO.File.ReadAllText(cssPath);
+        var css = System.IO.File.ReadAllText(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/css/ptg-piece-tag.min.css"));
 
         var match = System.Text.RegularExpressions.Regex.Match(css, @"--ptg-piece-padding\s*:\s*([^;]+);");
         if (match.Success)
@@ -26,7 +25,7 @@
         }
     }
     <style>
-        @Html.Raw(Model.CssFonts)
+        @Html.Raw(System.IO.File.ReadAllText(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/css/opensans.min.css")))
         @Html.Raw(css)
     </style>
 </head>

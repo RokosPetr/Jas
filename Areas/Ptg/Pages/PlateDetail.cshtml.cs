@@ -153,5 +153,7 @@ namespace Jas.Areas.Ptg.Pages
         public int TotalPlates { get; set; }
         public string? ImgUrl { get; set; }
         public List<PlateItem> Items { get; set; } = new();
+        public Dictionary<string, string> QrTagPng { get; set; } = new();
+        public Dictionary<string, string> TagPng { get; set; } = new();
     }
 }

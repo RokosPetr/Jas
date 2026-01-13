@@ -28,10 +28,15 @@
         PlateIndex = 1,
         TotalPlates = 1,
         ImgUrl = img,
-        Items = items
+        Items = items,
+        QrTagPng = Model.QrTagPng,
+        TagPng = Model.TagPng
     })
 </div>
 
+<partial name="Shared/_PdfOptionsModal" />
+
 @section Scripts {
     <script src="~/js/ptg/stand-detail.js" asp-append-version="true"></script>
+    <script src="~/js/ptg-pdf-modal.js" asp-append-version="true"></script>
 }

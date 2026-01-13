@@ -36,6 +36,11 @@ table.plate-price-tag > tbody .product-type {
   font-size: 12pt;
   text-align: left;
   text-transform: uppercase;
+  /*            .reg {
+                font-family: "Courier New", Courier, monospace;
+                font-weight: 600;
+            }
+*/
 }
 table.plate-price-tag > tbody .product-type th {
   color: #e31f24;
@@ -80,10 +85,6 @@ table.plate-price-tag > tbody .product-type .title {
 }
 table.plate-price-tag > tbody .product-type .size {
   text-transform: none;
-}
-table.plate-price-tag > tbody .product-type .reg {
-  font-family: "Courier New", Courier, monospace;
-  font-weight: 600;
 }
 table.plate-price-tag > tbody .product-type img {
   width: 14px;

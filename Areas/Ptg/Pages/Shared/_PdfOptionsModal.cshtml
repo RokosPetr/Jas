@@ -1,0 +1,41 @@
+<div class="modal fade" id="pdfOptionsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nastavení PDF</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavøít"></button>
+            </div>
+            <div class="modal-body">
+                <form id="pdfOptionsForm">
+                    <input type="hidden" id="pdfItemId" />
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="pdfPrintQr" />
+                        <label class="form-check-label" for="pdfPrintQr">
+                            QR
+                        </label>
+                    </div>
+
+                    <div class="form-check mt-2" id="pdfPrintPicturesRow">
+                        <input class="form-check-input" type="checkbox" id="pdfPrintPictures" />
+                        <label class="form-check-label" for="pdfPrintPictures">
+                            obrázky
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Zrušit
+                </button>
+                <button type="button"
+                        class="btn btn-primary"
+                        id="pdfOptionsConfirm">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

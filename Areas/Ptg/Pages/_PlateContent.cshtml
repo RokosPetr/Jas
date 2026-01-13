@@ -2,15 +2,30 @@
 @using Jas.Globals.Ptg.Enums
 @model Jas.Areas.Ptg.Pages.PlateContentVm
 
+@{
+    // helper lokální funkce na zjištění base64 PNG z dictionary
+    string? GetPng(Dictionary<string, string> dict, string? reg)
+        => !string.IsNullOrWhiteSpace(reg) && dict.TryGetValue(reg, out var v) ? v : null;
+}
 
 @{
     if (Model.StandType != (int)StandType.Plate)
     {
-        <h1>@Model.StandCode - @Model.StandName</h1>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h1 class="mb-0">@Model.StandCode - @Model.StandName</h1>
+            <button type="button"
+                    class="btn btn-sm btn-primary open-pdf-dialog"
+                    data-id="@Model.StandId"
+                    data-has-pictures="false">
+                Stáhnout PDF
+            </button>
+        </div>
     }
     else
     {
-        <h2>@Model.PlateIndex. @Model.PlateDescription</h2>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="mb-0">@Model.PlateIndex. @Model.PlateDescription</h2>
+        </div>
     }
 }
 
@@ -102,6 +117,7 @@
                    data-ajax-mode="replace">Další ▶</a>
             }
         </div>
+
     </div>
 
     <!-- Tabulka: pořadí, reg_number, name, price + ikonka náhledu -->
@@ -136,12 +152,12 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="thumbs-tab" data-bs-toggle="tab" data-bs-target="#vo-pane" type="button" role="tab" aria-controls="vo-pane" aria-selected="false">
-                        VO @(Model.StandType == (int)StandType.Plate ? "štítek" : "cenovka")
+                        MO @(Model.StandType == (int)StandType.Plate ? "štítek" : "cenovka")
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="thumbs-tab" data-bs-toggle="tab" data-bs-target="#mo-pane" type="button" role="tab" aria-controls="mo-pane" aria-selected="false">
-                        MO @(Model.StandType == (int)StandType.Plate ? "štítek" : "cenovka")
+                        VO @(Model.StandType == (int)StandType.Plate ? "štítek" : "cenovka")
                     </button>
                 </li>
             </ul>
@@ -175,13 +191,13 @@
                                     <td class="item-order">
                                         <span class="order-dot">@((displayOrder.HasValue) ? displayOrder.Value.ToString() : "")</span>
                                     </td>
+                                    <td class="reg">@item.RegNumber</td>
                                     <td class="name">
                                         <a href="@($"https://www.koupelny-jas.cz/eshop/p/{TextUtils.Slugify(item.TagName!)}-i{item.RegNumber}")" target="_blank">
                                             @item.TagName
                                         </a>
                                     </td>
                                     <td class="price">@((item.Price.HasValue) ? $"{item.Price:N0} {item.Unit}" : "")</td>
-                                    <td class="reg">@item.RegNumber</td>
                                 </tr>
                             }
                         </tbody>
@@ -220,7 +236,30 @@
                     }
                     else
                     {
-                        @Html.DisplayFor(m => m.Items, "PieceTag", additionalViewData: new { PrintQr = true })
+                        @* místo DisplayFor s PieceTag použijeme vygenerované PNG s QR *@
+                        @if (Model.QrTagPng.Any())
+                        {
+                            <div class="row row-cols-1 row-cols-md-2 g-3">
+                                @foreach (var item in Model.Items)
+                                {
+                                    var png = GetPng(Model.QrTagPng, item.RegNumber);
+                                    if (png is null)
+                                    {
+                                        continue;
+                                    }
+
+                                    <div class="col text-center">
+                                        <img class="img-fluid border rounded"
+                                             alt="@item.RegNumber"
+                                             src="data:image/png;base64,@png" />
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">Žádné vygenerované štítky s QR.</p>
+                        }
                     }
                 </div>
                 <div class="tab-pane fade" id="mo-pane" role="tabpanel" aria-labelledby="mo-pane">
@@ -230,7 +269,30 @@
                     }
                     else
                     {
-                        @Html.DisplayFor(m => m.Items, "PieceTag", additionalViewData: new { PrintQr = false })
+                        @* místo DisplayFor s PieceTag bez QR použijeme PNG bez QR *@
+                        @if (Model.TagPng.Any())
+                        {
+                            <div class="row row-cols-1 row-cols-md-2 g-3">
+                                @foreach (var item in Model.Items)
+                                {
+                                    var png = GetPng(Model.TagPng, item.RegNumber);
+                                    if (png is null)
+                                    {
+                                        continue;
+                                    }
+
+                                    <div class="col text-center">
+                                        <img class="img-fluid border rounded"
+                                             alt="@item.RegNumber"
+                                             src="data:image/png;base64,@png" />
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">Žádné vygenerované štítky bez QR.</p>
+                        }
                     }
                 </div>
             </div>

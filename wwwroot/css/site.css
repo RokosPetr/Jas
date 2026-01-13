@@ -87,6 +87,7 @@ html {
 }
 body {
   /* Margin bottom by footer height */
+  font-family: 'Open Sans';
 }
 body.flipbook-body {
   /* Margin bottom by footer height */

@@ -1,10 +1,6 @@
 ﻿body {
   font-family: Open Sans;
 }
-@font-face {
-  font-family: "OpenSansExtrabold";
-  src: url("/fonts/OpenSans-ExtraBold.ttf") format("truetype");
-}
 .table.plate-item th,
 .table.plate-item td {
   vertical-align: middle;
@@ -40,6 +36,7 @@
   color: #6c757d;
   font-size: 0.95rem;
   letter-spacing: 0.2px;
+  font-weight: bold;
 }
 .table.plate-item td.name {
   width: 100%;

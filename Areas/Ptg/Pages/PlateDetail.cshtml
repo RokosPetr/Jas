@@ -10,7 +10,16 @@
 
 <div class="container my-5 ptg-plate-detail">
 
-    <h1>@Model.Stand.Code - @Model.Stand.Name</h1>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1 class="mb-0">@Model.Stand.Code - @Model.Stand.Name</h1>
+        <button type="button"
+                class="btn btn-sm btn-primary open-pdf-dialog"
+                data-id="@Model.Stand.IdStand"
+                data-has-pictures="true">
+            Stáhnout PDF
+        </button>
+    </div>
+
     <!-- Thumbnaily plat (AJAX do #plate-content) -->
     <div class="d-flex flex-wrap justify-content-center gap-2 mt-2 mb-4">
         @for (int i = 0; i < Model.Plates.Count; i++)
@@ -49,6 +58,9 @@
     </div>
 </div>
 
+<partial name="Shared/_PdfOptionsModal" />
+
 @section Scripts {
     <script src="~/js/ptg/stand-detail.js" asp-append-version="true"></script>
+    <script src="~/js/ptg-pdf-modal.js" asp-append-version="true"></script>
 }

@@ -1,10 +1,7 @@
 ﻿body {
     font-family: Open Sans;
 }
-@font-face {
-    font-family: "OpenSansExtrabold";
-    src: url("/fonts/OpenSans-ExtraBold.ttf") format("truetype");
-}
+
 .table.plate-item {
     th,
     td {
@@ -50,11 +47,13 @@
         color: #6c757d; // bootstrap muted
         font-size: .95rem;
         letter-spacing: .2px;
+        font-weight: bold;
     }
     // name: odkaz jako h3
     td.name {
         width: 100%; // buňka vždy vyplní celou šířku
         text-align: left;
+
         a {
             display: block;
             width: 100%; // odkaz na 100 %

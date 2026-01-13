@@ -1,0 +1,419 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8" />
+    <title>Katalog – listování jako kniha</title>
+
+</head>
+<body>
+    <div id="container">
+        <canvas id="bookCanvas" width="800" height="600"></canvas>
+        <div id="pageNumber"></div>
+    </div>
+
+
+</body>
+</html>
+
+
+<script>
+    (function () {
+        const canvas = document.getElementById('bookCanvas');
+        const ctx = canvas.getContext('2d');
+        const pageNumberEl = document.getElementById('pageNumber');
+
+        const imageBasePath = 'images/catalogs/koupelny-jas/akce-koupelnove-vybaveni-2026/';
+        const imageCount = 13;
+
+        const images = [];
+        let loadedCount = 0;
+        let currentIndex = 0; // levá stránka páru (0,2,4,...)
+        let isAnimating = false;
+
+        function updatePageNumber() {
+            const leftPage = currentIndex + 1;
+            const rightPage = currentIndex + 2 <= imageCount ? currentIndex + 2 : '-';
+            pageNumberEl.textContent = leftPage + ' | ' + rightPage + ' / ' + imageCount;
+        }
+
+        function drawPageSide(img, x, y, w, h) {
+            if (!img) {
+                ctx.fillStyle = '#111';
+                ctx.fillRect(x, y, w, h);
+                return;
+            }
+
+            const imgRatio = img.width / img.height;
+            const targetRatio = w / h;
+
+            let dw;
+            let dh;
+            if (imgRatio > targetRatio) {
+                dw = w;
+                dh = w / imgRatio;
+            } else {
+                dh = h;
+                dw = h * imgRatio;
+            }
+
+            const dx = x + (w - dw) / 2;
+            const dy = y + (h - dh) / 2;
+
+            ctx.drawImage(img, dx, dy, dw, dh);
+        }
+
+        function drawSpread(leftIndex) {
+            const pageWidth = canvas.width / 2;
+            const pageHeight = canvas.height;
+
+            const leftImg = images[leftIndex] || null;
+            const rightImg = images[leftIndex + 1] || null;
+
+            ctx.fillStyle = '#222';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // levá
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, pageWidth, pageHeight);
+            ctx.clip();
+            drawPageSide(leftImg, 0, 0, pageWidth, pageHeight);
+            ctx.restore();
+
+            // pravá
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(pageWidth, 0, pageWidth, pageHeight);
+            ctx.clip();
+            drawPageSide(rightImg, pageWidth, 0, pageWidth, pageHeight);
+            ctx.restore();
+
+            // hřbet
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(pageWidth, 0);
+            ctx.lineTo(pageWidth, pageHeight);
+            ctx.stroke();
+
+            updatePageNumber();
+        }
+
+        // „3D“ odchlípnutí rohu: dopředu z pravého dolního rohu pravé stránky,
+        // dozadu z levého dolního rohu levé stránky.
+        function animateTurn(nextLeftIndex, direction) {
+            if (isAnimating) {
+                return;
+            }
+
+            const maxIndex = imageCount - 1;
+            if (nextLeftIndex < 0 || nextLeftIndex > maxIndex) {
+                return;
+            }
+
+            isAnimating = true;
+
+            const pageWidth = canvas.width / 2;
+            const pageHeight = canvas.height;
+            const centerX = pageWidth;
+            const steps = 40;
+            let step = 0;
+
+            const currentLeftImg = images[currentIndex] || null;
+            const currentRightImg = images[currentIndex + 1] || null;
+            const nextLeftImg = images[nextLeftIndex] || null;
+            const nextRightImg = images[nextLeftIndex + 1] || null;
+
+            function frame() {
+                step++;
+                const t = step / steps;
+                const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#222';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // základní dvoustrana podle směru
+                if (direction === 'forward') {
+                    // levá = currentLeft
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(0, 0, pageWidth, pageHeight);
+                    ctx.clip();
+                    drawPageSide(currentLeftImg, 0, 0, pageWidth, pageHeight);
+                    ctx.restore();
+
+                    // pravá = currentRight (celá) jako podklad
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(pageWidth, 0, pageWidth, pageHeight);
+                    ctx.clip();
+                    drawPageSide(currentRightImg, pageWidth, 0, pageWidth, pageHeight);
+                    ctx.restore();
+                } else {
+                    // zpět: pravá = currentRight
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(pageWidth, 0, pageWidth, pageHeight);
+                    ctx.clip();
+                    drawPageSide(currentRightImg, pageWidth, 0, pageWidth, pageHeight);
+                    ctx.restore();
+
+                    // levá = currentLeft jako podklad
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(0, 0, pageWidth, pageHeight);
+                    ctx.clip();
+                    drawPageSide(currentLeftImg, 0, 0, pageWidth, pageHeight);
+                    ctx.restore();
+                }
+
+                // hřbet
+                ctx.strokeStyle = '#555';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, 0);
+                ctx.lineTo(centerX, pageHeight);
+                ctx.stroke();
+
+                // teď samotné „odchlípnutí rohu“
+                ctx.save();
+
+                if (direction === 'forward') {
+                    // PRAVÝ DOLNÍ ROH PRAVÉ STRÁNKY
+                    const baseX = centerX + pageWidth; // pravý okraj knihy
+                    const baseY = pageHeight;          // spodní okraj
+
+                    // velikost rohu (max. šířka a výška trojúhelníku)
+                    const maxCorner = pageWidth * 0.7;
+                    const cornerSize = maxCorner * eased;
+
+                    // 1) „horní“ plocha odchlíplého rohu – část currentRight
+                    ctx.save();
+                    ctx.beginPath();
+                    // trojúhelník rohu (aktuálně odchlíplý)
+                    ctx.moveTo(baseX, baseY); // spodní pravý roh
+                    ctx.lineTo(baseX - cornerSize, baseY); // vlevo po spodku
+                    ctx.lineTo(baseX, baseY - cornerSize); // nahoru po pravém okraji
+                    ctx.closePath();
+                    ctx.clip();
+
+                    // pro jednoduchost kreslíme část currentRight z pravého dolního rohu
+                    drawPageSide(
+                        currentRightImg,
+                        centerX,
+                        0,
+                        pageWidth,
+                        pageHeight
+                    );
+
+                    // ztmavení „vnitřní“ strany rohu
+                    const gradFold = ctx.createLinearGradient(
+                        baseX - cornerSize,
+                        baseY - cornerSize,
+                        baseX,
+                        baseY
+                    );
+                    gradFold.addColorStop(0, 'rgba(0,0,0,0.6)');
+                    gradFold.addColorStop(1, 'rgba(0,0,0,0.0)');
+                    ctx.fillStyle = gradFold;
+                    ctx.fillRect(baseX - cornerSize, baseY - cornerSize, cornerSize, cornerSize);
+
+                    ctx.restore();
+
+                    // 2) oblast POD rohem, kde je vidět další stránka (nextRight)
+                    if (nextRightImg) {
+                        ctx.save();
+
+                        // trojúhelník pod rohem – mírně odsunutý dovnitř
+                        const inset = 10;
+                        ctx.beginPath();
+                        ctx.moveTo(baseX, baseY);
+                        ctx.lineTo(baseX - cornerSize + inset, baseY - inset);
+                        ctx.lineTo(baseX - inset, baseY - cornerSize + inset);
+                        ctx.closePath();
+                        ctx.clip();
+
+                        // „levý dolní roh“ další pravé stránky (zobrazíme celou pravou)
+                        drawPageSide(
+                            nextRightImg,
+                            centerX,
+                            0,
+                            pageWidth,
+                            pageHeight
+                        );
+
+                        // lehké zesvětlení – „papír pod rohem“
+                        const gradUnder = ctx.createLinearGradient(
+                            baseX - cornerSize,
+                            baseY,
+                            baseX,
+                            baseY - cornerSize
+                        );
+                        gradUnder.addColorStop(0, 'rgba(255,255,255,0.5)');
+                        gradUnder.addColorStop(1, 'rgba(255,255,255,0.0)');
+                        ctx.fillStyle = gradUnder;
+                        ctx.fillRect(baseX - cornerSize, baseY - cornerSize, cornerSize, cornerSize);
+
+                        ctx.restore();
+                    }
+                } else {
+                    // ZPĚT: LEVÝ DOLNÍ ROH LEVÉ STRÁNKY
+                    const baseX = 0;
+                    const baseY = pageHeight;
+
+                    const maxCorner = pageWidth * 0.7;
+                    const cornerSize = maxCorner * eased;
+
+                    // 1) horní plocha rohu – část currentLeft
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(baseX, baseY);
+                    ctx.lineTo(baseX + cornerSize, baseY);
+                    ctx.lineTo(baseX, baseY - cornerSize);
+                    ctx.closePath();
+                    ctx.clip();
+
+                    drawPageSide(
+                        currentLeftImg,
+                        0,
+                        0,
+                        pageWidth,
+                        pageHeight
+                    );
+
+                    const gradFold = ctx.createLinearGradient(
+                        baseX + cornerSize,
+                        baseY - cornerSize,
+                        baseX,
+                        baseY
+                    );
+                    gradFold.addColorStop(0, 'rgba(0,0,0,0.6)');
+                    gradFold.addColorStop(1, 'rgba(0,0,0,0.0)');
+                    ctx.fillStyle = gradFold;
+                    ctx.fillRect(baseX, baseY - cornerSize, cornerSize, cornerSize);
+
+                    ctx.restore();
+
+                    // 2) pod rohem – ukážeme část nextLeft
+                    if (nextLeftImg) {
+                        ctx.save();
+
+                        const inset = 10;
+                        ctx.beginPath();
+                        ctx.moveTo(baseX, baseY);
+                        ctx.lineTo(baseX + cornerSize - inset, baseY - inset);
+                        ctx.lineTo(baseX + inset, baseY - cornerSize + inset);
+                        ctx.closePath();
+                        ctx.clip();
+
+                        drawPageSide(
+                            nextLeftImg,
+                            0,
+                            0,
+                            pageWidth,
+                            pageHeight
+                        );
+
+                        const gradUnder = ctx.createLinearGradient(
+                            baseX,
+                            baseY - cornerSize,
+                            baseX + cornerSize,
+                            baseY
+                        );
+                        gradUnder.addColorStop(0, 'rgba(255,255,255,0.5)');
+                        gradUnder.addColorStop(1, 'rgba(255,255,255,0.0)');
+                        ctx.fillStyle = gradUnder;
+                        ctx.fillRect(baseX, baseY - cornerSize, cornerSize, cornerSize);
+
+                        ctx.restore();
+                    }
+                }
+
+                ctx.restore();
+
+                // stín u hřbetu (lehké zvýraznění)
+                const shadowWidth = 50;
+                const spineGrad = ctx.createLinearGradient(centerX - shadowWidth, 0, centerX + shadowWidth, 0);
+                spineGrad.addColorStop(0, 'rgba(0,0,0,0)');
+                spineGrad.addColorStop(0.5, 'rgba(0,0,0,0.3)');
+                spineGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = spineGrad;
+                ctx.fillRect(centerX - shadowWidth, 0, shadowWidth * 2, pageHeight);
+
+                if (step < steps) {
+                    requestAnimationFrame(frame);
+                } else {
+                    currentIndex = nextLeftIndex;
+                    drawSpread(currentIndex);
+                    isAnimating = false;
+                }
+            }
+
+            frame();
+        }
+
+        function goForward() {
+            const next = currentIndex + 2;
+            if (next >= imageCount) {
+                return;
+            }
+
+            animateTurn(next, 'forward');
+        }
+
+        function goBackward() {
+            const next = currentIndex - 2;
+            if (next < 0) {
+                return;
+            }
+
+            animateTurn(next, 'backward');
+        }
+
+        function handleClick(e) {
+            if (isAnimating) {
+                return;
+            }
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+
+            if (x > canvas.width / 2) {
+                goForward();
+            } else {
+                goBackward();
+            }
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'ArrowRight') {
+                goForward();
+            } else if (e.key === 'ArrowLeft') {
+                goBackward();
+            }
+        }
+
+        function preloadImages() {
+            for (let i = 1; i <= imageCount; i++) {
+                const img = new Image();
+                img.onload = function () {
+                    loadedCount++;
+                    if (loadedCount === imageCount) {
+                        drawSpread(currentIndex);
+                    }
+                };
+                img.src = imageBasePath + i + 's.jpg';
+                images.push(img);
+            }
+        }
+
+        canvas.width = 1000;
+        canvas.height = 600;
+
+        canvas.addEventListener('click', handleClick);
+        window.addEventListener('keydown', handleKeyDown);
+
+        preloadImages();
+    }());
+</script>

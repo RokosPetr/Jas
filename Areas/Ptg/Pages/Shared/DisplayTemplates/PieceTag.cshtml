@@ -12,63 +12,70 @@
         }
 
         <text>
-        <table class="piece-price-tag">
-            <thead>
-                <tr>
-                    <th colspan="2" class="name" style="@item.StyleTagName">@item.TagName</th>
-                </tr>
-            </thead>
-            <tbody class="@(item.Discarded ? "discarded" : "")@((item.PlateQr is null && item.Qr is null) || !printQr ? " noqr" : "")">
-                <tr>
-                    <td colspan="2" class="size">
-                        @item.SizeType1 <img src="@item.SymbolsImage" />
-                    </td>
-                </tr>
-                <tr>
-                    <td class="price@(item.Discount && !printQr ? " discount" : "")">
-                        <span class="price">
-                            @(!item.Discarded
-                                ? string.Format(new CultureInfo("cs-CZ"), "{0:0}", item.Price) + ",-"
-                                : "VYŘAZENO")
-                        </span>
-                        <span class="unit">@item.Unit</span>
-                    </td>
-                    <td class="qr" rowspan="3">
-                        <img src="@item.QrBase64" />
-                    </td>
-                </tr>
-                <tr>
-                    <td class="reg">
-                        <span class="number">Index: @item.RegNumber</span>
-                        <span class="dph">Uvedená cena je včetně DPH.</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="info">
-                        Pro podrobnější informace naskenujte do mobilního telefonu QR kód, kontaktujte prodejce u pultu nebo použijte dotykový panel na prodejně.
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="piece-price-tag" id="reg_@item.RegNumber">
+
+            <div class="piece-price-tag-head">
+                <span style="@item.StyleTagName">@item.TagName</span>
+            </div>
+
+        <div class="piece-price-tag-top @(item.Discarded ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr ? " noqr" : "")">
+                <div class="size"><span>@item.SizeType1</span></div>
+                <img class="symbols" src="@item.SymbolsImage" />
+                <div class="price@(item.Discount && !printQr ? " discount" : "")">
+                    <span class="price">
+                        @(!item.Discarded
+                            ? string.Format(new System.Globalization.CultureInfo("cs-CZ"), "{0:0}", item.Price) + ",-"
+                            : "VYŘAZENO")
+                    </span>
+                    <span class="unit">@item.Unit</span>
+                </div>
+
+            </div>
+
+                <div class="piece-price-tag-bottom @(item.Discarded ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr ? " noqr" : "")">
+                    <img class="qr" src="@item.QrBase64" />
+                    <div class="reg"><span>Index: @item.RegNumber</span></div>
+                    <div class="dph"><span>Uvedená cena je včetně DPH.</span></div>
+                    <div class="info">
+                        <span>Pro podrobnější informace naskenujte do mobilního telefonu QR kód, kontaktujte prodejce u pultu nebo použijte dotykový panel na prodejně.</span>
+                    </div>
+                </div>
+
+        </div>
         </text>
     }
 }
 
-<table class="page">
-    <tbody>
-    @for (int i = 0; i < Model.Count; i += 2)
+@{
+    const int itemsPerPage = 12; // 12 štítků na stránku (6 řádků po 2)
+}
+
+@for (int i = 0; i < Model.Count; i += 2)
+{
+    if (i % itemsPerPage == 0)
     {
-        <tr>
-            <td>
-                @{ RenderPieceTag(Model[i], printQr); }
-            </td>
-            <td>
-                @if (i + 1 < Model.Count)
-                {
-                    RenderPieceTag(Model[i + 1], printQr); 
-                }
-            </td>
-        </tr>
+        if (i > 0)
+        {
+            @Html.Raw("</tbody></table>")
+        }
+
+        @Html.Raw("<table class=\"page\"><tbody>")
     }
-    </tbody>
-</table>
+
+    <tr>
+        <td>
+            @{ RenderPieceTag(Model[i], printQr); }
+        </td>
+        <td>
+            @if (i + 1 < Model.Count)
+            {
+                RenderPieceTag(Model[i + 1], printQr);
+            }
+        </td>
+    </tr>
+
+    if (i + 2 >= Model.Count)
+    {
+        @Html.Raw("</tbody></table>")
+    }
+}

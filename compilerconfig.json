@@ -26,5 +26,9 @@
   {
     "outputFile": "wwwroot/css/ptg-piece-tag.css",
     "inputFile": "wwwroot/css/ptg-piece-tag.less"
+  },
+  {
+    "outputFile": "wwwroot/css/opensans.css",
+    "inputFile": "wwwroot/css/opensans.less"
   }
 ]
