@@ -25,7 +25,7 @@ namespace Jas.Infrastructure.Ptg
         public async Task<StandDetailData> GetAsync(int idStand, CancellationToken ct = default)
         {
             var cacheKey = $"stand:{idStand}:detail";
-            if (_cache.TryGetValue(cacheKey, out StandDetailData data))
+            if (_cache.TryGetValue(cacheKey, out StandDetailData? data))
                 return data;
 
             await using var conn = (SqlConnection)_context.Database.GetDbConnection();

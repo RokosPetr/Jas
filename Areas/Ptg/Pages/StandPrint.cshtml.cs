@@ -10,7 +10,7 @@ using Microsoft.Playwright;
 namespace Jas.Areas.Ptg.Pages
 {
     [Area("Ptg")]
-    [Authorize(Roles = "PTG - admin,PTG - user")]
+    [Authorize(Roles = "PTG - jas,PTG - vo")]
     public class StandPrintModel : PageModel
     {
         private readonly IImageStore _imageStore;
@@ -35,6 +35,7 @@ namespace Jas.Areas.Ptg.Pages
         public bool PrintQr { get; set; } = false;
         [BindProperty(SupportsGet = true)]
         public bool PrintPictures { get; set; } = false;
+        public bool VoPrice { get; set; } = false;
         public string? CssFonts { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id, CancellationToken ct)

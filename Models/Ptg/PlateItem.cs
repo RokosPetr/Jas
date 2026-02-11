@@ -17,6 +17,7 @@ namespace Jas.Models.Ptg
 
         // Z pdf_price_tag
         public string? TagName { get; set; }
+        public string? TagDescription { get; set; }
         public string? SizeType1 { get; set; }
         public string? SizeType2 { get; set; }
         public int? Price { get; set; }
@@ -36,6 +37,7 @@ namespace Jas.Models.Ptg
         public int TypeOrder { get; set; }
         public string? Qr { get; set; }
         public string? PlateQr { get; set; }
+        public int TagType { get; set; }
 
         // Obrázek (lokální cesta / relativní cesta k obrázku)
         public string? Picture { get; set; }

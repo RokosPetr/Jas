@@ -1,0 +1,18 @@
+@page "{id:int}"
+@model Jas.Areas.Ptg.Pages.StandXlsModel
+
+@{
+    ViewData["Title"] = "Export stojanu do Excelu";
+}
+
+<h2>Export stojanu do Excelu</h2>
+
+<p>
+    Stáhnout všechny pláty a položky pro stojan @Model.Stand?.Name (@Model.Stand?.IdStand):
+</p>
+
+<p>
+    <a asp-page="./StandXls" asp-route-id="@Model.Stand?.IdStand" asp-page-handler="Download">
+        Stáhnout Excel
+    </a>
+</p>

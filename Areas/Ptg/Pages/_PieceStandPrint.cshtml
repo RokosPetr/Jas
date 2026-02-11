@@ -4,10 +4,6 @@
     Layout = null;
 }
 
-@{
-    ViewData["PrintQr"] = Model.PrintQr;
-}
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,15 +19,19 @@
 
             css = System.Text.RegularExpressions.Regex.Replace(css, @"var\(--ptg-piece-padding\)", paddingValue);
         }
+
+        // origin pro OpenSansCssBuilder
+        var origin = $"{Context.Request.Scheme}://{Context.Request.Host}";
+        var openSansCss = Jas.Services.OpenSansCssBuilder.Build("https://ptg.koupelnyprokazdeho.cz");
     }
     <style>
-        @Html.Raw(System.IO.File.ReadAllText(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/css/opensans.min.css")))
+        @Html.Raw(openSansCss)
         @Html.Raw(css)
     </style>
 </head>
 <body class="ptg-print">
 
-    @Html.DisplayFor(m => m.PlateItems, "/Areas/Ptg/Pages/Shared/DisplayTemplates/PieceTag.cshtml", additionalViewData: new { PrintQr = (bool?)ViewData["PrintQr"] ?? false })
+    @Html.DisplayFor(m => m.PlateItems, "/Areas/Ptg/Pages/Shared/DisplayTemplates/PieceTag.cshtml", additionalViewData: new { PrintQr = Model.PrintQr, VoPrice = Model.VoPrice })
 
 </body>
 </html>

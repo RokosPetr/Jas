@@ -6,7 +6,6 @@
 
     if (Model.Stand.PiecePriceTag)
     {
-        <span></span>
         @await Html.PartialAsync("_PieceStandPrint", Model)
     }
     if (Model.Stand.PlatePriceTag && !Model.Stand.PiecePriceTag)

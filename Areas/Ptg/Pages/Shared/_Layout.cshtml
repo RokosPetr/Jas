@@ -12,6 +12,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/ptg.min.css" />
     @RenderSection("Styles", required: false)
+
+    @{
+        var origin = $"{Context.Request.Scheme}://{Context.Request.Host}";
+        var openSansCss = Jas.Services.OpenSansCssBuilder.Build(origin);
+    }
+    <style>
+        @Html.Raw(openSansCss)
+    </style>
 </head>
 <body>
     <header>

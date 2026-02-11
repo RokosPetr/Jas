@@ -10,7 +10,7 @@ using System.Data;
 namespace Jas.Areas.Ptg.Pages
 {
     [Area("Ptg")]
-    [Authorize(Roles = "PTG - admin,PTG - user")]
+    [Authorize(Roles = "PTG - jas,PTG - vo")]
     public class PlateDetailModel : PageModel
     {
         private readonly IImageStore _imageStore;
@@ -94,7 +94,8 @@ namespace Jas.Areas.Ptg.Pages
                 ImgUrl = string.IsNullOrEmpty(current.ImgUrl) ? "/images/no-picture.png" : current.ImgUrl,
                 Items = PlateItems
                     .Where(i => i.IdPlate == current.IdPlate)
-                    .OrderBy(i => i.ItemOrder)
+                    .OrderBy(i => i.TypeOrder)
+                    .ThenBy(i => i.ItemOrder)
                     .Select(i => { i.Picture = _imageStore.ProductPath(i.RegNumber); return i; })
                     .ToList()
             };

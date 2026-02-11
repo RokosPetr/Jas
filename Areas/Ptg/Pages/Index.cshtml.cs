@@ -16,8 +16,7 @@ namespace Jas.Areas.Ptg.Pages
 {
     [Area("Ptg")]
     //[Authorize]
-    [Authorize(Roles = "PTG - admin,PTG - user")]
-    //[Authorize(Roles = "PTG - admin")]
+    [Authorize(Roles = "PTG - jas,PTG - vo")]
     public class IndexModel : PageModel
     {
         private readonly JasMtzDbContext _context;

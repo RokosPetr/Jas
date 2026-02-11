@@ -37,20 +37,10 @@ div.piece-price-tag {
   border: 1px solid lightgrey;
   position: relative;
 }
-div.piece-price-tag .piece-price-tag-head {
-  height: 38px;
-  border-bottom: 2px solid #e31f24;
-  position: relative;
-}
-div.piece-price-tag .piece-price-tag-head span {
-  position: absolute;
-  font-size: 17.98pt;
-  font-weight: 800;
-  left: var(--ptg-piece-padding);
-  bottom: 0px;
-}
 div.piece-price-tag .piece-price-tag-top {
-  position: relative;
+  position: absolute;
+  width: 378px;
+  top: 39px;
 }
 div.piece-price-tag .piece-price-tag-top div,
 div.piece-price-tag .piece-price-tag-top img {
@@ -147,4 +137,28 @@ div.piece-price-tag .piece-price-tag-bottom.noqr div.dph {
 }
 div.piece-price-tag .piece-price-tag-bottom.noqr.discarded div.dph {
   display: none;
+}
+div.piece-price-tag.sanity .piece-price-tag-head {
+  border-bottom: 2px solid #e31f24;
+  padding: var(--ptg-piece-padding);
+  font-size: 10pt;
+  line-height: 1;
+}
+div.piece-price-tag.sanity .piece-price-tag-head span.name {
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+div.piece-price-tag:not(.sanity) .piece-price-tag-head {
+  height: 38px;
+  border-bottom: 2px solid #e31f24;
+  position: relative;
+  padding: 0px var(--ptg-piece-padding);
+}
+div.piece-price-tag:not(.sanity) .piece-price-tag-head span.name {
+  position: absolute;
+  font-size: 17.98pt;
+  font-weight: 800;
+  bottom: 0px;
+  text-transform: uppercase;
 }

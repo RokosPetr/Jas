@@ -20,7 +20,7 @@
         const hasPictures = btn.getAttribute("data-has-pictures") === "true";
 
         pdfItemIdInput.value = id;
-        pdfPrintQr.checked = false;
+        //pdfPrintQr.checked = false;
         pdfPrintPictures.checked = false;
 
         pdfPrintPicturesRow.style.display = hasPictures ? "block" : "none";

@@ -3,8 +3,9 @@
 
 @{
     var printQr = (bool?)ViewData["PrintQr"] ?? false;
+    var voPrice = (bool?)ViewData["VoPrice"] ?? false;
 
-    void RenderPieceTag(Jas.Models.Ptg.PlateItem item, bool printQr)
+    void RenderPieceTag(Jas.Models.Ptg.PlateItem item, bool printQr, bool voPrice)
     {
         if (item == null)
         {
@@ -12,25 +13,32 @@
         }
 
         <text>
-        <div class="piece-price-tag" id="reg_@item.RegNumber">
+            <div class="piece-price-tag @(item.TagType == 3 ? "sanity" : "")" id="reg_@item.RegNumber">
 
-            <div class="piece-price-tag-head">
-                <span style="@item.StyleTagName">@item.TagName</span>
-            </div>
+                <div class="piece-price-tag-head">
+                    <span class="name" style="@(item.TagType != 3 ? item.StyleTagName : "")">@item.TagName</span>
+                    @if (item.TagType == 3)
+                    {
+                        <br />
+            
+                        <span class="description">@Html.Raw(item.TagDescription.Replace("-", "&#8209;"))</span>
+                    }
+
+        </div>
 
         <div class="piece-price-tag-top @(item.Discarded ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr ? " noqr" : "")">
-                <div class="size"><span>@item.SizeType1</span></div>
-                <img class="symbols" src="@item.SymbolsImage" />
-                <div class="price@(item.Discount && !printQr ? " discount" : "")">
-                    <span class="price">
-                        @(!item.Discarded
-                            ? string.Format(new System.Globalization.CultureInfo("cs-CZ"), "{0:0}", item.Price) + ",-"
-                            : "VYŘAZENO")
-                    </span>
-                    <span class="unit">@item.Unit</span>
-                </div>
+            <div class="size"><span>@item.SizeType1</span></div>
+            <img class="symbols" src="@item.SymbolsImage" />
+            <div class="price@(item.Discount && !voPrice ? " discount" : "")">
+                <span class="price">
+                    @(!item.Discarded
+                                        ? string.Format(new System.Globalization.CultureInfo("cs-CZ"), "{0:N0}", voPrice ? item.PriceNn : item.PriceJas) + ",-"
+                                        : "VYŘAZENO")
+                        </span>
+                        <span class="unit">@item.Unit</span>
+                    </div>
 
-            </div>
+                </div>
 
                 <div class="piece-price-tag-bottom @(item.Discarded ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr ? " noqr" : "")">
                     <img class="qr" src="@item.QrBase64" />
@@ -41,7 +49,7 @@
                     </div>
                 </div>
 
-        </div>
+            </div>
         </text>
     }
 }
@@ -64,12 +72,14 @@
 
     <tr>
         <td>
-            @{ RenderPieceTag(Model[i], printQr); }
+            @{
+                RenderPieceTag(Model[i], printQr, voPrice);
+            }
         </td>
         <td>
             @if (i + 1 < Model.Count)
             {
-                RenderPieceTag(Model[i + 1], printQr);
+                RenderPieceTag(Model[i + 1], printQr, voPrice);
             }
         </td>
     </tr>

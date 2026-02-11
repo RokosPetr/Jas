@@ -133,7 +133,7 @@
         @foreach (var item in Model.Stands)
         {
             <div class="col">
-                <div class="card h-100 @(item.B2b ? "ptg-mo-stand" : "") @(item.B2c ? "ptg-vo-stand" : "")">
+                <div class="card h-100 @(item.B2b ? "ptg-vo-stand" : "") @(item.B2c ? "ptg-mo-stand" : "")">
                     @if (item.ImgUrl == null)
                     {
                         <img src="/images/no-picture.png" class="card-img-top catalog-img" alt="@item.Name">
@@ -175,26 +175,47 @@
                                 Detail
                             </a>
                         }
-                        <div class="btn-group">
-                            @if (item.PiecePriceTag)
-                            {
+
+                        @if (item.PiecePriceTag || item.PlatePriceTag)
+                        {
+                            <div class="btn-group">
+                                <!-- hlavní tlačítko pro PDF – ponecháme class='open-pdf-dialog' -->
                                 <button type="button"
                                         class="btn btn-sm btn-primary open-pdf-dialog"
                                         data-id="@item.IdStand"
-                                        data-has-pictures="false">
-                                    Stáhnout PDF
+                                        data-has-pictures="@(item.PlatePriceTag && !item.PiecePriceTag ? "true" : "false")">
+                                    Tisk PDF podle parametrů
                                 </button>
-                            }
-                            @if (item.PlatePriceTag && !item.PiecePriceTag)
-                            {
+
+                                <!-- šipka pro dropdown -->
                                 <button type="button"
-                                        class="btn btn-sm btn-primary open-pdf-dialog"
-                                        data-id="@item.IdStand"
-                                        data-has-pictures="true">
-                                    Stáhnout PDF
+                                        class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <span class="visually-hidden">Rozbalit nabídku tisku</span>
                                 </button>
-                            }
-                        </div>
+
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <button class="dropdown-item open-pdf-dialog"
+                                                type="button"
+                                                data-id="@item.IdStand"
+                                                data-has-pictures="@(item.PlatePriceTag && !item.PiecePriceTag ? "true" : "false")">
+                                            Tisk PDF podle parametrů
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-area="Ptg"
+                                           asp-page="StandXls"
+                                           asp-page-handler="Download"
+                                           asp-route-id="@item.IdStand">
+                                            Tisk XLS podle pořadí
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

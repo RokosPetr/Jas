@@ -42,22 +42,11 @@ div.piece-price-tag {
     position: relative;
 
 
-    .piece-price-tag-head {
-        height: 38px;
-        border-bottom: 2px solid rgb(227, 31, 36);
-        position: relative;
-
-        span {
-            position: absolute;
-            font-size: 17.98pt;
-            font-weight: 800;
-            left: var(--ptg-piece-padding);
-            bottom: 0px;
-        }
-    }
 
     .piece-price-tag-top {
-        position: relative;
+        position: absolute;
+        width: 378px;
+        top: 39px;
 
         div, img {
             position: absolute;
@@ -186,6 +175,41 @@ div.piece-price-tag {
                 div.dph {
                     display: none;
                 }
+            }
+        }
+    }
+
+    &.sanity {
+        .piece-price-tag-head {
+            border-bottom: 2px solid rgb(227, 31, 36);
+            padding: var(--ptg-piece-padding);
+            font-size: 10pt;
+            line-height: 1;
+
+            span.name {
+                font-weight: 700;
+                line-height: 1.2;
+                text-transform: uppercase;
+            }
+
+            span.description {
+            }
+        }
+    }
+
+    &:not(.sanity) {
+        .piece-price-tag-head {
+            height: 38px;
+            border-bottom: 2px solid rgb(227, 31, 36);
+            position: relative;
+            padding: 0px var(--ptg-piece-padding);
+
+            span.name {
+                position: absolute;
+                font-size: 17.98pt;
+                font-weight: 800;
+                bottom: 0px;
+                text-transform: uppercase;
             }
         }
     }

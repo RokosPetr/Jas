@@ -10,7 +10,7 @@ using Microsoft.Playwright;
 namespace Jas.Areas.Ptg.Pages
 {
     [Area("Ptg")]
-    [Authorize(Roles = "PTG - admin,PTG - user")]
+    [Authorize(Roles = "PTG - jas,PTG - vo")]
     public class PieceDetailModel : PageModel
     {
         private readonly IImageStore _imageStore;
@@ -30,13 +30,13 @@ namespace Jas.Areas.Ptg.Pages
         public StandCompany? Stand { get; set; }
         public List<Plate> Plates { get; set; } = new();
         public List<PlateItem> PlateItems { get; set; } = new();
-        public Dictionary<string, string> QrTagPng { get; set; } = new();
-        public Dictionary<string, string> TagPng { get; set; } = new();
+        public Dictionary<string, string> MoTagPng { get; set; } = new();
+        public Dictionary<string, string> VoTagPng { get; set; } = new();
 
         // jednoduchý cache klíè = stojan
         private static readonly object _tagCacheLock = new();
 
-        private static readonly Dictionary<int, (DateTime Created, Dictionary<string, string> Qr, Dictionary<string, string> NoQr)>
+        private static readonly Dictionary<int, (DateTime Created, Dictionary<string, string> MoTags, Dictionary<string, string> VoTags)>
             _tagCache;
 
         static PieceDetailModel()
@@ -71,15 +71,15 @@ namespace Jas.Areas.Ptg.Pages
 
         private async Task EnsureTagsFromCacheOrGenerateAsync(int standId, CancellationToken ct)
         {
-            (DateTime Created, Dictionary<string, string> Qr, Dictionary<string, string> NoQr) cached;
+            (DateTime Created, Dictionary<string, string> MoTags, Dictionary<string, string> VoTags) cached;
 
             lock (_tagCacheLock)
             {
                 if (_tagCache.TryGetValue(standId, out cached)
                     && DateTime.UtcNow - cached.Created < CacheTtl)
                 {
-                    QrTagPng = new Dictionary<string, string>(cached.Qr ?? new());
-                    TagPng   = new Dictionary<string, string>(cached.NoQr ?? new());
+                    MoTagPng = new Dictionary<string, string>(cached.MoTags ?? new());
+                    VoTagPng = new Dictionary<string, string>(cached.VoTags ?? new());
                     return;
                 }
             }
@@ -89,8 +89,8 @@ namespace Jas.Areas.Ptg.Pages
             lock (_tagCacheLock)
             {
                 _tagCache[standId] = (DateTime.UtcNow,
-                    new Dictionary<string, string>(QrTagPng),
-                    new Dictionary<string, string>(TagPng));
+                    new Dictionary<string, string>(MoTagPng),
+                    new Dictionary<string, string>(VoTagPng));
             }
         }
 
@@ -101,7 +101,8 @@ namespace Jas.Areas.Ptg.Pages
                 Stand = Stand,
                 Plates = Plates,
                 PlateItems = PlateItems,
-                PrintQr = true
+                PrintQr = true,
+                VoPrice = User.IsInRole("PTG - vo")
             };
 
             using var playwright = await Playwright.CreateAsync();
@@ -113,32 +114,39 @@ namespace Jas.Areas.Ptg.Pages
             });
             var page = await context.NewPageAsync();
 
-            QrTagPng.Clear();
-            TagPng.Clear();
+            MoTagPng.Clear();
+            VoTagPng.Clear();
 
-            async Task FillDictAsync(bool printQr, Dictionary<string, string> target)
+            async Task FillDictAsync(bool printQr, Dictionary<string, string> target, bool voPrice)
             {
                 standPrintModel.PrintQr = printQr;
+                standPrintModel.VoPrice = voPrice;
                 var html = await _renderer.RenderViewToStringAsync("/Areas/Ptg/Pages/_PieceStandPrint.cshtml", standPrintModel);
                 await page.SetContentAsync(html);
 
                 await page.EvaluateAsync(@"async () => {
-                if (document.fonts && document.fonts.ready) {
-                    await document.fonts.ready;
-                }
-                void(document.body.offsetHeight);
-            }");
+                    if (document.fonts && document.fonts.ready) {
+                        await document.fonts.ready;
+                    }
+                    void(document.body.offsetHeight);
+                }");
 
                 using var sem = new SemaphoreSlim(6);
-                var tasks = PlateItems
+
+                var itemsByReg = PlateItems
                     .Where(i => !string.IsNullOrWhiteSpace(i.RegNumber))
+                    .GroupBy(i => i.RegNumber)
+                    .Select(g => g.First())
+                    .ToList();
+
+                var tasks = itemsByReg
                     .Select(async item =>
                     {
                         await sem.WaitAsync(ct);
                         try
                         {
                             var selector = "#reg_" + item.RegNumber;
-                            var locator = page.Locator(selector);
+                            var locator = page.Locator(selector).First;
 
                             if (await locator.CountAsync() == 0)
                                 return;
@@ -160,8 +168,8 @@ namespace Jas.Areas.Ptg.Pages
                 await Task.WhenAll(tasks);
             }
 
-            await FillDictAsync(printQr: true, target: QrTagPng);
-            await FillDictAsync(printQr: false, target: TagPng);
+            await FillDictAsync(printQr: true, target: MoTagPng, voPrice: false);
+            await FillDictAsync(printQr: false, target: VoTagPng, voPrice: true);
         }
 
         private async Task EnsureHasImagesAsync(IEnumerable<PlateItem> items, CancellationToken ct)
@@ -209,7 +217,8 @@ namespace Jas.Areas.Ptg.Pages
 
             await EnsureTagsFromCacheOrGenerateAsync(id, ct);
 
-            return new JsonResult(new { CountQr = QrTagPng.Count, CountTag = TagPng.Count });
+            return new JsonResult(new { CountQr = MoTagPng.Count, CountTag = VoTagPng.Count });
         }
     }
+
 }

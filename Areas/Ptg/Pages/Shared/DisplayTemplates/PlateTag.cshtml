@@ -3,6 +3,7 @@
 @{
     var productTypes = Model.GroupBy(g => g.ProductType);
     var printQr = (bool?)ViewData["PrintQr"] ?? false;
+    var voPrice = (bool?)ViewData["VoPrice"] ?? false;
     int i = 1;
     int j = 1;
     var plateQr = Model.FirstOrDefault(f => f.SeriesItem);
@@ -37,13 +38,14 @@
 
                                 <tr>
                                     <td class="ord-number">@(j).</td>
-                                    <td class="reg">@item.RegNumber</td>
-                                    <td class="title">
+@*                                     <td class="reg">@item.RegNumber</td>
+ *@                                    <td class="title">
+                                        <span class="reg">@item.RegNumber</span>
                                         <span class="name">@item.TagName.Replace("\u00A0", " ")@(item.Surface is not null && item.Surface.Contains('S') ? " struktura" : "")</span>
                                         <span class="size">@item.SizeType2</span>
                                     </td>
-                                    <td class="price@(item.Discount ? " discount" : "")@(item.Discarded ? " discarded" : "")">
-                                        <span class="price">@(!item.Discarded ? string.Format(new CultureInfo("cs-CZ"), "{0:N0}", item.PriceNn) : "VYŘAZENO")</span> <span class="unit">@item.Unit</span>
+                                    <td class="price@(item.Discount && !voPrice ? " discount" : "")@(item.Discarded ? " discarded" : "")">
+                                        <span class="price">@(!item.Discarded ? string.Format(new CultureInfo("cs-CZ"), "{0:N0}", voPrice ? item.PriceNn : item.PriceJas) : "VYŘAZENO")</span> <span class="unit">@item.Unit</span>
                                     </td>
                                 </tr>
                                 j++;
