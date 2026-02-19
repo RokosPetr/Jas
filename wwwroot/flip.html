@@ -247,132 +247,14 @@
         })();
 
         /* ================= FULLSCREEN VIEWER (PC) ================= */
-        const overlay = document.getElementById("overlay");
-        const viewer = document.getElementById("viewer");
-        const img = document.getElementById("vimg");
-        const btnClose = document.getElementById("btnClose");
-        const btnReset = document.getElementById("btnReset");
-
-        let scale = 1, tx = 0, ty = 0;
-        const MIN_SCALE = 0.2, MAX_SCALE = 8;
-
-        function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
-        function applyTransform() { img.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`; }
-
-        function fitAndCenterDesktop() {
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
-            const iw = img.naturalWidth;
-            const ih = img.naturalHeight;
-
-            scale = clamp(vh / ih, MIN_SCALE, MAX_SCALE);
-            tx = (vw - iw * scale) / 2;
-            ty = (vh - ih * scale) / 2;
-            applyTransform();
-        }
-
-        function zoomTo(newScale, mx, my) {
-            newScale = clamp(newScale, MIN_SCALE, MAX_SCALE);
-            const old = scale;
-            if (newScale === old) return;
-
-            tx = mx - (mx - tx) * (newScale / old);
-            ty = my - (my - ty) * (newScale / old);
-            scale = newScale;
-            applyTransform();
-        }
-
-        // vybere stránku do fullscreen podle toho, kam se dblclickne (kvůli dvojstraně)
-        let lastDblX = null;
-        function pageIndexFromClick() {
-            const base = pageFlip.getCurrentPageIndex(); // typicky levá stránka dvojstrany
-            const count = pageFlip.getPageCount();
-            if (lastDblX == null) return base;
-
-            const r = bookWrap.getBoundingClientRect();
-            const clickedRight = (lastDblX - r.left) > (r.width / 2);
-            return clickedRight ? Math.min(base + 1, count - 1) : base;
-        }
-
-        function openFullscreen() {
-            if (!allPages) return;
-
-            const idx = pageIndexFromClick();
-            const url = allPages[idx];
-
-            overlay.classList.add("open");
-            overlay.setAttribute("aria-hidden", "false");
-            document.body.style.overflow = "hidden";
-
-            img.src = url;
-
-            const ready = () => fitAndCenterDesktop();
-            if (img.decode) img.decode().then(ready).catch(ready);
-            else img.onload = ready;
-        }
-
-        function closeFullscreen() {
-            overlay.classList.remove("open");
-            overlay.setAttribute("aria-hidden", "true");
-            document.body.style.overflow = "";
-        }
-
-        btnClose.addEventListener("click", closeFullscreen);
-        btnReset.addEventListener("click", () => { if (img.naturalWidth) fitAndCenterDesktop(); });
-
-        // wheel zoom podle myši
-        viewer.addEventListener("wheel", (e) => {
-            if (!overlay.classList.contains("open")) return;
-            e.preventDefault();
-
-            const zoomIntensity = 0.12;
-            const dir = e.deltaY > 0 ? -1 : 1;
-            zoomTo(scale * (1 + zoomIntensity * dir), e.clientX, e.clientY);
-        }, { passive: false });
-
-        // drag myší
-        let dragging = false, lastX = 0, lastY = 0;
-
-        viewer.addEventListener("mousedown", (e) => {
-            if (!overlay.classList.contains("open")) return;
-            dragging = true;
-            lastX = e.clientX; lastY = e.clientY;
-            img.style.cursor = "grabbing";
-        });
-
-        window.addEventListener("mousemove", (e) => {
-            if (!dragging) return;
-            tx += (e.clientX - lastX);
-            ty += (e.clientY - lastY);
-            lastX = e.clientX; lastY = e.clientY;
-            applyTransform();
-        });
-
-        window.addEventListener("mouseup", () => {
-            if (!dragging) return;
-            dragging = false;
-            img.style.cursor = "grab";
-        });
-
-        // dblclick: otevřít / zavřít fullscreen
-        bookWrap.addEventListener("dblclick", (e) => {
-            e.preventDefault();
-            lastDblX = e.clientX;
-            openFullscreen();
-        }, true);
-
-        overlay.addEventListener("dblclick", (e) => {
-            e.preventDefault();
-            closeFullscreen();
-        }, true);
-
-        window.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") closeFullscreen();
-        });
-
-        window.addEventListener("resize", () => {
-            if (overlay.classList.contains("open") && img.naturalWidth) fitAndCenterDesktop();
+        setupFlipViewer({
+            bookWrap,
+            pageFlip,
+            getAllPages: () => allPages
         });
     </script>
+
+    <!-- vlastní skript pro fullscreen zoom viewer -->
+    <script src="js/flip-viewer.js"></script>
 </body>
 </html>

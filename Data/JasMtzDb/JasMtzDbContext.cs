@@ -45,6 +45,8 @@ public partial class JasMtzDbContext : DbContext
 
     public virtual DbSet<PtgStandSearch> PtgStandSearches { get; set; }
 
+    public virtual DbSet<SrvMaintenanceRequest> SrvMaintenanceRequests { get; set; }
+
     public virtual DbSet<ViMkMtzUser> ViMkMtzUsers { get; set; }
 
     public virtual DbSet<ViMtzUser> ViMtzUsers { get; set; }
@@ -484,6 +486,46 @@ public partial class JasMtzDbContext : DbContext
             entity.Property(e => e.Size).HasMaxLength(100);
             entity.Property(e => e.StandProducerAlias).HasMaxLength(200);
             entity.Property(e => e.StandProducerName).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<SrvMaintenanceRequest>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__srv_main__3213E83FC6B1A371");
+
+            entity.ToTable("srv_maintenance_requests");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ActualCost)
+                .HasColumnType("decimal(12, 2)")
+                .HasColumnName("actual_cost");
+            entity.Property(e => e.CostCenter)
+                .HasMaxLength(100)
+                .HasColumnName("cost_center");
+            entity.Property(e => e.CreatedDate).HasColumnName("created_date");
+            entity.Property(e => e.DueDate).HasColumnName("due_date");
+            entity.Property(e => e.EstimatedCost)
+                .HasColumnType("decimal(12, 2)")
+                .HasColumnName("estimated_cost");
+            entity.Property(e => e.IdDepartment).HasColumnName("id_department");
+            entity.Property(e => e.IdSolver)
+                .HasMaxLength(450)
+                .HasColumnName("id_solver");
+            entity.Property(e => e.IdStore).HasColumnName("id_store");
+            entity.Property(e => e.IdUser)
+                .HasMaxLength(450)
+                .HasColumnName("id_user");
+            entity.Property(e => e.IssueDescription)
+                .HasMaxLength(1000)
+                .HasColumnName("issue_description");
+            entity.Property(e => e.PlannedRepairDate).HasColumnName("planned_repair_date");
+            entity.Property(e => e.RemainingTimeDays).HasColumnName("remaining_time_days");
+            entity.Property(e => e.RemovedDate).HasColumnName("removed_date");
+            entity.Property(e => e.RepairCategory).HasColumnName("repair_category");
+            entity.Property(e => e.RepairDescription)
+                .HasMaxLength(1000)
+                .HasColumnName("repair_description");
+            entity.Property(e => e.RequiredResolutionDays).HasColumnName("required_resolution_days");
+            entity.Property(e => e.Status).HasColumnName("status");
         });
 
         modelBuilder.Entity<ViMkMtzUser>(entity =>
