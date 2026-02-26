@@ -127,5 +127,36 @@ $(function () {
             }
         }
     });
+
+    // SRV – náhled data "Opravit do" podle kategorie opravy (Create/Edit)
+    (function () {
+        var select = document.getElementById('repairCategorySelect');
+        var preview = document.getElementById('dueDatePreview');
+
+        if (!select || !preview) {
+            return;
+        }
+
+        function recalcDueDate() {
+            // hodnota enumu už přímo obsahuje počet dní (5 / 30 / 60)
+            var days = parseInt(select.value || '0', 10);
+
+            if (!days) {
+                preview.textContent = '';
+                return;
+            }
+
+            var now = new Date();
+            now.setDate(now.getDate() + days);
+
+            // český formát datumu
+            preview.textContent = now.toLocaleDateString('cs-CZ');
+        }
+
+        select.addEventListener('change', recalcDueDate);
+
+        // spočítat při načtení stránky podle výchozí hodnoty
+        recalcDueDate();
+    })();
 });
 

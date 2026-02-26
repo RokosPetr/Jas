@@ -1,0 +1,206 @@
+@page "{id:int}"
+@model Jas.Areas.Srv.Pages.EditModel
+@using Jas.Globals.Srv.Enums
+
+@{
+    ViewData["Title"] = "Editace požadavku";
+    bool isAdmin = User.IsInRole("SRV - admin");
+    bool isOwner = Model.IsOwner;
+    bool canEditBasic = isOwner && Model.Request.Status == (int)Status.New;
+
+    var statusText = Model.Request.Status switch
+    {
+        (int)Status.New        => "Nová",
+        (int)Status.InProgress => "V procesu",
+        (int)Status.Resolved   => "Vyřízeno",
+        (int)Status.Cancelled  => "Zrušeno",
+        _                      => "Neznámý"
+    };
+
+    var dueDateText = Model.Request.DueDate.HasValue
+        ? Model.Request.DueDate.Value.ToString("dd.MM.yyyy")
+        : "";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input type="hidden" asp-for="Request.Id" />
+
+    @* TEXTOVÉ HODNOTY NAHOŘE *@
+    <div class="mb-2 d-flex flex-wrap align-items-baseline">
+        <div class="me-4 mb-1">
+            <label class="form-label fw-bold me-1">Zadal:</label>
+            <span>@Model.Request.UserName</span>
+            <input type="hidden" asp-for="Request.UserName" />
+            <input type="hidden" asp-for="Request.IdUser" />
+        </div>
+
+        <div class="me-4 mb-1">
+            <label class="form-label fw-bold me-1">Oddělení:</label>
+            <span>@Model.Request.Department</span>
+            <input type="hidden" asp-for="Request.Department" />
+            <input type="hidden" asp-for="Request.IdDepartment" />
+        </div>
+
+        <div class="me-4 mb-1">
+            <label class="form-label fw-bold me-1">Stav požadavku:</label>
+            <span>@statusText</span>
+            <input type="hidden" asp-for="Request.Status" />
+        </div>
+    </div>
+
+    @* 1) POPIS ZÁVADY – mění jen zadavatel ve stavu Nová *@
+    @if (canEditBasic)
+    {
+        <div class="mb-3">
+            <label asp-for="Request.IssueDescription" class="form-label fw-bold"></label>
+            <textarea asp-for="Request.IssueDescription" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Request.IssueDescription" class="text-danger"></span>
+        </div>
+    }
+    else
+    {
+        <div class="mb-3">
+            <label class="form-label fw-bold me-2">
+                @Html.DisplayNameFor(m => m.Request.IssueDescription):
+            </label>
+            <p class="mb-0">@Model.Request.IssueDescription</p>
+            <input type="hidden" asp-for="Request.IssueDescription" />
+        </div>
+    }
+
+    @* 1) KATEGORIE OPRAVY – mění jen zadavatel ve stavu Nová,
+       a na stejném řádku ukazuje také "Opravit do" (náhled se přepočítává na klientu)
+       Pro funkčnost klientského skriptu je potřeba id="repairCategorySelect" a id="dueDatePreview" *@
+    @if (canEditBasic)
+    {
+        <div class="mb-3">
+            <div class="d-flex align-items-baseline justify-content-between mb-1">
+                <label asp-for="Request.RepairCategory" class="form-label fw-bold me-2"></label>
+                <span>
+                    <b>@Html.DisplayNameFor(m => m.Request.DueDate):</b> <span id="dueDatePreview">@dueDateText</span>
+                    <input type="hidden" asp-for="Request.DueDate" />
+                </span>
+            </div>
+            <select asp-for="Request.RepairCategory"
+                    asp-items="Html.GetEnumSelectList<RepairCategory>()"
+                    class="form-select"
+                    id="repairCategorySelect">
+            </select>
+            <span asp-validation-for="Request.RepairCategory" class="text-danger"></span>
+        </div>
+    }
+    else
+    {
+        <input type="hidden" asp-for="Request.RepairCategory" />
+    }
+
+    @* Checkbox „V procesu“ – pouze pro admina a jen ve stavu Nová *@
+    @if (isAdmin && Model.Request.Status == (int)Status.New)
+    {
+        <div class="form-check mb-3">
+            <input asp-for="InProgress" class="form-check-input" />
+            <label asp-for="InProgress" class="form-check-label">V procesu</label>
+        </div>
+    }
+
+    @* 2–3) Ostatní pole – jen admin, s omezeními podle stavu *@
+    @if (isAdmin)
+    {
+        <div class="mb-3">
+            <label asp-for="Request.RepairDescription" class="form-label fw-bold"></label>
+            <textarea asp-for="Request.RepairDescription" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Request.RepairDescription" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Request.PlannedRepairDate" class="form-label fw-bold"></label>
+            <input asp-for="Request.PlannedRepairDate" class="form-control" />
+            <span asp-validation-for="Request.PlannedRepairDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Request.EstimatedCost" class="form-label fw-bold"></label>
+            <input asp-for="Request.EstimatedCost" class="form-control" type="number" step="1" min="0" />
+            <span asp-validation-for="Request.EstimatedCost" class="text-danger"></span>
+        </div>
+
+        @* Skutečné náklady:
+           - ve stavu V procesu editovat (pro „Vyřídit“)
+           - jinde jen zobrazit, ne u Nových *@
+        @if (Model.Request.Status == (int)Status.InProgress)
+        {
+            <div class="mb-3">
+                <label asp-for="Request.ActualCost" class="form-label fw-bold"></label>
+                <input asp-for="Request.ActualCost" class="form-control" type="number" step="1" min="0" />
+                <span asp-validation-for="Request.ActualCost" class="text-danger"></span>
+            </div>
+        }
+        else if (Model.Request.Status != (int)Status.New)
+        {
+            <div class="mb-3 d-flex align-items-baseline">
+                <label asp-for="Request.ActualCost" class="form-label fw-bold me-2"></label>
+                <span>
+                    @(Model.Request.ActualCost.HasValue
+                        ? Model.Request.ActualCost.Value.ToString("N0")
+                        : "")
+                </span>
+                <input type="hidden" asp-for="Request.ActualCost" />
+            </div>
+        }
+    }
+
+    <div class="mt-3">
+        @if (Model.Request.Status == (int)Status.InProgress && isAdmin)
+        {
+            @* ve stavu V PROCESU – tři tlačítka, Save má vlastní handler *@
+            <button type="submit"
+                    asp-page-handler="Save"
+                    class="btn btn-primary me-2">
+                Uložit
+            </button>
+
+            <button type="submit"
+                    asp-page-handler="Resolve"
+                    class="btn btn-success me-2">
+                Vyřídit
+            </button>
+
+            <button type="submit"
+                    asp-page-handler="Cancel"
+                    class="btn btn-danger me-2">
+                Zrušit
+            </button>
+        }
+        else
+        {
+            @* v ostatních stavech jen Uložit, ale také přes handler Save *@
+            <button type="submit"
+                    asp-page-handler="Save"
+                    class="btn btn-primary">
+                Uložit
+            </button>
+
+            @* ve stavu NOVÁ dovolíme Zrušit zadavateli i adminovi *@
+            @if (Model.Request.Status == (int)Status.New && (isOwner || isAdmin))
+            {
+                <button type="submit"
+                        asp-page-handler="Cancel"
+                        class="btn btn-danger ms-2">
+                    Zrušit
+                </button>
+            }
+        }
+
+        <a asp-area="Srv" asp-page="/Index" class="btn btn-secondary ms-2">
+            Zpět na přehled
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

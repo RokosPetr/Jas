@@ -492,17 +492,18 @@ public partial class JasMtzDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__srv_main__3213E83FC6B1A371");
 
-            entity.ToTable("srv_maintenance_requests");
+            entity.ToTable("srv_maintenance_request");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ActualCost)
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("actual_cost");
-            entity.Property(e => e.CostCenter)
-                .HasMaxLength(100)
-                .HasColumnName("cost_center");
-            entity.Property(e => e.CreatedDate).HasColumnName("created_date");
-            entity.Property(e => e.DueDate).HasColumnName("due_date");
+            entity.Property(e => e.CreatedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("created_date");
+            entity.Property(e => e.DueDate)
+                .HasColumnType("datetime")
+                .HasColumnName("due_date");
             entity.Property(e => e.EstimatedCost)
                 .HasColumnType("decimal(12, 2)")
                 .HasColumnName("estimated_cost");
@@ -517,14 +518,16 @@ public partial class JasMtzDbContext : DbContext
             entity.Property(e => e.IssueDescription)
                 .HasMaxLength(1000)
                 .HasColumnName("issue_description");
-            entity.Property(e => e.PlannedRepairDate).HasColumnName("planned_repair_date");
-            entity.Property(e => e.RemainingTimeDays).HasColumnName("remaining_time_days");
-            entity.Property(e => e.RemovedDate).HasColumnName("removed_date");
+            entity.Property(e => e.PlannedRepairDate)
+                .HasColumnType("datetime")
+                .HasColumnName("planned_repair_date");
+            entity.Property(e => e.RemovedDate)
+                .HasColumnType("datetime")
+                .HasColumnName("removed_date");
             entity.Property(e => e.RepairCategory).HasColumnName("repair_category");
             entity.Property(e => e.RepairDescription)
                 .HasMaxLength(1000)
                 .HasColumnName("repair_description");
-            entity.Property(e => e.RequiredResolutionDays).HasColumnName("required_resolution_days");
             entity.Property(e => e.Status).HasColumnName("status");
         });
 

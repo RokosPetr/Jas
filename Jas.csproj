@@ -15,36 +15,41 @@
 
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
+    <Content Remove="wwwroot\css\srv.less" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Areas\Ptg\Pages\_PlateContent.cshtml" />
     <None Include="compilerconfig.json" />
+    <None Include="wwwroot\css\srv.less" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="14.0.0" />
-    <PackageReference Include="AutoMapper.Data" Version="9.0.0" />
+    <PackageReference Include="AutoMapper" Version="16.0.0" />
+    <PackageReference Include="AutoMapper.Data" Version="10.0.0" />
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="jQuery.UI.Combined" Version="1.14.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.16" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.16" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.16" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.16" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.24" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.24" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.24" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.jQuery.Unobtrusive.Ajax" Version="3.2.6" />
-    <PackageReference Include="Microsoft.Playwright" Version="1.57.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.22" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.58.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.23" />
     <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
-    <PackageReference Include="QRCoder" Version="1.6.0" />
-    <PackageReference Include="System.Drawing.Common" Version="10.0.1" />
+    <PackageReference Include="QRCoder" Version="1.7.0" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.3" />
     <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
-    <PackageReference Include="System.Net.Primitives" Version="4.3.0" />
-    <PackageReference Include="X.PagedList" Version="10.5.7" />
-    <PackageReference Include="X.PagedList.EF" Version="10.5.7" />
-    <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
+    <PackageReference Include="System.Net.Primitives" Version="4.3.1" />
+    <PackageReference Include="X.PagedList" Version="10.5.9" />
+    <PackageReference Include="X.PagedList.EF" Version="10.5.9" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.9" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,6 +71,8 @@
     <Folder Include="Areas\Pdf\Pages\Shared\DisplayTemplates\" />
     <Folder Include="Areas\Pdf\Pages\Shared\EditorTemplates\" />
     <Folder Include="Areas\Ptg\Pages\Shared\EditorTemplates\" />
+    <Folder Include="Areas\Srv\Pages\Shared\DisplayTemplates\" />
+    <Folder Include="Areas\Srv\Pages\Shared\EditorTemplates\" />
     <Folder Include="wwwroot\pdf\src\akce-koupelnove-vybaveni-2026\" />
   </ItemGroup>
 

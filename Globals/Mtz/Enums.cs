@@ -14,32 +14,4 @@
         ProcessedCancelled = 7
     }
 
-    public enum Roles
-    {
-        Administrator,
-        Reditel,
-        VedouciSkladu,
-        Skladnik,
-        VedouciProdejny,
-        MOProdejce,
-        VOProdejce,
-        AnalyzaProdeje,
-        SkladoveZasoby,
-        NakupciVO,
-        AnalyzaNakupu,
-        RozvozMO,
-        OverovacPartnera,
-        ObchodniZastupce,
-        VedouciOZ,
-        PotvrzeniDoruceniMORozvozu,
-        ProduktoveOddeleni,
-        Guest,
-        VirtualniKoupelnaSprava,
-        KorektorPolozekStojanu,
-        ProhlizeniPolozekDokladu,
-        Bezpecak,
-        ProdejceMichalkovice,
-        MTZ
-    }
-
 }

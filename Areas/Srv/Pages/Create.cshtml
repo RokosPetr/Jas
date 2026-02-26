@@ -1,0 +1,71 @@
+@page "{id?}"
+@model Jas.Areas.Srv.Pages.CreateModel
+@using Jas.Globals.Srv.Enums
+
+@{
+    ViewData["Title"] = Model.IsEdit ? "Zpracování požadavku" : "Nový požadavek";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input type="hidden" asp-for="Request.Id" />
+
+    <div class="mb-3 d-flex align-items-baseline">
+        <label class="form-label fw-bold me-2">Zadal:</label>
+        <span>@Model.Request.UserName</span>
+        <input type="hidden" asp-for="Request.UserName" />
+        <input type="hidden" asp-for="Request.IdUser" />
+    </div>
+
+    <div class="mb-3 d-flex align-items-baseline">
+        <label class="form-label fw-bold me-2">Oddělení:</label>
+        <span>@Model.Request.Department</span>
+        <input type="hidden" asp-for="Request.Department" />
+        <input type="hidden" asp-for="Request.IdDepartment" />
+    </div>
+
+    <div class="mb-3">
+        <div class="d-flex align-items-baseline justify-content-between mb-1">
+            <label asp-for="Request.IssueDescription" class="form-label fw-bold me-2"></label>
+            <span>
+                <b>Opravit do:</b> <span id="dueDatePreview"></span>
+            </span>
+        </div>
+        <textarea asp-for="Request.IssueDescription" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Request.IssueDescription" class="text-danger"></span>
+    </div>
+
+    @* RepairDescription lze měnit pouze při editaci *@
+    @if (Model.IsEdit)
+    {
+        <div class="mb-3">
+            <label asp-for="Request.RepairDescription" class="form-label fw-bold"></label>
+            <textarea asp-for="Request.RepairDescription" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Request.RepairDescription" class="text-danger"></span>
+        </div>
+    }
+
+    <div class="mb-3">
+        <label asp-for="Request.RepairCategory" class="form-label fw-bold"></label>
+        <select asp-for="Request.RepairCategory"
+                asp-items="Html.GetEnumSelectList<RepairCategory>()"
+                class="form-select"
+                id="repairCategorySelect">
+        </select>
+        <span asp-validation-for="Request.RepairCategory" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Uložit
+    </button>
+    <a asp-area="Srv" asp-page="/Index" class="btn btn-secondary">
+        Zpět na přehled
+    </a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

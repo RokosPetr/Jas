@@ -1,0 +1,274 @@
+@page "{filter?}"
+@model Jas.Areas.Srv.Pages.IndexModel
+@using Jas.Globals.Srv.Enums
+
+@{
+    var activeFilter = (ViewContext.RouteData.Values["filter"] as string) ?? string.Empty;
+
+    // Titulek podle aktivního stavu
+    var title = activeFilter switch
+    {
+        "new-requests"        => "Přehled nových požadavků na údržbu",
+        "inprogress-requests" => "Přehled rozpracovaných požadavků na údržbu",
+        "resolved-requests"   => "Přehled vyřízených požadavků na údržbu",
+        "cancelled-requests"  => "Přehled zrušených požadavků na údržbu",
+        _                     => "Přehled požadavků na údržbu"
+    };
+
+    ViewData["Title"] = title;
+
+    var newRequests        = Model.Requests.Where(r => r.Status == (int)Status.New).ToList();
+    var inProgressRequests = Model.Requests.Where(r => r.Status == (int)Status.InProgress).ToList();
+    var resolvedRequests   = Model.Requests.Where(r => r.Status == (int)Status.Resolved).ToList();
+    var cancelledRequests  = Model.Requests.Where(r => r.Status == (int)Status.Cancelled).ToList();
+
+    bool hasAny =
+        newRequests.Count > 0 ||
+        inProgressRequests.Count > 0 ||
+        resolvedRequests.Count > 0 ||
+        cancelledRequests.Count > 0;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!hasAny)
+{
+    <p>Žádné požadavky k zobrazení.</p>
+}
+else
+{
+    @* NOVÉ *@
+    if (activeFilter == "new-requests" && newRequests.Count > 0)
+    {
+        <table class="table table-striped table-bordered table-sm w-100">
+            <thead class="table-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].Id)</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].Department)</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].RepairCategory)</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].CreatedDate)</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].DueDate)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in newRequests)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Department</td>
+                    <td>
+                        @(item.RepairCategory switch
+                          {
+                              (int)RepairCategory.Light   => "Lehká (60 dní)",
+                              (int)RepairCategory.Serious => "Vážná (30 dní)",
+                              (int)RepairCategory.Urgent  => "Urgentní (5 dní)",
+                              _                           => "Neznámá"
+                          })
+                    </td>
+                    <td>@item.CreatedDate.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        @(item.DueDate.HasValue
+                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
+                            : "")
+                    </td>
+                    <td class="text-end">
+                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Upravit">
+                            <span aria-hidden="true">&#9998;</span>
+                            <span class="visually-hidden">Upravit</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                        <td colspan="7" class="bg-white text-dark">
+                            <span class="fw-bold me-2">
+                                @Html.DisplayNameFor(m => m.Requests[0].IssueDescription):
+                            </span>
+                            @item.IssueDescription
+                        </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+
+    @* V PROCESU *@
+    if (activeFilter == "inprogress-requests" && inProgressRequests.Count > 0)
+    {
+        <table class="table table-striped table-bordered table-sm w-100">
+            <thead class="table-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].Id)</th>
+                    <th>Uživatel</th>
+                    <th>Středisko</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].CreatedDate)</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].DueDate)</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].PlannedRepairDate)</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].EstimatedCost)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in inProgressRequests)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.UserName</td>
+                    <td>@item.Department</td>
+                    <td>@item.CreatedDate.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        @(item.DueDate.HasValue
+                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
+                            : "")
+                    </td>
+                    <td>
+                        @(item.PlannedRepairDate.HasValue
+                            ? item.PlannedRepairDate.Value.ToString("dd.MM.yyyy")
+                            : "")
+                    </td>
+                    <td>
+                        @(item.EstimatedCost.HasValue
+                            ? item.EstimatedCost.Value.ToString("N0")
+                            : "")
+                    </td>
+                    <td class="text-end">
+                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Upravit">
+                            <span aria-hidden="true">&#9998;</span>
+                            <span class="visually-hidden">Upravit</span>
+                        </a>
+                    </td>
+                </tr>
+                    <tr>
+                        <td colspan="8" class="bg-white text-dark">
+                            <span class="fw-bold me-2">
+                                @Html.DisplayNameFor(m => m.Requests[0].IssueDescription):
+                            </span>
+                            @item.IssueDescription
+                            @if (!string.IsNullOrWhiteSpace(item.RepairDescription))
+                            {
+                                <br /><span class="fw-bold me-2">
+                                    @Html.DisplayNameFor(m => m.Requests[0].RepairDescription):
+                                </span>
+                                @item.RepairDescription
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @* VYŘÍZENÉ *@
+    if (activeFilter == "resolved-requests" && resolvedRequests.Count > 0)
+    {
+        <table class="table table-striped table-bordered table-sm w-100">
+            <thead class="table-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].Id)</th>
+                    <th>Uživatel</th>
+                    <th>Středisko</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].RemovedDate)</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].ActualCost)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in resolvedRequests)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.UserName</td>
+                        <td>@item.Department</td>
+                        <td>
+                            @(item.RemovedDate.HasValue
+                                            ? item.RemovedDate.Value.ToString("dd.MM.yyyy")
+                                            : "")
+                        </td>
+                        <td>
+                            @(item.ActualCost.HasValue
+                                            ? item.ActualCost.Value.ToString("N2")
+                                            : "")
+                        </td>
+                        <td class="text-end">
+                            <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Upravit">
+                                <span aria-hidden="true">&#9998;</span>
+                                <span class="visually-hidden">Upravit</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" class="bg-white text-dark">
+                            <span class="fw-bold me-2">
+                                @Html.DisplayNameFor(m => m.Requests[0].IssueDescription):
+                            </span>
+                            @item.IssueDescription
+                            @if (!string.IsNullOrWhiteSpace(item.RepairDescription))
+                            {
+                                <br />
+                
+                                <span class="fw-bold me-2">
+                                    @Html.DisplayNameFor(m => m.Requests[0].RepairDescription):
+                                </span>
+                                @item.RepairDescription
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @* ZRUŠENÉ *@
+    if (activeFilter == "cancelled-requests" && cancelledRequests.Count > 0)
+    {
+        <table class="table table-striped table-bordered table-sm w-100">
+            <thead class="table-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].Id)</th>
+                    <th>Uživatel</th>
+                    <th>Středisko</th>
+                    <th>@Html.DisplayNameFor(m => m.Requests[0].RemovedDate)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in cancelledRequests)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.UserName</td>
+                        <td>@item.Department</td>
+                        <td>
+                            @(item.RemovedDate.HasValue
+                                            ? item.RemovedDate.Value.ToString("dd.MM.yyyy")
+                                            : "")
+                        </td>
+                        <td class="text-end">
+                            <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Upravit">
+                                <span aria-hidden="true">&#9998;</span>
+                                <span class="visually-hidden">Upravit</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" class="bg-white text-dark">
+                            <span class="fw-bold me-2">
+                                @Html.DisplayNameFor(m => m.Requests[0].IssueDescription):
+                            </span>
+                            @item.IssueDescription
+                            @if (!string.IsNullOrWhiteSpace(item.RepairDescription))
+                            {
+                                <br />
+
+                                <span class="fw-bold me-2">
+                                    @Html.DisplayNameFor(m => m.Requests[0].RepairDescription):
+                                </span>
+                                @item.RepairDescription
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

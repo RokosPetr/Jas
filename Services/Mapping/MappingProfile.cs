@@ -2,6 +2,7 @@
 using Jas.Data.JasMtzDb;
 using Jas.Models.Mtz;
 using Jas.Models.Ptg;
+using Jas.Models.Srv;
 using Jas.Services.Mapping.Resolvers;
 using System.Data;
 
@@ -32,6 +33,10 @@ namespace Jas.Services.Mapping
             CreateMap<int?, bool>().ConvertUsing(v => v.GetValueOrDefault() != 0);
 
             CreateMap<IDataRecord, SearchStandItem>();
+
+            // SRV – mapování entita <-> view‑model
+            CreateMap<SrvMaintenanceRequest, SrvMaintenanceRequestModel>()
+                .ReverseMap();
         }
     }
 }

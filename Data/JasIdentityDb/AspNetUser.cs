@@ -45,6 +45,8 @@ public partial class AspNetUser
 
     public string? Ico { get; set; }
 
+    public int? Mop9Voj { get; set; }
+
     public virtual ICollection<AspNetUserClaim> AspNetUserClaims { get; set; } = new List<AspNetUserClaim>();
 
     public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; } = new List<AspNetUserLogin>();

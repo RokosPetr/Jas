@@ -16,6 +16,7 @@ using Jas.Services.Mapping;
 using Jas.Services.Mapping.Resolvers;
 using Jas.Services.Mtz;
 using Jas.Services.Ptg;
+using Jas.Services.Srv;
 using Jas.Web.Endpoints;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -67,6 +68,7 @@ builder.Services.AddScoped<IStoreService, StoreService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<INavbarServiceMtz, NavbarServiceMtz>();
 builder.Services.AddScoped<INavbarServicePtg, NavbarServicePtg>();
+builder.Services.AddScoped<INavbarServiceSrv, NavbarServiceSrv>();
 //builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 builder.Services.AddAutoMapper(cfg =>

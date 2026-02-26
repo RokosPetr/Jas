@@ -1,0 +1,145 @@
+@using Jas.Services.Srv
+@using ENUMS = Jas.Globals.Srv.Enums
+@inject INavbarServiceSrv NavbarService
+
+@{
+    Layout = null;
+    await NavbarService.InitializeAsync();
+
+    var page = (ViewContext.RouteData.Values["page"] as string) ?? string.Empty; // např. "/Index"
+    var filter = (ViewContext.RouteData.Values["filter"] as string) ?? string.Empty;
+
+    bool isCreate          = page.Equals("/Create", StringComparison.OrdinalIgnoreCase);
+    bool isIndexNew        = page.Equals("/Index", StringComparison.OrdinalIgnoreCase) && filter == "new-requests";
+    bool isIndexInProgress = page.Equals("/Index", StringComparison.OrdinalIgnoreCase) && filter == "inprogress-requests";
+    bool isIndexResolved   = page.Equals("/Index", StringComparison.OrdinalIgnoreCase) && filter == "resolved-requests";
+    bool isIndexCancelled  = page.Equals("/Index", StringComparison.OrdinalIgnoreCase) && filter == "cancelled-requests";
+}
+
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item">
+                    <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 @(isCreate ? "active" : "")"
+                       asp-area="Srv" asp-page="/Create">
+                        Nový požadavek
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    @{
+                        int? newCount = NavbarService.GetRequestCountByStatus((int)ENUMS.Status.New);
+
+                        if (newCount == null)
+                        {
+                            <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                  aria-disabled="true" tabindex="-1">
+                                Nové
+                                <span class="badge"></span>
+                            </span>
+                        }
+                        else
+                        {
+                            <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap @(isIndexNew ? "active" : "")"
+                               asp-area="Srv" asp-page="/Index" asp-route-filter="new-requests">
+                                Nové
+                                <span class="badge">@newCount</span>
+                            </a>
+                        }
+                    }
+                </li>
+
+                <li class="nav-item">
+                    @{
+                        int? inProgressCount = NavbarService.GetRequestCountByStatus((int)ENUMS.Status.InProgress);
+
+                        if (inProgressCount == null)
+                        {
+                            <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                  aria-disabled="true" tabindex="-1">
+                                V procesu
+                                <span class="badge"></span>
+                            </span>
+                        }
+                        else
+                        {
+                            <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap @(isIndexInProgress ? "active" : "")"
+                               asp-area="Srv" asp-page="/Index" asp-route-filter="inprogress-requests">
+                                V procesu
+                                <span class="badge">@inProgressCount</span>
+                            </a>
+                        }
+                    }
+                </li>
+
+                <li class="nav-item">
+                    @{
+                        int? resolvedCount = NavbarService.GetRequestCountByStatus((int)ENUMS.Status.Resolved);
+
+                        if (resolvedCount == null)
+                        {
+                            <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                  aria-disabled="true" tabindex="-1">
+                                Vyřízené
+                                <span class="badge"></span>
+                            </span>
+                        }
+                        else
+                        {
+                            <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap @(isIndexResolved ? "active" : "")"
+                               asp-area="Srv" asp-page="/Index" asp-route-filter="resolved-requests">
+                                Vyřízené
+                                <span class="badge">@resolvedCount</span>
+                            </a>
+                        }
+                    }
+                </li>
+
+                <li class="nav-item">
+                    @{
+                        int? cancelledCount = NavbarService.GetRequestCountByStatus((int)ENUMS.Status.Cancelled);
+
+                        if (cancelledCount == null)
+                        {
+                            <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                  aria-disabled="true" tabindex="-1">
+                                Zrušené
+                                <span class="badge"></span>
+                            </span>
+                        }
+                        else
+                        {
+                            <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap @(isIndexCancelled ? "active" : "")"
+                               asp-area="Srv" asp-page="/Index" asp-route-filter="cancelled-requests">
+                                Zrušené
+                                <span class="badge">@cancelledCount</span>
+                            </a>
+                        }
+                    }
+                </li>
+            </ul>
+        </div>
+
+        <div id="top-panel-dropdown">
+            <div id="cart-holder">
+                <span class="user">@NavbarService.JasUser?.Name</span>
+            </div>
+            <div id="top-panel-dropdown-menu">
+                @if (NavbarService.IsExternalLoggedIn)
+                {
+                    <a href="https://www.mamekoupelny.eu">Zpět intranet</a>
+                }
+                <a asp-area="Identity"
+                   asp-page="/Account/Logout"
+                   asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")">
+                    Odhlásit
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
