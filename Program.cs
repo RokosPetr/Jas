@@ -7,6 +7,7 @@ using Jas.Application.Abstractions.Ptg;
 using Jas.Data.JasIdentityApp;
 using Jas.Data.JasIdentityDb;
 using Jas.Data.JasMtzDb;
+using Jas.Data.JasMtzDb.Interceptors;
 using Jas.Data.JasPdfDb;
 using Jas.Globals;
 using Jas.Infrastructure.Images;
@@ -110,6 +111,14 @@ builder.Services.AddSingleton<IImageStore, LocalImageStore>();
 var context = new CustomAssemblyLoadContext();
 context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), "bin", "libwkhtmltox.dll"));
 builder.Services.AddSingleton<IConverter>(provider => new SynchronizedConverter(new PdfTools()));
+
+builder.Services.AddScoped<MaintenanceRequestHistoryInterceptor>();
+
+builder.Services.AddDbContext<JasMtzDbContext>((sp, options) =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MtzConnection"));
+    options.AddInterceptors(sp.GetRequiredService<MaintenanceRequestHistoryInterceptor>());
+});
 
 var app = builder.Build();
 

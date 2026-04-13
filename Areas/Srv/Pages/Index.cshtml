@@ -1,6 +1,7 @@
 @page "{filter?}"
 @model Jas.Areas.Srv.Pages.IndexModel
 @using Jas.Globals.Srv.Enums
+@using X.PagedList.Mvc.Core
 
 @{
     var activeFilter = (ViewContext.RouteData.Values["filter"] as string) ?? string.Empty;
@@ -10,26 +11,75 @@
     {
         "new-requests"        => "Přehled nových požadavků na údržbu",
         "inprogress-requests" => "Přehled rozpracovaných požadavků na údržbu",
+        "toconfirm-requests"  => "Přehled požadavků na údržbu k odsouhlašení",
         "resolved-requests"   => "Přehled vyřízených požadavků na údržbu",
+        "returned-requests"   => "Přehled vrácených požadavků na údržbu",
         "cancelled-requests"  => "Přehled zrušených požadavků na údržbu",
-        _                     => "Přehled požadavků na údržbu"
+        _                      => "Přehled požadavků na údržbu"
     };
 
     ViewData["Title"] = title;
 
-    var newRequests        = Model.Requests.Where(r => r.Status == (int)Status.New).ToList();
-    var inProgressRequests = Model.Requests.Where(r => r.Status == (int)Status.InProgress).ToList();
-    var resolvedRequests   = Model.Requests.Where(r => r.Status == (int)Status.Resolved).ToList();
-    var cancelledRequests  = Model.Requests.Where(r => r.Status == (int)Status.Cancelled).ToList();
+    var paged = Model.PagedRequests;
 
-    bool hasAny =
-        newRequests.Count > 0 ||
-        inProgressRequests.Count > 0 ||
-        resolvedRequests.Count > 0 ||
-        cancelledRequests.Count > 0;
+    bool hasAny = paged != null && paged.Count > 0;
 }
 
 <h1>@ViewData["Title"]</h1>
+
+<form method="get" class="mb-3">
+    <div class="row g-2 align-items-end">
+        <div class="col-auto">
+            <label class="form-label" for="DepartmentFilterId">Středisko:</label>
+            <select asp-for="DepartmentFilterId"
+                    class="form-select"
+                    asp-items="@(new SelectList(Model.Departments, "Id", "Name", Model.DepartmentFilterId))">
+                <option value="">-- Všechna střediska --</option>
+            </select>
+        </div>
+
+        @* filtr vytvořeno od *@
+        <div class="col-auto">
+            <label class="form-label" asp-for="CreatedFrom">Vytvořeno od:</label>
+            <input asp-for="CreatedFrom" type="date" class="form-control" />
+        </div>
+
+        @* filtr vytvořeno do *@
+        <div class="col-auto">
+            <label class="form-label" asp-for="CreatedTo">Vytvořeno do:</label>
+            <input asp-for="CreatedTo" type="date" class="form-control" />
+        </div>
+
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Filtrovat</button>
+        </div>
+    </div>
+</form>
+
+@if (Model.PagedRequests != null && Model.PagedRequests.PageCount > 1)
+{
+    @Html.PagedListPager(
+        Model.PagedRequests,
+        page => Url.Page("./Index", new
+        {
+            filter = activeFilter,
+            pageNumber = page,
+            DepartmentFilterId = Model.DepartmentFilterId,
+            CreatedFrom = Model.CreatedFrom?.ToString("yyyy-MM-dd"),
+            CreatedTo = Model.CreatedTo?.ToString("yyyy-MM-dd")
+        }),
+        new PagedListRenderOptions
+        {
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" },
+            UlElementClasses = new[] { "pagination" },
+            DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+            DisplayLinkToLastPage = PagedListDisplayMode.Always,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+            DisplayLinkToNextPage = PagedListDisplayMode.Always,
+            DisplayLinkToIndividualPages = true
+        })
+}
 
 @if (!hasAny)
 {
@@ -37,6 +87,13 @@
 }
 else
 {
+    var newRequests        = paged.Where(r => r.Status == (int)Status.New).ToList();
+    var inProgressRequests = paged.Where(r => r.Status == (int)Status.InProgress).ToList();
+    var toConfirmRequests  = paged.Where(r => r.Status == (int)Status.ToConfirm).ToList();
+    var resolvedRequests   = paged.Where(r => r.Status == (int)Status.Resolved).ToList();
+    var returnedRequests   = paged.Where(r => r.Status == (int)Status.Returned).ToList();
+    var cancelledRequests  = paged.Where(r => r.Status == (int)Status.Cancelled).ToList();
+
     @* NOVÉ *@
     if (activeFilter == "new-requests" && newRequests.Count > 0)
     {
@@ -54,24 +111,77 @@ else
             <tbody>
             @foreach (var item in newRequests)
             {
+
+                    string GetCategoryText(int cat) => cat switch
+                    {
+                        (int)RepairCategory.Light   => "Lehká (60 dní)",
+                        (int)RepairCategory.Serious => "Vážná (30 dní)",
+                        (int)RepairCategory.Urgent  => "Urgentní (5 dní)",
+                        _                           => "Neznámá"
+                    };
+
+                    var userCatText  = GetCategoryText(item.RepairCategory);
+                    var adminCatText = item.RepairCategoryAdmin.HasValue
+                        ? GetCategoryText(item.RepairCategoryAdmin.Value)
+                        : null;
+
+                    bool hasDifferentAdminCat =
+                        item.RepairCategoryAdmin.HasValue &&
+                        item.RepairCategoryAdmin.Value != item.RepairCategory;
+
+                    // aktuální DueDate (podle efektivní kategorie – admin/user)
+                    var currentDueText = item.DueDate.HasValue
+                        ? item.DueDate.Value.ToString("dd.MM.yyyy")
+                        : string.Empty;
+
+                    // termín jen podle uživatelské kategorie (RepairCategory)
+                    string? userDueText = null;
+                    if (item.CreatedDate != default && item.RepairCategory != 0)
+                    {
+                        int GetDaysUser(int cat) => cat switch
+                        {
+                            (int)RepairCategory.Light   => 60,
+                            (int)RepairCategory.Serious => 30,
+                            (int)RepairCategory.Urgent  => 5,
+                            _                           => 0
+                        };
+
+                        var daysUser = GetDaysUser(item.RepairCategory);
+                        if (daysUser > 0)
+                        {
+                            userDueText = item.CreatedDate
+                                .AddDays(daysUser)
+                                .ToString("dd.MM.yyyy");
+                        }
+                    }
+
                 <tr>
                     <td>@item.Id</td>
                     <td>@item.Department</td>
+
+                    @* RepairCategory / RepairCategoryAdmin *@
                     <td>
-                        @(item.RepairCategory switch
-                          {
-                              (int)RepairCategory.Light   => "Lehká (60 dní)",
-                              (int)RepairCategory.Serious => "Vážná (30 dní)",
-                              (int)RepairCategory.Urgent  => "Urgentní (5 dní)",
-                              _                           => "Neznámá"
-                          })
+                        @if (hasDifferentAdminCat)
+                        {
+                            @adminCatText @: (@userCatText)
+                        }
+                        else
+                        {
+                            @userCatText
+                        }
                     </td>
+
                     <td>@item.CreatedDate.ToString("dd.MM.yyyy")</td>
+
+                    @* DueDate + (datum podle původní RepairCategory) *@
                     <td>
-                        @(item.DueDate.HasValue
-                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
-                            : "")
+                        @currentDueText
+                        @if (hasDifferentAdminCat && !string.IsNullOrEmpty(userDueText))
+                        {
+                            @: (@userDueText)
+                        }
                     </td>
+
                     <td class="text-end">
                         <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Upravit">
                             <span aria-hidden="true">&#9998;</span>
@@ -88,6 +198,78 @@ else
                         </td>
                 </tr>
             }
+            </tbody>
+        </table>
+    }
+
+    @* K POTVRZENÍ *@
+    if (activeFilter == "toconfirm-requests" && toConfirmRequests.Count > 0)
+    {
+        <table class="table table-striped table-bordered table-sm w-100">
+            <thead class="table-light">
+                <tr>
+                    <th>Č.p.</th>
+                    <th>Uživatel</th>
+                    <th>Středisko</th>
+                    <th>Opravit do</th>
+                    <th>Odstraněno</th>
+                    <th>Předpokládané nák.</th>
+                    <th>Skutečné nák.</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in toConfirmRequests)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.UserName</td>
+                        <td>@item.Department</td>
+                        <td>
+                            @(item.DueDate.HasValue
+                                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
+                                            : "")
+                        </td>
+                        <td>
+                            @(item.RemovedDate.HasValue
+                                            ? item.RemovedDate.Value.ToString("dd.MM.yyyy")
+                                            : "")
+                        </td>
+                        <td>
+                            @(item.EstimatedCost.HasValue
+                                            ? item.EstimatedCost.Value.ToString("N0")
+                                            : "")
+                        </td>
+                        <td>
+                            @(item.ActualCost.HasValue
+                                            ? item.ActualCost.Value.ToString("N0")
+                                            : "")
+                        </td>
+                        <td class="text-end">
+                            <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Detail">
+                                <span aria-hidden="true">&#9998;</span>
+                                <span class="visually-hidden">Detail</span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" class="bg-white text-dark">
+                            <span class="fw-bold me-2">
+                                @Html.DisplayNameFor(m => m.Requests[0].IssueDescription):
+                            </span>
+                            @item.IssueDescription
+                            @if (!string.IsNullOrWhiteSpace(item.RepairDescription))
+                            {
+                                <br />
+
+                                <span class="fw-bold me-2">
+                                    @Html.DisplayNameFor(m => m.Requests[0].RepairDescription):
+                                </span>
+                                @item.RepairDescription
+                            }
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     }
@@ -149,7 +331,7 @@ else
                                 <br /><span class="fw-bold me-2">
                                     @Html.DisplayNameFor(m => m.Requests[0].RepairDescription):
                                 </span>
-                                @item.RepairDescription
+                                    @item.RepairDescription
                             }
                         </td>
                     </tr>
@@ -164,11 +346,13 @@ else
         <table class="table table-striped table-bordered table-sm w-100">
             <thead class="table-light">
                 <tr>
-                    <th>@Html.DisplayNameFor(m => m.Requests[0].Id)</th>
+                    <th>Č.p.</th>
                     <th>Uživatel</th>
                     <th>Středisko</th>
-                    <th>@Html.DisplayNameFor(m => m.Requests[0].RemovedDate)</th>
-                    <th>@Html.DisplayNameFor(m => m.Requests[0].ActualCost)</th>
+                    <th>Opravit do</th>
+                    <th>Odstraněno</th>
+                    <th>Předpokládané nák.</th>
+                    <th>Skutečné nák.</th>
                     <th></th>
                 </tr>
             </thead>
@@ -180,13 +364,23 @@ else
                         <td>@item.UserName</td>
                         <td>@item.Department</td>
                         <td>
+                            @(item.DueDate.HasValue
+                                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
+                                            : "")
+                        </td>
+                        <td>
                             @(item.RemovedDate.HasValue
                                             ? item.RemovedDate.Value.ToString("dd.MM.yyyy")
                                             : "")
                         </td>
                         <td>
+                            @(item.EstimatedCost.HasValue
+                                            ? item.EstimatedCost.Value.ToString("N0")
+                                            : "")
+                        </td>
+                        <td>
                             @(item.ActualCost.HasValue
-                                            ? item.ActualCost.Value.ToString("N2")
+                                            ? item.ActualCost.Value.ToString("N0")
                                             : "")
                         </td>
                         <td class="text-end">
@@ -268,6 +462,89 @@ else
                         </td>
                     </tr>
                 }
+            </tbody>
+        </table>
+    }
+
+    @* VRÁCENÉ *@
+    if (activeFilter == "returned-requests" && returnedRequests.Count > 0)
+    {
+        <table class="table table-striped table-bordered table-sm w-100">
+            <thead class="table-light">
+                <tr>
+                    <th>Č.p.</th>
+                    <th>Uživatel</th>
+                    <th>Středisko</th>
+                    <th>Opravit do</th>
+                    <th>Odstraněno</th>
+                    <th>Předpokládané nák.</th>
+                    <th>Skutečné nák.</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in returnedRequests)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.UserName</td>
+                    <td>@item.Department</td>
+                    <td>
+                        @(item.DueDate.HasValue
+                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
+                            : "")
+                    </td>
+                    <td>
+                        @(item.RemovedDate.HasValue
+                            ? item.RemovedDate.Value.ToString("dd.MM.yyyy")
+                            : "")
+                    </td>
+                    <td>
+                        @(item.EstimatedCost.HasValue
+                            ? item.EstimatedCost.Value.ToString("N0")
+                            : "")
+                    </td>
+                    <td>
+                        @(item.ActualCost.HasValue
+                            ? item.ActualCost.Value.ToString("N0")
+                            : "")
+                    </td>
+                    <td class="text-end">
+                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Upravit">
+                            <span aria-hidden="true">&#9998;</span>
+                            <span class="visually-hidden">Upravit</span>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="bg-white text-dark">
+                        <span class="fw-bold me-2">
+                            @Html.DisplayNameFor(m => m.Requests[0].IssueDescription):
+                        </span>
+                        @item.IssueDescription
+
+                        @* Popis opravy *@
+                        @if (!string.IsNullOrWhiteSpace(item.RepairDescription))
+                        {
+                            <br />
+                            <span class="fw-bold me-2">
+                                @Html.DisplayNameFor(m => m.Requests[0].RepairDescription):
+                            </span>
+                            @item.RepairDescription
+                        }
+
+                        @* Důvod vrácení, pokud ho máš v modelu (ReturnDescription) *@
+                        @if (!string.IsNullOrWhiteSpace(item.ReturnDescription))
+                        {
+                            <br />
+                            <span class="fw-bold me-2">
+                                Důvod vrácení:
+                            </span>
+                            @item.ReturnDescription
+                        }
+                    </td>
+                </tr>
+            }
             </tbody>
         </table>
     }

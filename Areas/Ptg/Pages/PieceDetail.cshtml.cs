@@ -53,6 +53,10 @@ namespace Jas.Areas.Ptg.Pages
             Plates = data.Plates;
             PlateItems = data.Items;
 
+            // Pokud má stojan více plat, slouèíme všechny položky do jednoho plata.
+            // Pro potøeby detailu kusovek nepotøebujeme rozlišovat jednotlivá plata.
+            GroupAllItemsIntoSinglePlate();
+
             var firstPlate = Plates.FirstOrDefault();
             if (firstPlate is null)
                 return Page();
@@ -215,9 +219,37 @@ namespace Jas.Areas.Ptg.Pages
             Plates = data.Plates;
             PlateItems = data.Items;
 
+            // Stejná logika seskupení jako v OnGetAsync, aby generování tagù
+            // vycházelo z jednoho „spojeného“ plata.
+            GroupAllItemsIntoSinglePlate();
+
             await EnsureTagsFromCacheOrGenerateAsync(id, ct);
 
             return new JsonResult(new { CountQr = MoTagPng.Count, CountTag = VoTagPng.Count });
+        }
+
+        /// <summary>
+        /// Pokud stojan obsahuje více plat, seskupí všechny položky do jednoho plata
+        /// tak, že ponechá první podle PlateOrder a všem položkám nastaví jeho IdPlate.
+        /// </summary>
+        private void GroupAllItemsIntoSinglePlate()
+        {
+            if (Plates == null || Plates.Count <= 1)
+            {
+                return;
+            }
+
+            var mainPlate = Plates
+                .OrderBy(p => p.PlateOrder)
+                .ThenBy(p => p.IdPlate)
+                .First();
+
+            foreach (var item in PlateItems)
+            {
+                item.IdPlate = mainPlate.IdPlate;
+            }
+
+            Plates = new List<Plate> { mainPlate };
         }
     }
 

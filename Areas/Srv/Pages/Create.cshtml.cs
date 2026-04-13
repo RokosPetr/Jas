@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using StatusEnum = Jas.Globals.Srv.Enums.Status;
 using RepairCategoryEnum = Jas.Globals.Srv.Enums.RepairCategory;
+using NoteTypeEnum = Jas.Globals.Srv.Enums.MaintenanceRequestNoteType;
+using Jas.Globals.Srv.Enums;
 
 namespace Jas.Areas.Srv.Pages
 {
@@ -92,25 +94,26 @@ namespace Jas.Areas.Srv.Pages
 
             if (Request.Id == 0)
             {
+                // NOVÝ požadavek
                 var entity = _mapper.Map<SrvMaintenanceRequest>(Request);
 
-                // pro jistotu explicitně nastavíme kategorii opravy
+                // explicitně nastavíme kategorii opravy
                 entity.RepairCategory = Request.RepairCategory;
 
                 var user = _userService.JasUser;
                 if (user is not null)
                 {
-                    entity.IdUser = user.Id;
-                    entity.IdSolver = "1244a08d-4b45-4aac-abf8-5e59aa8f430e";
+                    entity.IdUser       = user.Id;
+                    entity.IdSolver     = "1244a08d-4b45-4aac-abf8-5e59aa8f430e";
                     entity.IdDepartment = user.DepartmentId;
-                    entity.IdStore = user.StoreId;
+                    entity.IdStore      = user.StoreId;
                 }
 
                 var now = DateTime.Now;
                 entity.CreatedDate = now;
 
-                // počet dní odvozený od kategorie opravy
-                var days = Request.RepairCategory switch
+                // počet dní odvozený od ADMIN kategorie opravy
+                var days = entity.RepairCategoryAdmin switch
                 {
                     (int)RepairCategoryEnum.Light   => 60,
                     (int)RepairCategoryEnum.Serious => 30,
@@ -121,12 +124,61 @@ namespace Jas.Areas.Srv.Pages
                 {
                     entity.DueDate = now.AddDays(days);
                 }
+
                 entity.Status = (int)StatusEnum.New;
 
                 _context.SrvMaintenanceRequests.Add(entity);
+                await _context.SaveChangesAsync(); // tady už má entity.Id hodnotu
+
+                // ÚVODNÍ poznámky pro nově založený požadavek – interceptor na Added neběží
+                var nowUtc = DateTime.UtcNow;
+
+                if (!string.IsNullOrWhiteSpace(entity.IssueDescription))
+                {
+                    _context.SrvMaintenanceRequestNotes.Add(new SrvMaintenanceRequestNote
+                    {
+                        IdRequest = entity.Id,
+                        NoteType  = (byte)NoteTypeEnum.Issue,
+                        NoteText  = entity.IssueDescription.Trim(),
+                        CreatedAt = nowUtc,
+                        IdUser    = entity.IdUser
+                    });
+                }
+
+                if (!string.IsNullOrWhiteSpace(entity.RepairDescription))
+                {
+                    _context.SrvMaintenanceRequestNotes.Add(new SrvMaintenanceRequestNote
+                    {
+                        IdRequest = entity.Id,
+                        NoteType  = (byte)NoteTypeEnum.Repair,
+                        NoteText  = entity.RepairDescription.Trim(),
+                        CreatedAt = nowUtc,
+                        IdUser    = entity.IdUser
+                    });
+                }
+
+                if (!string.IsNullOrWhiteSpace(entity.ReturnDescription))
+                {
+                    _context.SrvMaintenanceRequestNotes.Add(new SrvMaintenanceRequestNote
+                    {
+                        IdRequest = entity.Id,
+                        NoteType  = (byte)NoteTypeEnum.Return,
+                        NoteText  = entity.ReturnDescription.Trim(),
+                        CreatedAt = nowUtc,
+                        IdUser    = entity.IdUser
+                    });
+                }
+
+                if (_context.ChangeTracker.HasChanges())
+                {
+                    await _context.SaveChangesAsync(); // uloží případné nové poznámky
+                }
+
+                return RedirectToPage("/Index");
             }
             else
             {
+                // EDITACE existujícího požadavku
                 var entity = await _context.SrvMaintenanceRequests
                     .FirstOrDefaultAsync(r => r.Id == Request.Id);
 
@@ -135,12 +187,14 @@ namespace Jas.Areas.Srv.Pages
                     return NotFound();
                 }
 
+                // zde už NEpřidáváme poznámky – jen změníme entity,
+                // a interceptor MaintenanceRequestHistoryInterceptor zaloguje změny
                 _mapper.Map(Request, entity);
                 _context.SrvMaintenanceRequests.Update(entity);
-            }
 
-            await _context.SaveChangesAsync();
-            return RedirectToPage("/Index");
+                await _context.SaveChangesAsync();
+                return RedirectToPage("/Index");
+            }
         }
 
         private async Task LoadDepartmentAsync()

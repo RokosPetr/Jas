@@ -30,7 +30,7 @@ namespace Jas.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required(ErrorMessage = "Toto pole je povinné")]
-            [StringLength(100, ErrorMessage = "{0} musí být nejméně {2} a maximálně {1} dlouhé.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "{0} musí být nejméně {2} a maximálně {1} dlouhé.", MinimumLength = 5)]
             [DataType(DataType.Password)]
             [Display(Name = "Heslo")]
             public string Password { get; set; }

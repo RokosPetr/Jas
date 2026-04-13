@@ -6,7 +6,7 @@
     ViewData["Title"] = "Editace požadavku";
     bool isAdmin = User.IsInRole("SRV - admin");
     bool isOwner = Model.IsOwner;
-    bool canEditBasic = isOwner && Model.Request.Status == (int)Status.New;
+    bool canEditBasic = Model.IsOwner && Model.Request.Status == (int)Status.New;
 
     var statusText = Model.Request.Status switch
     {
@@ -14,6 +14,7 @@
         (int)Status.InProgress => "V procesu",
         (int)Status.Resolved   => "Vyřízeno",
         (int)Status.Cancelled  => "Zrušeno",
+        (int)Status.Returned => "Vráceno",
         _                      => "Neznámý"
     };
 
@@ -22,136 +23,339 @@
         : "";
 }
 
-<h1>@ViewData["Title"]</h1>
-
 <form method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <input type="hidden" asp-for="Request.Id" />
 
-    @* TEXTOVÉ HODNOTY NAHOŘE *@
-    <div class="mb-2 d-flex flex-wrap align-items-baseline">
-        <div class="me-4 mb-1">
-            <label class="form-label fw-bold me-1">Zadal:</label>
-            <span>@Model.Request.UserName</span>
-            <input type="hidden" asp-for="Request.UserName" />
-            <input type="hidden" asp-for="Request.IdUser" />
-        </div>
+    @* ======================= HLAVIČKA POŽADAVKU ======================= *@
+    <fieldset class="border rounded-3 p-3 mb-4 bg-light">
+        <legend class="float-none w-auto px-2 fw-bold">Informace o požadavku</legend>
 
-        <div class="me-4 mb-1">
-            <label class="form-label fw-bold me-1">Oddělení:</label>
-            <span>@Model.Request.Department</span>
-            <input type="hidden" asp-for="Request.Department" />
-            <input type="hidden" asp-for="Request.IdDepartment" />
-        </div>
-
-        <div class="me-4 mb-1">
-            <label class="form-label fw-bold me-1">Stav požadavku:</label>
-            <span>@statusText</span>
-            <input type="hidden" asp-for="Request.Status" />
-        </div>
-    </div>
-
-    @* 1) POPIS ZÁVADY – mění jen zadavatel ve stavu Nová *@
-    @if (canEditBasic)
-    {
-        <div class="mb-3">
-            <label asp-for="Request.IssueDescription" class="form-label fw-bold"></label>
-            <textarea asp-for="Request.IssueDescription" class="form-control" rows="4"></textarea>
-            <span asp-validation-for="Request.IssueDescription" class="text-danger"></span>
-        </div>
-    }
-    else
-    {
-        <div class="mb-3">
-            <label class="form-label fw-bold me-2">
-                @Html.DisplayNameFor(m => m.Request.IssueDescription):
-            </label>
-            <p class="mb-0">@Model.Request.IssueDescription</p>
-            <input type="hidden" asp-for="Request.IssueDescription" />
-        </div>
-    }
-
-    @* 1) KATEGORIE OPRAVY – mění jen zadavatel ve stavu Nová,
-       a na stejném řádku ukazuje také "Opravit do" (náhled se přepočítává na klientu)
-       Pro funkčnost klientského skriptu je potřeba id="repairCategorySelect" a id="dueDatePreview" *@
-    @if (canEditBasic)
-    {
-        <div class="mb-3">
-            <div class="d-flex align-items-baseline justify-content-between mb-1">
-                <label asp-for="Request.RepairCategory" class="form-label fw-bold me-2"></label>
-                <span>
-                    <b>@Html.DisplayNameFor(m => m.Request.DueDate):</b> <span id="dueDatePreview">@dueDateText</span>
-                    <input type="hidden" asp-for="Request.DueDate" />
-                </span>
+        <div class="d-flex flex-wrap align-items-baseline">
+            <div class="me-4 mb-1">
+                <label class="form-label fw-bold me-1">Zadal:</label>
+                <span>@Model.Request.UserName</span>
+                <input type="hidden" asp-for="Request.UserName" />
+                <input type="hidden" asp-for="Request.IdUser" />
             </div>
-            <select asp-for="Request.RepairCategory"
-                    asp-items="Html.GetEnumSelectList<RepairCategory>()"
-                    class="form-select"
-                    id="repairCategorySelect">
-            </select>
-            <span asp-validation-for="Request.RepairCategory" class="text-danger"></span>
-        </div>
-    }
-    else
-    {
-        <input type="hidden" asp-for="Request.RepairCategory" />
-    }
 
-    @* Checkbox „V procesu“ – pouze pro admina a jen ve stavu Nová *@
-    @if (isAdmin && Model.Request.Status == (int)Status.New)
-    {
-        <div class="form-check mb-3">
-            <input asp-for="InProgress" class="form-check-input" />
-            <label asp-for="InProgress" class="form-check-label">V procesu</label>
-        </div>
-    }
+            <div class="me-4 mb-1">
+                <label class="form-label fw-bold me-1">Vytvořeno:</label>
+                <span>@Model.Request.CreatedDate.ToString("dd.MM.yyyy")</span>
+                <input type="hidden" asp-for="Request.CreatedDate" />
+            </div>
 
-    @* 2–3) Ostatní pole – jen admin, s omezeními podle stavu *@
-    @if (isAdmin)
-    {
-        <div class="mb-3">
-            <label asp-for="Request.RepairDescription" class="form-label fw-bold"></label>
-            <textarea asp-for="Request.RepairDescription" class="form-control" rows="4"></textarea>
-            <span asp-validation-for="Request.RepairDescription" class="text-danger"></span>
-        </div>
+            <div class="me-4 mb-1">
+                <label class="form-label fw-bold me-1">Oddělení:</label>
+                <span>@Model.Request.Department</span>
+                <input type="hidden" asp-for="Request.Department" />
+                <input type="hidden" asp-for="Request.IdDepartment" />
+            </div>
 
-        <div class="mb-3">
-            <label asp-for="Request.PlannedRepairDate" class="form-label fw-bold"></label>
-            <input asp-for="Request.PlannedRepairDate" class="form-control" />
-            <span asp-validation-for="Request.PlannedRepairDate" class="text-danger"></span>
-        </div>
+            <div class="me-4 mb-1">
+                <label class="form-label fw-bold me-1">Stav požadavku:</label>
+                <span>@statusText</span>
+                <input type="hidden" asp-for="Request.Status" />
+            </div>
 
-        <div class="mb-3">
-            <label asp-for="Request.EstimatedCost" class="form-label fw-bold"></label>
-            <input asp-for="Request.EstimatedCost" class="form-control" type="number" step="1" min="0" />
-            <span asp-validation-for="Request.EstimatedCost" class="text-danger"></span>
+            @* Ve stavu V procesu a dále zobraz "Opravit do" *@
+            @if (Model.Request.Status != (int)Status.New && Model.Request.DueDate.HasValue)
+            {
+                <div class="me-4 mb-1">
+                    <label class="form-label fw-bold me-1">
+                        @Html.DisplayNameFor(m => m.Request.DueDate):
+                    </label>
+                    <span title="Opravit do" data-bs-toggle="tooltip">@dueDateText</span>
+                </div>
+            }
         </div>
+    </fieldset>
+    @* ===================== KONEC: HLAVIČKA POŽADAVKU =================== *@
 
-        @* Skutečné náklady:
-           - ve stavu V procesu editovat (pro „Vyřídit“)
-           - jinde jen zobrazit, ne u Nových *@
-        @if (Model.Request.Status == (int)Status.InProgress)
+    @* ======================= ZADÁNÍ POŽADAVKU ======================= *@
+    <fieldset class="border rounded-3 p-3 mb-4">
+        <legend class="float-none w-auto px-2 fw-bold">Zadání</legend>
+
+        @* 1) POPIS ZÁVADY *@
+        @if (Model.IsOwner && Model.Request.Status == (int)Status.New)
         {
             <div class="mb-3">
-                <label asp-for="Request.ActualCost" class="form-label fw-bold"></label>
-                <input asp-for="Request.ActualCost" class="form-control" type="number" step="1" min="0" />
-                <span asp-validation-for="Request.ActualCost" class="text-danger"></span>
+                <label asp-for="Request.IssueDescription" class="form-label fw-bold"></label>
+                <textarea asp-for="Request.IssueDescription" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Request.IssueDescription" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex align-items-baseline justify-content-between mb-1">
+                    <label asp-for="Request.RepairCategory" class="form-label fw-bold me-2"></label>
+                    <span>
+                        <b>@Html.DisplayNameFor(m => m.Request.DueDate):</b>
+                        <span id="dueDatePreview" title="Opravit do">@dueDateText</span>
+                        <input type="hidden" asp-for="Request.DueDate" />
+                    </span>
+                </div>
+                <select asp-for="Request.RepairCategory"
+                        asp-items="Html.GetEnumSelectList<RepairCategory>()"
+                        class="form-select"
+                        id="repairCategorySelect">
+                </select>
             </div>
         }
-        else if (Model.Request.Status != (int)Status.New)
+        else
         {
-            <div class="mb-3 d-flex align-items-baseline">
-                <label asp-for="Request.ActualCost" class="form-label fw-bold me-2"></label>
-                <span>
-                    @(Model.Request.ActualCost.HasValue
-                        ? Model.Request.ActualCost.Value.ToString("N0")
-                        : "")
+                string GetCategoryText(int cat) => cat switch
+                {
+                    (int)RepairCategory.Light   => "Lehká (60 dní)",
+                    (int)RepairCategory.Serious => "Vážná (30 dní)",
+                    (int)RepairCategory.Urgent  => "Urgentní (5 dní)",
+                    _                           => "Neznámá"
+                };
+
+                var userCatText  = GetCategoryText(Model.Request.RepairCategory);
+                var adminCatText = Model.Request.RepairCategoryAdmin.HasValue
+                    ? GetCategoryText(Model.Request.RepairCategoryAdmin.Value)
+                    : null;
+
+                bool hasDifferentAdminCat =
+                    Model.Request.RepairCategoryAdmin.HasValue &&
+                    Model.Request.RepairCategoryAdmin.Value != Model.Request.RepairCategory;
+
+                // aktuální DueDate (podle efektivní kategorie – admin/user)
+                var currentDueText = Model.Request.DueDate.HasValue
+                    ? Model.Request.DueDate.Value.ToString("dd.MM.yyyy")
+                    : string.Empty;
+
+                // termín jen podle uživatelské kategorie (RepairCategory)
+                string? userDueText = null;
+                if (Model.Request.CreatedDate != default && Model.Request.RepairCategory != 0)
+                {
+                    int GetDaysUser(int cat) => cat switch
+                    {
+                        (int)RepairCategory.Light   => 60,
+                        (int)RepairCategory.Serious => 30,
+                        (int)RepairCategory.Urgent  => 5,
+                        _                           => 0
+                    };
+
+                    var daysUser = GetDaysUser(Model.Request.RepairCategory);
+                    if (daysUser > 0)
+                    {
+                        userDueText = Model.Request.CreatedDate
+                            .AddDays(daysUser)
+                            .ToString("dd.MM.yyyy");
+                    }
+                }
+
+            <div class="mb-3">
+                <label class="form-label fw-bold me-2">
+                    @Html.DisplayNameFor(m => m.Request.IssueDescription):
+                </label>
+                <p class="mb-0">@Model.Request.IssueDescription</p>
+                <input type="hidden" asp-for="Request.IssueDescription" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold me-2">
+                    @Html.DisplayNameFor(m => m.Request.RepairCategory):
+                </label>
+                <span class="me-3">
+                    @if (hasDifferentAdminCat)
+                    {
+                        @adminCatText @: (@userCatText)
+                    }
+                    else
+                    {
+                        @userCatText
+                    }
                 </span>
-                <input type="hidden" asp-for="Request.ActualCost" />
+
+                <span>
+                    <b>@Html.DisplayNameFor(m => m.Request.DueDate):</b>
+                    @currentDueText
+                    @if (hasDifferentAdminCat && !string.IsNullOrEmpty(userDueText))
+                    {
+                        @: (@userDueText)
+                    }
+                </span>
+
+                <input type="hidden" asp-for="Request.RepairCategory" />
+                <input type="hidden" asp-for="Request.DueDate" />
             </div>
         }
+
+    </fieldset>
+
+    @if (isAdmin)
+    {
+        <fieldset class="border rounded-3 p-3 mb-4">
+            <legend class="float-none w-auto px-2 fw-bold">Řešení</legend>
+
+            @if (Model.Request.Status == (int)Status.New)
+            {
+                <div class="form-check mb-3">
+                    <input asp-for="InProgress" class="form-check-input" />
+                    <label asp-for="InProgress" class="form-check-label">V procesu</label>
+                </div>
+            }
+
+            @if (Model.Request.Status == (int)Status.ToConfirm)
+            {
+                <div class="mb-3">
+                    <label class="form-label fw-bold">@Html.DisplayNameFor(m => m.Request.RepairDescription):</label>
+                    <p class="mb-0">@Model.Request.RepairDescription</p>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <label class="form-label fw-bold">@Html.DisplayNameFor(m => m.Request.PlannedRepairDate):</label>
+                        <p class="mb-0">
+                            @(Model.Request.PlannedRepairDate.HasValue
+                                ? Model.Request.PlannedRepairDate.Value.ToString("dd.MM.yyyy")
+                                : "")
+                        </p>
+                    </div>
+
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <label class="form-label fw-bold">@Html.DisplayNameFor(m => m.Request.EstimatedCost):</label>
+                        <p class="mb-0">
+                            @(Model.Request.EstimatedCost.HasValue
+                                ? Model.Request.EstimatedCost.Value.ToString("N0")
+                                : "")
+                        </p>
+                    </div>
+
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <label class="form-label fw-bold">@Html.DisplayNameFor(m => m.Request.ActualCost):</label>
+                        <p class="mb-0">
+                            @(Model.Request.ActualCost.HasValue
+                                ? Model.Request.ActualCost.Value.ToString("N0")
+                                : "")
+                        </p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label asp-for="Request.RepairDescription" class="form-label fw-bold"></label>
+                    <textarea asp-for="Request.RepairDescription" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Request.RepairDescription" class="text-danger"></span>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <label asp-for="Request.PlannedRepairDate" class="form-label fw-bold"></label>
+                        <input asp-for="Request.PlannedRepairDate"
+                               class="form-control"
+                               type="date" id="plannedRepairDateInput"
+                               data-created="@Model.Request.CreatedDate.ToString("yyyy-MM-dd")"
+                               data-user-cat="@Model.Request.RepairCategory"
+                               data-admin-cat="@Model.Request.RepairCategoryAdmin" />
+                        <span asp-validation-for="Request.PlannedRepairDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-2 mb-md-0">
+                        <label asp-for="Request.EstimatedCost" class="form-label fw-bold"></label>
+                        <input asp-for="Request.EstimatedCost" class="form-control" type="number" step="1" min="0" />
+                        <span asp-validation-for="Request.EstimatedCost" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Request.ActualCost" class="form-label fw-bold"></label>
+
+                        @if (Model.Request.Status == (int)Status.InProgress)
+                        {
+                            <input asp-for="Request.ActualCost" class="form-control" type="number" step="1" min="0" />
+                            <span asp-validation-for="Request.ActualCost" class="text-danger"></span>
+                        }
+                        else if (Model.Request.Status != (int)Status.New)
+                        {
+                            <div class="d-flex align-items-baseline">
+                                <span>
+                                    @(Model.Request.ActualCost.HasValue
+                                        ? Model.Request.ActualCost.Value.ToString("N0")
+                                        : "")
+                                </span>
+                                <input type="hidden" asp-for="Request.ActualCost" />
+                            </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="Request.ActualCost" />
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (isAdmin && (Model.Request.Status == (int)Status.New || Model.Request.Status == (int)Status.InProgress))
+            {
+                // 0 = shodné se zadavatelem, pak běžné enum hodnoty
+                var enumItems = Html.GetEnumSelectList<RepairCategory>();
+
+                var adminItems = new List<SelectListItem>
+                {
+                    new SelectListItem
+                    {
+                        Text = "Shodné se zadavatelem",
+                        Value = "0",
+                        Selected = !Model.Request.RepairCategoryAdmin.HasValue ||
+                                   Model.Request.RepairCategoryAdmin.Value == 0
+                    }
+                };
+
+                foreach (var it in enumItems)
+                {
+                    adminItems.Add(new SelectListItem
+                    {
+                        Text = it.Text,
+                        Value = it.Value,
+                        Selected = Model.Request.RepairCategoryAdmin.HasValue &&
+                                   it.Value == Model.Request.RepairCategoryAdmin.Value.ToString()
+                    });
+                }
+
+                <div class="mb-0">
+                    <label asp-for="Request.RepairCategoryAdmin" class="form-label fw-bold">
+                        Kategorie opravy (admin)
+                    </label>
+                    <select asp-for="Request.RepairCategoryAdmin"
+                            class="form-select"
+                            asp-items="adminItems">
+                    </select>
+                    <span asp-validation-for="Request.RepairCategoryAdmin" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="Request.RepairCategoryAdmin" />
+            }
+        </fieldset>
     }
+    @* ===================== KONEC: REAKCE ADMINA ====================== *@
+
+    @* ===================== ROZHODNUTÍ ZADAVATELE ====================== *@
+    @if (Model.Request.Status == (int)Status.ToConfirm && isOwner)
+    {
+        <fieldset class="border rounded-3 p-3 mb-4">
+            <legend class="float-none w-auto px-2 fw-bold">Vrácení</legend>
+
+            <div class="mb-3">
+                <label asp-for="Request.ReturnDescription" class="form-label fw-bold">
+                    Důvod vrácení
+                </label>
+                <textarea asp-for="Request.ReturnDescription" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Request.ReturnDescription" class="text-danger"></span>
+            </div>
+
+            <div>
+                <button type="submit"
+                        asp-page-handler="Return"
+                        class="btn btn-warning me-2">
+                    Vrátit k dořešení
+                </button>
+            </div>
+        </fieldset>
+    }
+    @* ===================== KONEC: ROZHODNUTÍ ZADAVATELE ====================== *@
 
     <div class="mt-3">
         @if (Model.Request.Status == (int)Status.InProgress && isAdmin)
@@ -166,13 +370,44 @@
             <button type="submit"
                     asp-page-handler="Resolve"
                     class="btn btn-success me-2">
-                Vyřídit
+                Předat k odsouhlašení
+            </button>
+
+            @* tlačítko Zrušit otevře potvrzovací dialog *@
+            <button type="button"
+                    class="btn btn-danger me-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#cancelConfirmModal">
+                Zrušit požadavek
+            </button>
+        }
+        else if (Model.Request.Status == (int)Status.ToConfirm)
+        {
+            @* Ve stavu K potvrzení – nic needitujeme, zadavatel může pouze potvrdit *@
+            @if (isOwner)
+            {
+                <button type="button"
+                        class="btn btn-success"
+                        data-bs-toggle="modal"
+                        data-bs-target="#confirmModal">
+                    Potvrdit vyřešení požadavku
+                </button>
+            }
+
+        }
+        else if (Model.Request.Status == (int)Status.Returned && isAdmin)
+        {
+            @* ve stavu VRÁCENO – tlačítko „K odsouhlašení“ *@
+            <button type="submit"
+                    asp-page-handler="ResolveFromReturned"
+                    class="btn btn-success me-2">
+                Předat k odsouhlašení
             </button>
 
             <button type="submit"
-                    asp-page-handler="Cancel"
-                    class="btn btn-danger me-2">
-                Zrušit
+                    asp-page-handler="Save"
+                    class="btn btn-primary">
+                Uložit
             </button>
         }
         else
@@ -184,13 +419,14 @@
                 Uložit
             </button>
 
-            @* ve stavu NOVÁ dovolíme Zrušit zadavateli i adminovi *@
+            @* ve stavu NOVÁ dovolíme Zrušit zadavateli i adminovi – s potvrzovacím dialogem *@
             @if (Model.Request.Status == (int)Status.New && (isOwner || isAdmin))
             {
-                <button type="submit"
-                        asp-page-handler="Cancel"
-                        class="btn btn-danger ms-2">
-                    Zrušit
+                <button type="button"
+                        class="btn btn-danger ms-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#cancelConfirmModal">
+                    Zrušit požadavek
                 </button>
             }
         }
@@ -199,8 +435,90 @@
             Zpět na přehled
         </a>
     </div>
+
+    @* Potvrzovací dialog pro zrušení požadavku *@
+    <div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelConfirmModalLabel">Potvrzení zrušení</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                </div>
+                <div class="modal-body">
+                    Opravdu zrušit tento požadavek?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zpět</button>
+                    <button type="submit" asp-page-handler="Cancel" class="btn btn-danger">Zrušit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Potvrzovací dialog pro stav "K potvrzení" *@
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Potvrzení vyřízení</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zavřít"></button>
+                </div>
+                <div class="modal-body">
+                    Opravdu potvrdit tento požadavek jako vyřízený?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zpět</button>
+                    <button type="submit" asp-page-handler="Confirm" class="btn btn-success">Potvrdit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    @if (User.IsInRole("SRV - admin"))
+    {
+        <script>
+            (function () {
+                const input = document.getElementById('plannedRepairDateInput');
+                if (!input) return;
+
+                input.addEventListener('focus', function () {
+                    // pokud už něco je, nic nepřepisuj
+                    if (input.value) return;
+
+                    const createdStr = input.dataset.created;
+                    const userCatStr = input.dataset.userCat;
+                    const adminCatStr = input.dataset.adminCat;
+
+                    if (!createdStr) return;
+
+                    const created = new Date(createdStr);
+                    if (isNaN(created.getTime())) return;
+
+                    const userCat = parseInt(userCatStr || '0', 10);
+                    const adminCat = parseInt(adminCatStr || '0', 10);
+
+                    // priorita: admin kategorie (pokud nenulová), jinak uživatelská
+                    const effectiveCat = adminCat !== 0 ? adminCat : userCat;
+
+                    // podle tvého enumu: 60 = lehká, 30 = vážná, 5 = urgentní
+                    const days = effectiveCat;
+
+                    if (!days || days <= 0) return;
+
+                    const due = new Date(created);
+                    due.setDate(due.getDate() + days);
+
+                    const yyyy = due.getFullYear();
+                    const mm = String(due.getMonth() + 1).padStart(2, '0');
+                    const dd = String(due.getDate()).padStart(2, '0');
+
+                    input.value = `${yyyy}-${mm}-${dd}`;
+                });
+            })();
+        </script>
+    }
 }

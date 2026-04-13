@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using X.PagedList.Extensions;
 using StatusEnum = Jas.Globals.Srv.Enums.Status;
 
 namespace Jas.Areas.Srv.Pages
@@ -24,6 +26,30 @@ namespace Jas.Areas.Srv.Pages
 
         public IList<SrvMaintenanceRequestModel> Requests { get; private set; } = [];
 
+        [BindProperty(SupportsGet = true)]
+        public int PageNumber { get; set; } = 1;
+
+        public int PageSize { get; } = 20;
+
+        [BindProperty(SupportsGet = true)]
+        public int? DepartmentFilterId { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public DateTime? CreatedFrom { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public DateTime? CreatedTo { get; set; }
+
+        public class DepartmentOption
+        {
+            public int Id { get; set; }
+            public string Name { get; set; } = string.Empty;
+        }
+
+        public List<DepartmentOption> Departments { get; private set; } = new();
+
+        public IPagedList<SrvMaintenanceRequestModel> PagedRequests { get; private set; } = null!;
+
         public IndexModel(
             JasMtzDbContext context,
             IMapper mapper,
@@ -34,7 +60,7 @@ namespace Jas.Areas.Srv.Pages
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> OnGetAsync(string? filter)
+        public async Task<IActionResult> OnGetAsync(string? filter, int? pageNumber)
         {
             // základní dotaz pro požadavky
             var query = _context.SrvMaintenanceRequests
@@ -55,6 +81,25 @@ namespace Jas.Areas.Srv.Pages
                     // bez identifikace uživatele nevracej nic
                     query = query.Where(r => false);
                 }
+            }
+
+            // filtr podle oddělení (jen pro admina má smysl vybírat ze všech středisek)
+            if (DepartmentFilterId.HasValue && DepartmentFilterId.Value != 0)
+            {
+                query = query.Where(r => r.IdDepartment == DepartmentFilterId.Value);
+            }
+
+            // filtr podle data vytvoření
+            if (CreatedFrom.HasValue)
+            {
+                query = query.Where(r => r.CreatedDate >= CreatedFrom.Value);
+            }
+
+            if (CreatedTo.HasValue)
+            {
+                // koncový čas je do konce dne (23:59:59.999), aby se zahrnuly všechny záznamy i s časem
+                var endOfDay = CreatedTo.Value.Date.AddDays(1).AddTicks(-1);
+                query = query.Where(r => r.CreatedDate <= endOfDay);
             }
 
             // načteme (používá se pro jednotlivé seznamy ve view)
@@ -83,9 +128,17 @@ namespace Jas.Areas.Srv.Pages
                 {
                     targetFilter = "inprogress-requests";
                 }
+                else if (Requests.Any(r => r.Status == (int)StatusEnum.ToConfirm))
+                {
+                    targetFilter = "toconfirm-requests";
+                }
                 else if (Requests.Any(r => r.Status == (int)StatusEnum.Resolved))
                 {
                     targetFilter = "resolved-requests";
+                }
+                else if (Requests.Any(r => r.Status == (int)StatusEnum.Returned))
+                {
+                    targetFilter = "returned-requests";
                 }
                 else if (Requests.Any(r => r.Status == (int)StatusEnum.Cancelled))
                 {
@@ -99,9 +152,38 @@ namespace Jas.Areas.Srv.Pages
                 }
             }
 
+            // stránkování podle filtru stavu
+            var stateFilter = filter switch
+            {
+                "new-requests"        => (int)StatusEnum.New,
+                "inprogress-requests" => (int)StatusEnum.InProgress,
+                "toconfirm-requests"  => (int)StatusEnum.ToConfirm,
+                "resolved-requests"   => (int)StatusEnum.Resolved,
+                "returned-requests"   => (int)StatusEnum.Returned,
+                "cancelled-requests"  => (int)StatusEnum.Cancelled,
+                _                      => (int)StatusEnum.New
+            };
+
+            var filtered = Requests
+                .Where(r => r.Status == stateFilter)
+                .OrderByDescending(r => r.CreatedDate)
+                .ToList();
+
+            PageNumber = pageNumber.GetValueOrDefault(PageNumber);
+            if (PageNumber <= 0)
+            {
+                PageNumber = 1;
+            }
+
+            PagedRequests = filtered.ToPagedList(PageNumber, PageSize);
+
+            // pro zobrazení pracujeme jen s aktuální stránkou
+            Requests = PagedRequests.ToList();
+
             // doplnit názvy oddělení (středisko) a jména uživatelů
             await LoadDepartmentsAsync();
             await LoadUsersAsync();
+            await LoadDepartmentFilterAsync();
 
             // filtr je nastavený (nebo nebyl nalezen žádný jiný vhodný) – vykreslí se podle Razor logiky
             return Page();
@@ -176,6 +258,23 @@ namespace Jas.Areas.Srv.Pages
                     request.UserName = name ?? string.Empty;
                 }
             }
+        }
+
+        private async Task LoadDepartmentFilterAsync()
+        {
+            var departments = await _context.JasDepartments
+                .AsNoTracking()
+                .OrderBy(d => d.Name)
+                .Select(d => new { d.Id, d.Name })
+                .ToListAsync();
+
+            Departments = departments
+                .Select(d => new DepartmentOption
+                {
+                    Id = d.Id,
+                    Name = d.Name ?? string.Empty
+                })
+                .ToList();
         }
     }
 }

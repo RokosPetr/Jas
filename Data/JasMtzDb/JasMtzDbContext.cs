@@ -47,6 +47,8 @@ public partial class JasMtzDbContext : DbContext
 
     public virtual DbSet<SrvMaintenanceRequest> SrvMaintenanceRequests { get; set; }
 
+    public virtual DbSet<SrvMaintenanceRequestNote> SrvMaintenanceRequestNotes { get; set; }
+
     public virtual DbSet<ViMkMtzUser> ViMkMtzUsers { get; set; }
 
     public virtual DbSet<ViMtzUser> ViMtzUsers { get; set; }
@@ -461,6 +463,9 @@ public partial class JasMtzDbContext : DbContext
                 .HasColumnName("ico");
             entity.Property(e => e.IdMkStand).HasColumnName("id_mk_stand");
             entity.Property(e => e.IdStand).HasColumnName("id_stand");
+            entity.Property(e => e.Voj)
+                .HasMaxLength(10)
+                .HasColumnName("voj");
         });
 
         modelBuilder.Entity<PtgStandSearch>(entity =>
@@ -525,10 +530,38 @@ public partial class JasMtzDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("removed_date");
             entity.Property(e => e.RepairCategory).HasColumnName("repair_category");
+            entity.Property(e => e.RepairCategoryAdmin).HasColumnName("repair_category_admin");
             entity.Property(e => e.RepairDescription)
                 .HasMaxLength(1000)
                 .HasColumnName("repair_description");
+            entity.Property(e => e.ReturnDescription)
+                .HasMaxLength(1000)
+                .HasColumnName("return_description");
             entity.Property(e => e.Status).HasColumnName("status");
+        });
+
+        modelBuilder.Entity<SrvMaintenanceRequestNote>(entity =>
+        {
+            entity.ToTable("srv_maintenance_request_note");
+
+            entity.HasIndex(e => new { e.IdRequest, e.CreatedAt }, "IX_srv_maintenance_request_note_id_request_created_at");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasPrecision(0)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnName("created_at");
+            entity.Property(e => e.IdRequest).HasColumnName("id_request");
+            entity.Property(e => e.IdUser)
+                .HasMaxLength(450)
+                .HasColumnName("id_user");
+            entity.Property(e => e.NoteText).HasColumnName("note_text");
+            entity.Property(e => e.NoteType).HasColumnName("note_type");
+
+            entity.HasOne(d => d.IdRequestNavigation).WithMany(p => p.SrvMaintenanceRequestNotes)
+                .HasForeignKey(d => d.IdRequest)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_srv_maintenance_request_note_request");
         });
 
         modelBuilder.Entity<ViMkMtzUser>(entity =>

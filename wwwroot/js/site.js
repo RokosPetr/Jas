@@ -153,6 +153,8 @@
         // spočítat při načtení stránky podle výchozí hodnoty
         recalcDueDate();
     })();
+
+    // Inicializace Bootstrap tooltipů (pro prvky s data-bs-toggle="tooltip")
 });
 
 

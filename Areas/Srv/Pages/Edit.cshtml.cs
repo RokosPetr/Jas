@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using StatusEnum = Jas.Globals.Srv.Enums.Status;
 using RepairCategoryEnum = Jas.Globals.Srv.Enums.RepairCategory;
+using NoteTypeEnum = Jas.Globals.Srv.Enums.MaintenanceRequestNoteType;
 
 namespace Jas.Areas.Srv.Pages
 {
@@ -63,14 +64,23 @@ namespace Jas.Areas.Srv.Pages
                 CreatedDate = entity.CreatedDate,
                 RemovedDate = entity.RemovedDate,
                 DueDate = entity.DueDate,
-                PlannedRepairDate = entity.PlannedRepairDate,
+                PlannedRepairDate = entity.PlannedRepairDate ?? entity.DueDate,
                 IssueDescription = entity.IssueDescription,
                 RepairDescription = entity.RepairDescription,
                 Status = entity.Status,
                 RepairCategory = entity.RepairCategory,
                 EstimatedCost = entity.EstimatedCost,
-                ActualCost = entity.ActualCost
+                ActualCost = entity.ActualCost,
+                RepairCategoryAdmin = entity.RepairCategoryAdmin,
+                ReturnDescription = entity.ReturnDescription
             };
+
+            // po mapování:
+            if (Request.Status == (int)StatusEnum.Returned)
+            {
+                // textarea pro nové vyjádření bude prázdná
+                Request.ReturnDescription = null;
+            }
 
             InProgress = Request.Status == (int)StatusEnum.InProgress;
 
@@ -103,7 +113,14 @@ namespace Jas.Areas.Srv.Pages
                 {
                     ModelState.AddModelError("Request.PlannedRepairDate", "Zadejte plánovaný termín opravy.");
                 }
+            }
 
+            if (IsAdmin && Request.Status == (int)StatusEnum.Returned)
+            {
+                if (string.IsNullOrWhiteSpace(Request.ReturnDescription))
+                {
+                    ModelState.AddModelError("Request.ReturnDescription", "Zadejte nové vyjádření k vrácenému požadavku.");
+                }
             }
 
             if (!ModelState.IsValid)
@@ -124,48 +141,52 @@ namespace Jas.Areas.Srv.Pages
             // zadavatel může měnit základní pole jen ve stavu NOVÁ
             bool canEditBasic = IsOwner && entity.Status == (int)StatusEnum.New;
 
-                if (canEditBasic)
+            if (canEditBasic)
+            {
+                entity.IssueDescription = Request.IssueDescription;
+
+                // uživatel může měnit RepairCategory jen ve stavu NEW
+                if (entity.RepairCategory != Request.RepairCategory)
                 {
-                    entity.IssueDescription = Request.IssueDescription;
-
-                    bool categoryChanged = entity.RepairCategory != Request.RepairCategory;
                     entity.RepairCategory = Request.RepairCategory;
-
-                    if (categoryChanged)
-                    {
-                        var now = DateTime.Now;
-                        entity.CreatedDate = now;
-
-                        // počet dní odvozený od kategorie opravy
-                        var days = entity.RepairCategory switch
-                        {
-                            (int)RepairCategoryEnum.Light   => 60,
-                            (int)RepairCategoryEnum.Serious => 30,
-                            (int)RepairCategoryEnum.Urgent  => 5,
-                            _                               => 0
-                        };
-
-                        if (days > 0)
-                        {
-                            entity.DueDate = now.AddDays(days);
-                        }
-                    }
+                }
+                // POZNÁMKA: žádné ruční přidávání poznámek typu Issue – o to se postará interceptor
             }
 
             // Admin – ostatní úpravy (obecné uložení)
             if (IsAdmin)
             {
-                entity.RepairDescription = Request.RepairDescription;
+                // Repair – jen nastavit popis, interceptor vytvoří poznámku
+                if (!string.IsNullOrWhiteSpace(Request.RepairDescription))
+                {
+                    entity.RepairDescription = Request.RepairDescription;
+                }
+
+                // Return – ve stavu VRÁCENO jen nastavit popis, interceptor vytvoří poznámku
+                if (entity.Status == (int)StatusEnum.Returned &&
+                    !string.IsNullOrWhiteSpace(Request.ReturnDescription))
+                {
+                    entity.ReturnDescription = Request.ReturnDescription;
+                }
+
                 entity.PlannedRepairDate = Request.PlannedRepairDate;
-                entity.EstimatedCost = Request.EstimatedCost;
-                entity.ActualCost = Request.ActualCost;
+                entity.EstimatedCost     = Request.EstimatedCost;
+                entity.ActualCost        = Request.ActualCost;
+
+                // ---- LOGIKA RepairCategoryAdmin + DueDate ----
+                if (Request.RepairCategoryAdmin == 0 ||
+                    Request.RepairCategoryAdmin == entity.RepairCategory)
+                {
+                    entity.RepairCategoryAdmin = null;
+                }
+                else
+                {
+                    entity.RepairCategoryAdmin = Request.RepairCategoryAdmin;
+                }
             }
 
-            // Přepnutí do stavu V procesu:
-            if (InProgress ||
-                entity.PlannedRepairDate.HasValue ||
-                entity.EstimatedCost.HasValue ||
-                !string.IsNullOrWhiteSpace(entity.RepairDescription))
+            // Přepnutí do stavu V procesu
+            if (IsAdmin && InProgress)
             {
                 entity.Status = (int)StatusEnum.InProgress;
             }
@@ -176,17 +197,13 @@ namespace Jas.Areas.Srv.Pages
             return RedirectToPage("/Index", new { filter });
         }
 
-        // Handler pro tlačítko „Vyřídit“
+        // Handler pro tlačítko „K potvrzení“ (dříve „Vyřídit“)
         public async Task<IActionResult> OnPostResolveAsync()
         {
             ModelState.Remove("Request.IdUser");
             ModelState.Remove("Request.IdSolver");
 
             // Ve stavu „V procesu“ při Vyřídit vyžadovat:
-            //  - popis opravy
-            //  - plánovaný termín opravy
-            //  - plánované náklady
-            //  - skutečné náklady
             if (string.IsNullOrWhiteSpace(Request.RepairDescription))
             {
                 ModelState.AddModelError("Request.RepairDescription", "Zadejte popis opravy.");
@@ -224,16 +241,52 @@ namespace Jas.Areas.Srv.Pages
 
             if (entity.Status == (int)StatusEnum.InProgress)
             {
-                // aktualizovat adminovská pole včetně nákladů
-                entity.RepairDescription = Request.RepairDescription;
-                entity.PlannedRepairDate = Request.PlannedRepairDate;
-                entity.EstimatedCost = Request.EstimatedCost;
-                entity.ActualCost = Request.ActualCost;
+                if (!string.IsNullOrWhiteSpace(Request.RepairDescription))
+                {
+                    // jen nastavíme, interceptor zapíše historii typu Repair
+                    entity.RepairDescription = Request.RepairDescription;
+                }
 
-                entity.Status = (int)StatusEnum.Resolved;
+                entity.PlannedRepairDate = Request.PlannedRepairDate;
+                entity.EstimatedCost     = Request.EstimatedCost;
+                entity.ActualCost        = Request.ActualCost;
+
+                // při přepnutí do stavu "K potvrzení" rovnou nastavit datum vyřízení
+                entity.Status      = (int)StatusEnum.ToConfirm;
                 entity.RemovedDate = DateTime.Now;
+
                 await _context.SaveChangesAsync();
             }
+
+            var filter = GetFilterForStatus(entity.Status);
+            return RedirectToPage("/Index", new { filter });
+        }
+
+        // Handler pro tlačítko „Potvrdit“ (ze stavu K potvrzení do Vyřízeno)
+        public async Task<IActionResult> OnPostConfirmAsync()
+        {
+            ModelState.Remove("Request.IdUser");
+            ModelState.Remove("Request.IdSolver");
+
+            var entity = await _context.SrvMaintenanceRequests
+                .FirstOrDefaultAsync(r => r.Id == Request.Id);
+
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            // Potvrdit může jen zadavatel a jen ve stavu K potvrzení
+            var currentUserId = _userService.JasUser?.Id;
+            if (entity.Status != (int)StatusEnum.ToConfirm || currentUserId != entity.IdUser)
+            {
+                return Forbid();
+            }
+
+            // ve stavu K potvrzení se jen mění stav na Vyřízeno,
+            // datum vyřízení (RemovedDate) již bylo nastaveno při přechodu do K potvrzení
+            entity.Status = (int)StatusEnum.Resolved;
+            await _context.SaveChangesAsync();
 
             var filter = GetFilterForStatus(entity.Status);
             return RedirectToPage("/Index", new { filter });
@@ -258,9 +311,6 @@ namespace Jas.Areas.Srv.Pages
             // Validace důvodu zrušení podle role a stavu
             if (entity.Status == (int)StatusEnum.New)
             {
-                // Nový požadavek:
-                //  - pokud ruší zadavatel, důvod nevyžadujeme (doplníme automaticky)
-                //  - pokud ruší admin, důvod je povinný
                 if (!IsOwner && IsAdmin && string.IsNullOrWhiteSpace(Request.RepairDescription))
                 {
                     ModelState.AddModelError("Request.RepairDescription", "Zadejte důvod zrušení.");
@@ -268,7 +318,6 @@ namespace Jas.Areas.Srv.Pages
             }
             else
             {
-                // Ostatní stavy – důvod zrušení vždy povinný
                 if (string.IsNullOrWhiteSpace(Request.RepairDescription))
                 {
                     ModelState.AddModelError("Request.RepairDescription", "Zadejte důvod zrušení.");
@@ -282,20 +331,122 @@ namespace Jas.Areas.Srv.Pages
                 return Page();
             }
 
-            // Vlastní zrušení podle pravidel
             if (entity.Status == (int)StatusEnum.New && IsOwner)
             {
-                // 1) Zadavatel ruší NOVÝ požadavek – pevný text
                 entity.RepairDescription = "Zrušeno zadavatelem";
             }
             else
             {
-                // 2) Admin (nebo zrušení v jiném stavu) – použít zadaný důvod
                 entity.RepairDescription = Request.RepairDescription;
             }
 
-            entity.Status = (int)StatusEnum.Cancelled;
+            entity.Status      = (int)StatusEnum.Cancelled;
             entity.RemovedDate = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            var filter = GetFilterForStatus(entity.Status);
+            return RedirectToPage("/Index", new { filter });
+        }
+
+        // Handler pro tlačítko „Vrátit“ (ze stavu K potvrzení do Vráceno)
+        public async Task<IActionResult> OnPostReturnAsync()
+        {
+            ModelState.Remove("Request.IdUser");
+            ModelState.Remove("Request.IdSolver");
+
+            // dopočítat IsOwner i při POSTu
+            IsOwner = _userService.JasUser?.Id == Request.IdUser;
+
+            var entity = await _context.SrvMaintenanceRequests
+                .FirstOrDefaultAsync(r => r.Id == Request.Id);
+
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            var currentUserId = _userService.JasUser?.Id;
+            if (entity.Status != (int)StatusEnum.ToConfirm || currentUserId != entity.IdUser)
+            {
+                return Forbid();
+            }
+
+            if (string.IsNullOrWhiteSpace(Request.ReturnDescription))
+            {
+                ModelState.AddModelError("Request.ReturnDescription", "Zadejte důvod vrácení.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await LoadDepartmentAsync();
+                await LoadUserNameAsync();
+                return Page();
+            }
+
+            // Můžete:
+            // 1) nechat interceptor, aby vytvořil poznámku typu Return
+            //    → jen nastavíme ReturnDescription
+            entity.ReturnDescription = Request.ReturnDescription;
+            entity.Status            = (int)StatusEnum.Returned;
+
+            await _context.SaveChangesAsync();
+
+            var filter = GetFilterForStatus(entity.Status);
+            return RedirectToPage("/Index", new { filter });
+        }
+
+        // Handler pro tlačítko „K odsouhlašení“ ze stavu VRÁCENO
+        public async Task<IActionResult> OnPostResolveFromReturnedAsync()
+        {
+            ModelState.Remove("Request.IdUser");
+            ModelState.Remove("Request.IdSolver");
+
+            var entity = await _context.SrvMaintenanceRequests
+                .FirstOrDefaultAsync(r => r.Id == Request.Id);
+
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            if (entity.Status != (int)StatusEnum.Returned || !IsAdmin)
+            {
+                return Forbid();
+            }
+
+            // ve stavu VRÁCENO vyžadovat nové vyjádření
+            if (string.IsNullOrWhiteSpace(Request.ReturnDescription))
+            {
+                ModelState.AddModelError("Request.ReturnDescription", "Zadejte nové vyjádření k vrácenému požadavku.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await LoadDepartmentAsync();
+                await LoadUserNameAsync();
+                return Page();
+            }
+
+            // přičíst nové vyjádření do ReturnDescription
+            if (!string.IsNullOrWhiteSpace(Request.ReturnDescription))
+            {
+                var now  = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+                var line = $"{now} - {Request.ReturnDescription.Trim()}";
+                if (string.IsNullOrWhiteSpace(entity.ReturnDescription))
+                {
+                    entity.ReturnDescription = line;
+                }
+                else
+                {
+                    entity.ReturnDescription = entity.ReturnDescription.Trim()
+                                               + Environment.NewLine
+                                               + line;
+                }
+            }
+
+            entity.Status = (int)StatusEnum.ToConfirm;
+            entity.RemovedDate = DateTime.Now;
+
             await _context.SaveChangesAsync();
 
             var filter = GetFilterForStatus(entity.Status);
@@ -307,7 +458,9 @@ namespace Jas.Areas.Srv.Pages
             {
                 (int)StatusEnum.New        => "new-requests",
                 (int)StatusEnum.InProgress => "inprogress-requests",
+                (int)StatusEnum.ToConfirm  => "toconfirm-requests",
                 (int)StatusEnum.Resolved   => "resolved-requests",
+                (int)StatusEnum.Returned   => "returned-requests",
                 (int)StatusEnum.Cancelled  => "cancelled-requests",
                 _                          => "new-requests"
             };

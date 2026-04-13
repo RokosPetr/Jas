@@ -12,8 +12,10 @@
     bool isCreate          = page.Equals("/Create", StringComparison.OrdinalIgnoreCase);
     bool isIndexNew        = page.Equals("/Index", StringComparison.OrdinalIgnoreCase) && filter == "new-requests";
     bool isIndexInProgress = page.Equals("/Index", StringComparison.OrdinalIgnoreCase) && filter == "inprogress-requests";
+    bool isIndexToConfirm  = page.Equals("/Index", StringComparison.OrdinalIgnoreCase) && filter == "toconfirm-requests";
     bool isIndexResolved   = page.Equals("/Index", StringComparison.OrdinalIgnoreCase) && filter == "resolved-requests";
     bool isIndexCancelled  = page.Equals("/Index", StringComparison.OrdinalIgnoreCase) && filter == "cancelled-requests";
+    bool isIndexReturned   = page.Equals("/Index", StringComparison.OrdinalIgnoreCase) && filter == "returned-requests";
 }
 
 <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark">
@@ -79,6 +81,29 @@
 
                 <li class="nav-item">
                     @{
+                        int? toConfirmCount = NavbarService.GetRequestCountByStatus((int)ENUMS.Status.ToConfirm);
+
+                        if (toConfirmCount == null)
+                        {
+                            <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                  aria-disabled="true" tabindex="-1">
+                                K potvrzení
+                                <span class="badge"></span>
+                            </span>
+                        }
+                        else
+                        {
+                            <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap @(isIndexToConfirm ? "active" : "")"
+                               asp-area="Srv" asp-page="/Index" asp-route-filter="toconfirm-requests">
+                                K potvrzení
+                                <span class="badge">@toConfirmCount</span>
+                            </a>
+                        }
+                    }
+                </li>
+
+                <li class="nav-item">
+                    @{
                         int? resolvedCount = NavbarService.GetRequestCountByStatus((int)ENUMS.Status.Resolved);
 
                         if (resolvedCount == null)
@@ -118,6 +143,29 @@
                                asp-area="Srv" asp-page="/Index" asp-route-filter="cancelled-requests">
                                 Zrušené
                                 <span class="badge">@cancelledCount</span>
+                            </a>
+                        }
+                    }
+                </li>
+
+                <li class="nav-item">
+                    @{
+                        int? returnedCount = NavbarService.GetRequestCountByStatus((int)ENUMS.Status.Returned);
+
+                        if (returnedCount == null)
+                        {
+                            <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
+                                  aria-disabled="true" tabindex="-1">
+                                Vrácené
+                                <span class="badge"></span>
+                            </span>
+                        }
+                        else
+                        {
+                            <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap @(isIndexReturned ? "active" : "")"
+                               asp-area="Srv" asp-page="/Index" asp-route-filter="returned-requests">
+                                Vrácené
+                                <span class="badge">@returnedCount</span>
                             </a>
                         }
                     }

@@ -1,0 +1,48 @@
+@page "{id}"
+@model Jas.Areas.Ptg.Pages.EditCustomerModel
+@{
+    ViewData["Title"] = "Editace zákazníka";
+}
+
+<div class="container my-5">
+    <h1>@ViewData["Title"]</h1>
+
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="alert alert-success">@Model.StatusMessage</div>
+    }
+
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Uživatel</label>
+            <div class="form-control-plaintext">@Model.UserName</div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label fw-bold"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <hr />
+
+        <h5>Změna hesla</h5>
+        <div class="mb-3">
+            <label asp-for="NewPassword" class="form-label fw-bold"></label>
+            <input asp-for="NewPassword" class="form-control" />
+            <span asp-validation-for="NewPassword" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ConfirmPassword" class="form-label fw-bold"></label>
+            <input asp-for="ConfirmPassword" class="form-control" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Uložit</button>
+        <a asp-page="./ManagePtgUsers" asp-route-Search="@Model.ReturnSearch" class="btn btn-secondary ms-2">Zpět na seznam</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

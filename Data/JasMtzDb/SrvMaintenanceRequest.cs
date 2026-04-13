@@ -27,11 +27,17 @@ public partial class SrvMaintenanceRequest
 
     public string? RepairDescription { get; set; }
 
+    public string? ReturnDescription { get; set; }
+
     public int Status { get; set; }
 
     public int RepairCategory { get; set; }
 
+    public int? RepairCategoryAdmin { get; set; }
+
     public decimal? EstimatedCost { get; set; }
 
     public decimal? ActualCost { get; set; }
+
+    public virtual ICollection<SrvMaintenanceRequestNote> SrvMaintenanceRequestNotes { get; set; } = new List<SrvMaintenanceRequestNote>();
 }
