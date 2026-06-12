@@ -1,0 +1,37 @@
+{varType App\Modules\StockModule\Orm\Cubicles\Cubicle $row}
+{define cell-code}
+    {if $row->isRival}
+        <div style="margin-right: 10px; position: relative;">
+            {$row->code}
+            <span style="
+                background: #fd8e0c;
+                height: 10px;
+                width: 10px;
+                opacity: .9;
+                display: inline-block;
+                position: absolute;
+                bottom: 7px;
+                right: -13px;
+            "></span>
+        </div>
+    {else}
+        {$row->code}
+    {/if}
+{/define}
+
+{define cell-producers}
+    {$row->producers |implode:', '}
+{/define}
+
+{define cell-activityPeriod}
+    {if $row->activityPeriod <= 0}
+        -
+    {else}
+        {var string $label = $row->activityPeriod === 1 ? 'měsíc' : ($row->activityPeriod < 5 ? 'měsíce' : 'měsíců')}
+        {$row->activityPeriod} {$label}
+    {/if}
+{/define}
+
+{define cell-name}
+    <span n:class="$row->state === $row::STATE_INACTIVE ? text-red, $row->state === $row::STATE_PARTLY_ACTIVE ? text-blue">{$row->name}</span>
+{/define}

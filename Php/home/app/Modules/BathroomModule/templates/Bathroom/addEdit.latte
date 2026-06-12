@@ -1,0 +1,42 @@
+{varType App\Modules\BathroomModule\Orm\Bathrooms\Bathroom $bathroom}
+{block htmlHead}
+    <link rel="stylesheet" type="text/css" href="/dist/lightbox.bundle.css">
+    <script src="/dist/aframe.bundle.js"></script>
+{/block}
+
+{block content}
+    {control bathroomForm}
+    {include #slider}
+    {import 'bathroomView.latte'}
+    <div n:ifset="$bathroom" class="container">
+        {include #bathroomView bathroom => $bathroom, showPosition => true, lightbox => true}
+        <br>
+        <a n:if="$user->isAllowed(':Bathroom:Bathroom:itemLinks')" n:href="itemLinks id => $bathroom->id" class="btn btn-secondary">Nastavení bodů</a>
+        {include #linkPicture bathroom => $bathroom}
+    </div>
+    {include #lightbox}
+{/block}
+
+{define slider}
+    <div id="slider-range"><span id="slider-range-handle" class="ui-slider-handle"></span></div>
+
+    <script>
+        var slider = $('#slider-range');
+        var sliderInput = $('input.range-slider');
+        var slideHandle = $('#slider-range-handle');
+
+        sliderInput.parent().append(slider);
+        slider.slider({
+            min: 0,
+            max: 360,
+            value: sliderInput.val(),
+            create: function() {
+                slideHandle.text(sliderInput.val());
+            },
+            slide: function( event, ui ) {
+                sliderInput.val(ui.value);
+                slideHandle.text(ui.value);
+            }
+        });
+    </script>
+{/define}

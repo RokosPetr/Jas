@@ -1,0 +1,14 @@
+{block content}
+
+<div class="jas-link-wrapper">
+    <a title="Zpět" n:href="obligatoryStock">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět</strong>
+    </a>
+</div>
+
+{if $user->isSuperAdmin()}
+    {control storeSelect}
+{/if}
+
+{control storeMissingObligatorySectors}

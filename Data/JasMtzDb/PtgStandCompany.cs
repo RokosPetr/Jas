@@ -16,4 +16,6 @@ public partial class PtgStandCompany
     public int Cipa { get; set; }
 
     public string? Voj { get; set; }
+
+    public int? K2Id { get; set; }
 }

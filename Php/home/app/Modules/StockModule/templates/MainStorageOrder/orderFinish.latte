@@ -1,0 +1,101 @@
+{varType App\Modules\StockModule\Orm\StockItems\StockItemRepository $stockItemRepo}
+{var bool $smartOrder = $presenter->action === 'smartOrderFinish'}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na nastavení objednávky" n:href="$smartOrder ? smartOrderStart : manualOrderStart">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na nastavení objednávky</strong>
+    </a>
+</div>
+<h2 n:ifset="$producer">{$producer}</h2>
+{form mainStorageOrderForm}
+    {if !$form['items']->getComponents()->count()}
+        <h2>Pro zadané parametry nebyly generovány žádné objednávky</h2>
+    {else}
+        <table class="table datagrid-table jambo_table">
+            <thead>
+                <tr>
+                    <th>Reg. číslo</th>
+                    <th>Název</th>
+                    <th>Kat. číslo</th>
+                    <th>Zásoba</th>
+                    <th n:if="$smartOrder">Prodejnost/měsíc</th>
+                    <th>Na paletě</th>
+                    <th>Minimum</th>
+                    <th>Počet palet</th>
+                    <th>Množství celkem</th>
+                    <th>Jednotka</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {var bool $showLegend = false}
+                {foreach $form['items']->getComponents() as $itemId => $itemContainer}
+                    {var App\Modules\StockModule\Orm\StockItems\StockItem $stockItem = $smartOrder ? $stockItemRepo->getById($itemId) : $selectedItemsToOrder[$itemId]}
+                    {if !$stockItem->palette && !$showLegend}
+                        {php $showLegend = true}
+                    {/if}
+                    <tr n:class="!$stockItem->palette ? legend_red">
+                        <td>{$stockItem->regNumber}</td>
+                        <td>{$stockItem->name}</td>
+                        <td>{$stockItem->storageCatalog}</td>
+                        <td>{$stockItem->mainStorageQuantity}{if $stockItem->mainStorageOrder} (+ {$stockItem->mainStorageOrder}){/if}</td>
+                        <td n:if="$smartOrder">{round($itemContainer['palette']->getOption('salesAverage'))}</td>
+                        <td>{$stockItem->palette ?? '-'}</td>
+                        <td>{$stockItem->minOrder ?? '-'}</td>
+                        <td>{input $itemContainer['palette'] class => paletteInput, style => 'width: 90px'}</td>
+                        <td>
+                            {if isset($itemContainer['quantity'])}
+                                {input $itemContainer['quantity'] style => 'width: 100px'}
+                            {else}
+                                <div data-palette="{$itemContainer['palette']->getOption('paletteQuantity')}"></div>
+                            {/if}
+                        </td>
+                        <td>{$stockItem->unit->name ?? ''}</td>
+                        <td class="row-actions">
+                            <a n:if="$smartOrder" n:href="salePreview id => $stockItem->id" class="side-dialog" title="Náhled prodejnosti" data-sd-history="on"><span class="fa fa-search"></span></a>
+                            {var string $removeAction = $smartOrder ? 'removeSmartOrderItem' : 'removeManualOrderItem'}
+                            <a n:href="$removeAction id => $stockItem->id" title="Odstranit položku" class="ajax remove-item-btn"><span class="fa fa-trash"></span></a>
+                        </td>
+                    </tr>
+                {/foreach}
+            </tbody>
+        </table>
+
+        <div n:if="$showLegend">
+            Legenda:
+            <span style="font-size: 80%;">
+                <span class="fa fa-square" style="color: #e1312d;"></span>
+                Neznámé množství na paletě, nutno ručně upřesnit celkové množství k objednání
+            </span>
+        </div>
+
+        <div class="text-center">
+            {input create class => 'btn btn-secondary'}
+        </div>
+        {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+    {/if}
+{/form}
+
+<script>
+    $('table.datagrid-table div[data-palette]').each(function (index, element) {
+        var orderSumElement = $(element);
+        var paletteQuantity = orderSumElement.attr('data-palette');
+        var palleteInput = orderSumElement.closest('tr').find('input.paletteInput');
+        orderSumElement.text(Math.round(palleteInput.val() * paletteQuantity * 100) / 100);
+
+        palleteInput.on('input', function () {
+            var value = parseInt(palleteInput.val());
+
+            if (isNaN(value)) {
+                orderSumElement.text('N/A');
+            } else {
+                orderSumElement.text(Math.round(value * paletteQuantity * 100) / 100);
+            }
+        });
+    });
+
+    $('.remove-item-btn').click(function () {
+        $(this).closest('tr').remove();
+    });
+</script>

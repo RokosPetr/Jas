@@ -1,0 +1,9 @@
+{varType App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote $note}
+{block content}
+{sideDialog}
+    <div style="padding-top: 15px">
+        <h1>Doklad: {$note->number}</h1>
+        <br>
+        {control deliveryNoteRemarkForm}
+    </div>
+{/sideDialog}

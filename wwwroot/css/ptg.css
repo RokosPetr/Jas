@@ -138,3 +138,19 @@
 .ptg-piece-detail table.page table.piece-price-tag tbody.noqr td.reg * {
   bottom: var(--ptg-piece-padding);
 }
+.producer-logo {
+  max-height: 30px;
+  padding: 5px;
+}
+@media screen and (min-width: 600px) {
+  .producer-logo {
+    max-height: 35px;
+    padding: 5px;
+  }
+}
+@media screen and (min-width: 900px) {
+  .producer-logo {
+    max-height: 40px;
+    padding: 5px;
+  }
+}

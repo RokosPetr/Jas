@@ -1,0 +1,51 @@
+{define filter-row}
+    <div class="flex-item form-group" id="grid-col-{$column->name}">
+        <label class="control-label">{$column->label}</label>
+
+        {if in_array($column->name, $gridSetting->formDate)}
+            {include col-filter-formDate column => $column}
+        {elseif in_array($column->name, $gridSetting->formTime)}
+            {include col-filter-formTime column => $column}
+        {elseif in_array($column->name, $gridSetting->formDateTime)}
+            {include col-filter-formDateTime column => $column}
+        {elseif in_array($column->name, $gridSetting->formIntervalTexts)}
+            {include col-filter-formIntervalTexts column => $column}
+        {elseif in_array($column->name, $gridSetting->formIntervalIntegers)}
+            {include col-filter-formIntervalIntegers column => $column}
+        {else}
+            {ifset #col-filter-{$column->name}}
+                {include #"col-filter-{$column->name}" column => $column}
+            {else}
+                {var $class = ''}
+                {if $form['filter'][$column->name] instanceof \Nette\Forms\Controls\BaseControl}
+                    {php $class = $form['filter'][$column->name]->getControlPrototype()->class;
+                    $class = !is_null($class) ? implode(" ", array_keys($class)) : ''}
+                {/if}
+                {include #col-filter column => $column, class => $class, prototype => $form['filter'][$column->name]->getControlPrototype()}
+            {/ifset}
+        {/if}
+    </div>
+{/define}
+
+{define row-head-filter}
+    <div id="filter-form" class="grid-filters">
+        {formContainer filter}
+            <div class="filter-options">
+                <div class="flex-container">
+                    {foreach $filterColumns as $column}
+                        {if isset($form['filter'][$column->name])}
+                            {include #filter-row column => $column}
+                        {/if}
+                    {/foreach}
+                </div>
+            </div>
+            <div class="filter-in-but pull-right">
+                {input filter class=>"btn btn-success resetFilterOpen"}
+                {if $showFilterCancel}
+                    {input cancel class=>"btn btn-warning"}
+                {/if}
+            </div>
+            <div class="clearfix"></div>
+        {/formContainer}
+    </div>
+{/define}

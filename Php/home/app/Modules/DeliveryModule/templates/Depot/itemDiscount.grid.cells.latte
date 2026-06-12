@@ -1,0 +1,12 @@
+{varType App\Modules\StockModule\Orm\Discounts\DiscountStockItem $row}
+{define col-value}
+    <td class="grid-col-value" style="text-align: left; width: 100px;">{$row->value |number:2,',',' '} %</td>
+{/define}
+
+{define col-producer}
+    <td class="grid-col-producer" style="text-align: left; width: 280px;">{$row->producer->title}</td>
+{/define}
+
+{define cell-stockItem}
+    {$row->stockItem->title}
+{/define}

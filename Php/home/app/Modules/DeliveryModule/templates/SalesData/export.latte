@@ -1,0 +1,18 @@
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět" n:href=":Delivery:SalesOverview:default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět</strong>
+    </a>
+</div>
+
+{form salesDataExportForm}
+    <div class="overview-control-panel">
+        <div>
+            {label year style => 'margin-right: 15px;' /}
+            {input year class => 'select2-ignore', style => 'margin-right: 15px;'}
+            {input export}
+        </div>
+        {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+    </div>
+{/form}

@@ -1,0 +1,40 @@
+{varType App\Modules\BathroomModule\Orm\Bathrooms\Bathroom $bathroom}
+{block htmlHead}
+    <link rel="stylesheet" type="text/css" href="/dist/lightbox.bundle.css">
+    <script src="/dist/aframe.bundle.js"></script>
+{/block}
+
+{block content}
+    {import '../Bathroom/bathroomView.latte'}
+    <div class="container">
+        <a n:href="default" style="margin: 5px 0;">
+            <span class="fa fa-chevron-left" style="vertical-align: middle; font-size: 26px; color: black;"></span>
+            <span style="vertical-align: middle; font-size: 22px; color: black; ">zpět</span>
+        </a>
+        <div class="bathroom-header">
+            {var int $bathRating = round($bathroom->averageRating)}
+            <h6>Hodnocení návrhu</h6>
+            <div class="rating-star-container" data-rating="{$bathRating}">
+                {for $i = 1; $i <= 5; $i++}
+                    <a n:href="rateBathroom! bathroomId => $bathroom->id, rating => $i" data-rating="{$i}">
+                        <span class="fa fa-star{if $i > $bathRating}-o{/if}"></span>
+                    </a>
+                {/for}
+            </div>
+            <h1>{$bathroom->name}</h1>
+        </div>
+        {include #bathroomView bathroom => $bathroom, showPosition => false, lightbox => true}
+        <br>
+        {include #linkPicture bathroom => $bathroom}
+        <br>
+        <a n:href="default">
+            <span class="fa fa-chevron-left" style="vertical-align: middle; font-size: 26px; color: black;"></span>
+            <span style="vertical-align: middle; font-size: 22px; color: black; ">zpět</span>
+        </a>
+    </div>
+    {include #lightbox}
+
+    <script>
+        initBathRating();
+    </script>
+{/block}

@@ -1,0 +1,14 @@
+{varType App\Modules\StockModule\Orm\Stands\StandPlate $plate}
+{varType int $order}
+{block content}
+<div class="jas-link-wrapper">
+    {var string $anchorLink = $order < 10 ? 'standItems' : ('standItems#item-id-' .  (intval($order / 10) * 10))}
+    <a title="Zpět" href="{if $plate->stand->hasPlates}{link plateItems id => $plate->id}{else}{link $anchorLink id => $plate->stand->id}{/if}">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět</strong>
+    </a>
+</div>
+<h2>{$plate->stand->title}</h2>
+<h2 n:if="$plate->stand->hasPlates">{$plate->description}</h2>
+<h2>{$order}. položka</h2>
+{control standHistoryPlateItems}

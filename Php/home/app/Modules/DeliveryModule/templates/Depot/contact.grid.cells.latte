@@ -1,0 +1,14 @@
+{varType App\Modules\DeliveryModule\Orm\Contacts\Contact $row}
+{define cell-url}
+    {if $row->url}
+        <a href="{$row->url}" target="_blank">{$row->url}</a>
+    {else}
+        -
+    {/if}
+{/define}
+
+{define cell-order}
+    <a class="ajax" href="{plink setContactOrder! contact => $row->id, order => $row->order - 1}"><span class="fa fa-arrow-up"></span></a>
+    <a class="ajax" href="{plink setContactOrder! contact => $row->id, order => $row->order + 1}"><span class="fa fa-arrow-down"></span></a>
+    <span class="pull-right">{$row->order}</span>
+{/define}

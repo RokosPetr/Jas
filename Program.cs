@@ -9,6 +9,7 @@ using Jas.Data.JasIdentityDb;
 using Jas.Data.JasMtzDb;
 using Jas.Data.JasMtzDb.Interceptors;
 using Jas.Data.JasPdfDb;
+using Jas.Data.JasDb;
 using Jas.Globals;
 using Jas.Infrastructure.Images;
 using Jas.Infrastructure.Ptg;
@@ -19,9 +20,12 @@ using Jas.Services.Mtz;
 using Jas.Services.Ptg;
 using Jas.Services.Srv;
 using Jas.Web.Endpoints;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +38,8 @@ builder.Services.AddDbContext<JasMtzDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MtzConnection")));
 builder.Services.AddDbContext<JasPdfDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("PdfConnection")));
+builder.Services.AddDbContext<JasDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("JasDbConnection")));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -121,6 +127,9 @@ builder.Services.AddDbContext<JasMtzDbContext>((sp, options) =>
 });
 
 var app = builder.Build();
+var ptgPdfRouteRegex = new Regex(
+    @"^/files/(?<fileName>(?<slug>.+)-(?<id>\d+)-(?<changeDateSegment>\d{8})-(?<qrPart>qr|noqr)-(?<picturesPart>pics|nopics))\.pdf/?$",
+    RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -135,6 +144,59 @@ else
 }
 
 app.UseHttpsRedirection();
+
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value;
+    if (!string.IsNullOrEmpty(path))
+    {
+        var match = ptgPdfRouteRegex.Match(path);
+        if (match.Success)
+        {
+            // Ověřit přihlášení před přepsáním cesty
+            var authResult = await context.AuthenticateAsync();
+            if (!authResult.Succeeded)
+            {
+                var originalUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}";
+                var phpLoginReturnUrl = $"{context.Request.Scheme}://{context.Request.Host}/Identity/Account/PhpLogin?returnUrl={Uri.EscapeDataString(originalUrl)}";
+                var phpLoginUrl = $"https://www.mamekoupelny.eu/system/login/?backUrl={Uri.EscapeDataString(phpLoginReturnUrl)}";
+                context.Response.Redirect(phpLoginUrl);
+                return;
+            }
+
+            var fileName = match.Groups["fileName"].Value + ".pdf";
+            var fullPath = Path.Combine(app.Environment.WebRootPath, "pdf", "ptg", fileName);
+
+            if (System.IO.File.Exists(fullPath))
+            {
+                context.Request.Path = $"/pdf/ptg/{fileName}";
+                context.Request.QueryString = QueryString.Empty;
+            }
+            else
+            {
+                var queryValues = QueryHelpers.ParseQuery(context.Request.QueryString.Value ?? string.Empty)
+                    .ToDictionary(
+                        item => item.Key,
+                        item => item.Value.ToString(),
+                        StringComparer.OrdinalIgnoreCase);
+
+                queryValues["handler"] = "Pdf";
+                queryValues["changeDateSegment"] = match.Groups["changeDateSegment"].Value;
+                queryValues["ChangeDate"] = DateTime.ParseExact(match.Groups["changeDateSegment"].Value, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                queryValues["PrintQr"] = (match.Groups["qrPart"].Value.Equals("qr", StringComparison.OrdinalIgnoreCase)).ToString().ToLowerInvariant();
+                queryValues["PrintPictures"] = (match.Groups["picturesPart"].Value.Equals("pics", StringComparison.OrdinalIgnoreCase)).ToString().ToLowerInvariant();
+                queryValues["Inline"] = bool.TrueString.ToLowerInvariant();
+                queryValues["ForceSaveToDisk"] = bool.TrueString.ToLowerInvariant();
+                queryValues["RequestedFileName"] = fileName;
+
+                context.Request.Path = $"/ptg/print/{match.Groups["id"].Value}/{match.Groups["changeDateSegment"].Value}";
+                context.Request.QueryString = QueryString.Create(queryValues);
+            }
+        }
+    }
+
+    await next();
+});
 
 app.UseStaticFiles();
 app.MapImageEndpoints();

@@ -1,0 +1,10 @@
+{varType App\Modules\StockModule\Orm\Stands\Stand $stand}
+{varType App\Modules\SystemModule\Orm\Files\File $platePicture}
+{block content}
+<h2>{$stand->title}</h2>
+{control standPlateForm}
+{import 'picture.latte'}
+{ifset $platePicture}
+    {include #picture picture => $platePicture, label => 'Foto', repo => 'standPlates'}
+{/ifset}
+{include #jsDialog}

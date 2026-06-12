@@ -1,0 +1,7 @@
+{varType App\Modules\SystemModule\Orm\Mails\Mail $row}
+{define cell-user}
+    {$row->user->name}
+{/define}
+{define cell-body}
+    {$row->body |stripHtml |truncate:60}
+{/define}

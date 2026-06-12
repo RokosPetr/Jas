@@ -1,0 +1,5 @@
+{varType App\Modules\BathroomModule\Orm\Bathrooms\Bathroom $row}
+
+{define cell-name}
+    <a n:tag-if="!$row->deleted" href="{plink edit id => $row->id}">{$row->name}</a>
+{/define}

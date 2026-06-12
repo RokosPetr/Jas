@@ -1,0 +1,26 @@
+{varType App\Modules\TransportModule\Orm\Transports\StoreTransport $transport}
+{block content}
+{sideDialog}
+    <h2>{$transport->car->licensePlate} {$transport->driver->name}</h2>
+    <h2>{$transport->date |date:'d.m.Y'} {$transport->timeFrom |floatToHour}-{$transport->timeTill |floatToHour}</h2>
+    <div n:foreach="$transport->targets as $target">
+        <div>Příjemce: {$target->name}</div>
+        <div>Telefon: {$target->phone}</div>
+        <div>Adresa: {$target->address ?? '-'}</div>
+        <div>Tarif: {$target->tariff ? App\Modules\TransportModule\Orm\Transports\StoreTransportTarget::TARIFFS_LABELS[$target->tariff] : '-'}</div>
+        <div>Platba: {$target->payment ? App\Modules\TransportModule\Orm\Transports\StoreTransportTarget::PAYMENTS_LABELS[$target->payment] : '-'}</div>
+        <div n:if="$target->remark">{$target->remark}</div>
+        <div>Dodací listy:
+            {foreach $target->items as $item}
+                {$item->deliveryNote} ({$item->weight} kg) <span n:class="fa, $item->delivered ? fa-check : fa-close, $item->delivered ? text-success : text-danger"></span>{sep}, {/sep}
+            {/foreach}
+        </div>
+        {sep}<br>{/sep}
+    </div>
+    <div n:if="!$transport->isValid">
+        <br>
+        <ul>
+            <li n:foreach="$transport->errors as $error" class="text-danger">{$error}</li>
+        </ul>
+    </div>
+{/sideDialog}

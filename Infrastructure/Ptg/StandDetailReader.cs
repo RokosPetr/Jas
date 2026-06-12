@@ -22,19 +22,29 @@ namespace Jas.Infrastructure.Ptg
             _mapper = mapper;
         }
 
-        public async Task<StandDetailData> GetAsync(int idStand, CancellationToken ct = default)
+        public async Task<StandDetailData> GetAsync(int idStand, CancellationToken ct = default, DateTime? changeDate = null)
         {
-            var cacheKey = $"stand:{idStand}:detail";
+            var cacheKey = $"stand:{idStand}:detail:{changeDate:O}";
             if (_cache.TryGetValue(cacheKey, out StandDetailData? data))
                 return data;
 
             await using var conn = (SqlConnection)_context.Database.GetDbConnection();
             await conn.OpenAsync(ct);
 
-            await using var cmd = new SqlCommand(@"
+            var sql = changeDate.HasValue
+                ? @"
+            EXEC dbo.sp_ptg_GetStandDetailChange @IdStand = @id, @ChangeDate = @changeDate;
+        "
+                : @"
             EXEC dbo.sp_ptg_GetStandDetail @IdStand = @id;
-        ", conn);
+        ";
+
+            await using var cmd = new SqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", idStand);
+            if (changeDate.HasValue)
+            {
+                cmd.Parameters.Add("@changeDate", SqlDbType.DateTime).Value = changeDate.Value;
+            }
 
             await using var reader = await cmd.ExecuteReaderAsync(ct);
 
@@ -46,15 +56,33 @@ namespace Jas.Infrastructure.Ptg
             await reader.NextResultAsync(ct);
             var plates = _mapper.Map<IDataReader, IEnumerable<Plate>>(reader).ToList();
 
-            // 3) items
-            await reader.NextResultAsync(ct);
-            var items = _mapper.Map<IDataReader, IEnumerable<PlateItem>>(reader).ToList();
+            var changeTexts = new List<string>();
+            var items = new List<PlateItem>();
+
+            while (await reader.NextResultAsync(ct))
+            {
+                if (HasColumn(reader, "ChangeText"))
+                {
+                    var changeTextOrdinal = reader.GetOrdinal("ChangeText");
+                    while (await reader.ReadAsync(ct))
+                    {
+                        if (!reader.IsDBNull(changeTextOrdinal))
+                        {
+                            changeTexts.Add(reader.GetString(changeTextOrdinal));
+                        }
+                    }
+                }
+                else
+                {
+                    items = _mapper.Map<IDataReader, IEnumerable<PlateItem>>(reader).ToList();
+                }
+            }
 
             // rychlý flag pro listingy; reálné ověření řešíš mimo tuto službu
             foreach (var it in items)
                 it.HasImage = !string.IsNullOrWhiteSpace(it.ImgUrl);
 
-            data = new StandDetailData(stand, plates, items);
+            data = new StandDetailData(stand, plates, items, changeTexts);
 
             var opts = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
@@ -62,6 +90,19 @@ namespace Jas.Infrastructure.Ptg
 
             _cache.Set(cacheKey, data, opts);
             return data;
+        }
+
+        private static bool HasColumn(IDataRecord record, string columnName)
+        {
+            for (var i = 0; i < record.FieldCount; i++)
+            {
+                if (string.Equals(record.GetName(i), columnName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

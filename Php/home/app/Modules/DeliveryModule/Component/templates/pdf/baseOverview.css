@@ -1,0 +1,54 @@
+table.overview {
+    border-collapse: collapse;
+    page-break-inside: avoid;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table.overview th {
+    font-size: 16px;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+table.overview td {
+    font-size: 15px;
+    text-align: center;
+    padding: 6px 8px;
+    white-space: nowrap;
+    color: black;
+    border-right: 2px solid #9a9a9a;
+}
+
+table.overview th.odd { background-color: #514c50; }
+table.overview th.even { background-color: #404040; }
+table.overview td.odd { background-color: #d0d0d0; }
+table.overview td.even { background-color: #a7a7a9; }
+table.overview td.sum-cell-odd { background-color: #dcdcde; }
+table.overview td.sum-cell-even { background-color: #e9e9eb; }
+table.overview td.year-cell { border-bottom: 6px solid #4c4c4d; }
+table.overview td.year-head-cell { border-bottom: 6px solid #141414; }
+table.overview td.data-cell { vertical-align: top; }
+table.overview td.no-right-border { border-right: none; }
+
+table.overview td.month {
+    background-color: #393738;
+    color: white;
+    text-align: left;
+    border-right: none;
+}
+
+table.overview td.month-sum {
+    background-color: #ababab;
+    color: white;
+    text-align: left;
+    border-right: none;
+}
+
+.positive-value { color: #289216; }
+.negative-value { color: #f70502; }
+.new-page {
+    page-break-before: always;
+    text-align: center;
+}

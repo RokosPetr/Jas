@@ -1,0 +1,11 @@
+{varType App\Modules\SystemModule\Orm\Stores\Store $row}
+{define cell-manager}
+    {$row->manager->name ?? '-'}
+{/define}
+
+{define col-color}
+    <td class="grid-col-color" style="text-align: left;  white-space: nowrap; width: 180px;">
+        <span style="width: 50px; background-color: {$row->color |noescape}; display: inline-block;">&nbsp;</span>
+        {$row->color}
+    </td>
+{/define}

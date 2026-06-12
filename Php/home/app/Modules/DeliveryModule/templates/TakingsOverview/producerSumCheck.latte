@@ -1,0 +1,32 @@
+{block content}
+<h2>{$title}</h2>
+<h3>Rok: {$year}</h3>
+<h3>Měsíc: {$month}</h3>
+<table class="table datagrid-table jambo_table">
+    <thead>
+        <tr>
+            <th style="width: 130px;">Číslo dokladu</th>
+            <th style="width: 150px;">Suma</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {var float $totalSum = 0}
+        <tr n:foreach="$noteData as $noteRow">
+            <td>{$noteRow->number}</td>
+            <td style="text-align: right;">{$noteRow->sumValue |number:0,',',' '} {$unit}</td>
+            <td>
+                <a class="side-dialog" data-sd-history="on" href="{plink :Delivery:DeliveryNote:preview id => $noteRow->id}">
+                    <span class="fa fa-search"></span>
+                </a>
+            </td>
+            {php $totalSum += $noteRow->sumValue}
+        </tr>
+        <tr>
+            <td><b>Suma</b></td>
+            <td style="text-align: right;">{$totalSum |number:0,',',' '} {$unit}</td>
+            <td>{count($noteData)} položek</td>
+        </tr>
+    </tbody>
+</table>

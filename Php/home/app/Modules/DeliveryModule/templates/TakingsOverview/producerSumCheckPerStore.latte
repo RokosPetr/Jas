@@ -1,0 +1,53 @@
+{block content}
+<h2>{$title}</h2>
+<h3>Rok: {$year}</h3>
+<h3>Měsíc: {$month}</h3>
+<table class="table datagrid-table jambo_table">
+    <thead>
+        <tr>
+            <th style="width: 130px;">Číslo dokladu</th>
+            <th style="width: 200px;">Typ dokladu</th>
+            <th style="width: 150px;">Suma</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {var float $totalSum = 0}
+        {var int $rowCount = 0}
+        {foreach $noteData as $noteRow}
+            {continueIf (!$isMainStorage && $storeId !== $noteRow->store)
+                || ($isMainStorage && !in_array($noteRow->store, App\Modules\SystemModule\Orm\Stores\Store::MAIN_STORAGES) && $noteRow->movement_type === App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote::TYPE_TAKINGS)
+            }
+            {var $isMinus = $isMainStorage && $noteRow->movement_type === App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote::TYPE_TRANSFER_IN}
+            <tr>
+                <td>{$noteRow->number}</td>
+                <td>
+                    {if $noteRow->movement_type === App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote::TYPE_TRANSFER_IN}
+                        Převodka z velkoskladu
+                    {else}
+                        Nákupka
+                    {/if}
+                </td>
+                <td style="text-align: right;">{if $isMinus}- {/if}{$noteRow->sumValue |number:0,',',' '} {$unit}</td>
+                <td>
+                    <a class="side-dialog" data-sd-history="on" href="{plink :Delivery:DeliveryNote:preview id => $noteRow->id}">
+                        <span class="fa fa-search"></span>
+                    </a>
+                </td>
+                {if $isMinus}
+                    {php $totalSum -= $noteRow->sumValue}
+                {else}
+                    {php $totalSum += $noteRow->sumValue}
+                {/if}
+                {php ++$rowCount}
+            </tr>
+        {/foreach}
+        <tr>
+            <td><b>Suma</b></td>
+            <td></td>
+            <td style="text-align: right;">{$totalSum |number:0,',',' '} {$unit}</td>
+            <td>{$rowCount} položek</td>
+        </tr>
+    </tbody>
+</table>

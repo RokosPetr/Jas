@@ -1,0 +1,31 @@
+{varType App\Modules\MtzModule\Orm\MtzOrders\MtzOrder $mtzOrder}
+{block content}
+{sideDialog}
+    <table>
+        <tr>
+            <td class="text-right"><b>ID:</b></td>
+            <td>{$mtzOrder->id}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="text-right"><b>Vytvořeno:</b></td>
+            <td>{$mtzOrder->createdAt |date:'d.m.Y H:i'}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="text-right"><b>Uživatel:</b></td>
+            <td>{$mtzOrder->createdBy->name}</td>
+            <td></td>
+        </tr>
+        <tr n:foreach="$mtzOrder->items as $mtzItem">
+            <td class="text-right"><b n:if="$iterator->isFirst()">Položky:</b></td>
+            <td>{$mtzItem->item->title}</td>
+            <td>{$mtzItem->quantity}{if $mtzItem->item->orderUnit} {$mtzItem->item::UNITS_LABELS[$mtzItem->item->orderUnit]}{/if}</td>
+        </tr>
+        <tr>
+            <td class="text-right"><b>Poznámka:</b></td>
+            <td>{$mtzOrder->remark}</td>
+            <td></td>
+        </tr>
+    </table>
+{/sideDialog}

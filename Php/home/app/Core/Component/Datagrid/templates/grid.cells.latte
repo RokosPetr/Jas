@@ -1,0 +1,82 @@
+{define col-filter}
+    {php $iconClass = ""}
+    {if isset($prototype) && ($prototype->getAttribute('icon'))}
+        {php $iconClass = $prototype->getAttribute('icon')}
+        {if (strpos($prototype->getAttribute('icon'), 'left') === false)}
+            {if (strpos($prototype->getAttribute('icon'), 'right') !== false)}
+                {if ($prototype instanceof Nette\Forms\Controls\SelectBox)}
+                    {php $iconClass .= " rightSelectBox"}
+                {/if}
+            {else}
+                {php $iconClass .= " left"}
+            {/if}
+        {/if}
+    {/if}
+    {php $classFeedback = isset($prototype) && $prototype->hasAttribute('icon') ? "has-feedback" : ""}
+    <div class="{$classFeedback}">
+        {php $inputClass = ""}
+        {if (strpos($iconClass, 'left') !== false)}
+            {php $inputClass = " has-feedback-left"}
+        {/if}
+        {input $column->name class => "{$class} form-control {$inputClass}"}
+        {if (strpos($iconClass, 'left') !== false)}
+        {/if}
+        <span class="fa form-control-feedback {$iconClass}" aria-hidden="true"></span>
+    </div>
+{/define}
+
+{define col-filter-formDate}
+    {formContainer $column->name}
+        <div class="clearfix"></div>
+        <div class="has-feedback form-group">
+            {input _DateFrom class => "form-control datepicker"}
+            <span class="fa fa-calendar-o form-control-feedback right" aria-hidden="true"></span>
+        </div>
+        <div class="has-feedback form-group">
+            {input _DateTo class => "form-control datepicker"}
+            <span class="fa fa-calendar-o form-control-feedback right" aria-hidden="true"></span>
+        </div>
+    {/formContainer}
+{/define}
+
+{define col-filter-formTime}
+    {formContainer $column->name}
+        <div class="clearfix"></div>
+        <div class="has-feedback form-group">
+            {input _TimeFrom class => "form-control timepicker"}
+            <span class="fa fa-calendar-o form-control-feedback right" aria-hidden="true"></span>
+        </div>
+        <div class="has-feedback form-group">
+            {input _TimeTo class => "form-control timepicker"}
+            <span class="fa fa-calendar-o form-control-feedback right" aria-hidden="true"></span>
+        </div>
+    {/formContainer}
+{/define}
+
+{define col-filter-formDateTime}
+  {formContainer $column->name}
+    <div class="clearfix"></div>
+    <div class="has-feedback form-group">
+        {input _DateTimeFrom class => "form-control datetimepicker"}
+        <span class="fa fa-calendar-o form-control-feedback right" aria-hidden="true"></span>
+    </div>
+    <div class="has-feedback form-group">
+        {input _DateTimeTo class => "form-control datetimepicker"}
+        <span class="fa fa-calendar-o form-control-feedback right" aria-hidden="true"></span>
+    </div>
+  {/formContainer}
+{/define}
+
+{define col-filter-formIntervalTexts}
+  {formContainer $column->name}
+    {input _TextFrom class => "form-control"}
+    {input _TextTo class => "form-control"}
+  {/formContainer}
+{/define}
+
+{define col-filter-formIntervalIntegers}
+  {formContainer $column->name}
+    {input _IntegerFrom class => "form-control"}
+    {input _IntegerTo class => "form-control"}
+  {/formContainer}
+{/define}

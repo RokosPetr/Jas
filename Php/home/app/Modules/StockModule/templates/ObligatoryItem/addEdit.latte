@@ -1,0 +1,14 @@
+{varType App\Modules\StockModule\Orm\ObligatoryItems\ObligatoryItem $obligatoryItem}
+{block content}
+
+<div n:ifset="$obligatoryItem" class="col-md-offset-3">
+    <h1>{$obligatoryItem->item->title}</h1>
+</div>
+
+{control obligatoryItemForm}
+
+<script n:if="$presenter->action === add">
+    $(function () {
+        initProductSearch('frm-obligatoryItemForm-item');
+    });
+</script>

@@ -1,0 +1,624 @@
+{varType App\Modules\DeliveryModule\Component\SalesOverview $control}
+
+<div n:snippet="salesOverview">
+    <div class="overview-control-panel">
+        <div n:if="$control->viewMode !== $control::CURRENT_DATE_VIEW" style="margin-bottom: 5px; display: flex;">
+            <div style="width: 65px; color: white; padding-top: 5px;">Měsíc</div>
+            <div style="width: 85%;">
+                <div style="width: 80px; display: inline-block;">
+                    <input id="month-checkbox-all"
+                           type="checkbox"
+                           name="month-checkbox-all"
+                           value="all"
+                           {if $control->selectAllMonths}checked{/if}
+                           onchange="setAllMonths(this.checked ? 1 : 0)"
+                    >
+                    <label for="month-checkbox-all">všechny</label>
+                </div>
+                {for $i = 1; $i <= 12; $i++}
+                    <div style="width: 80px; display: inline-block;">
+                        <input id="month-checkbox-{$i}"
+                               class="month-checkbox"
+                               type="checkbox"
+                               name="month-checkbox-{$i}"
+                               value="{$i}"
+                               {if in_array($i, $control->selectedMonths)}checked{/if}
+                               onchange="setMonths()"
+                        >
+                        <label for="month-checkbox-{$i}">{App\Core\Utils\DateTime::CZ_MONTHS[$i]}</label>
+                    </div>
+                {/for}
+            </div>
+        </div>
+
+        <div n:if="$control->viewMode !== $control::CURRENT_DATE_VIEW">
+            <span style="width: 65px; display: inline-block;"><label for="selected-year-input">Rok</label></span>
+            <select name="selectedYear" class="select2-ignore" id="selected-year-input" onchange="setState('selectedYear', this.value)">
+                {for $i = intval(date('Y')); $i >= 2014; $i--}
+                    <option value="{$i}"{if $i === $control->selectedYear} selected{/if}>{$i}</option>
+                {/for}
+            </select>
+        </div>
+
+        <div n:if="$control->viewMode === $control::CURRENT_DATE_VIEW">
+            <span style="width: 65px; display: inline-block;"><label for="selected-date-input">Den</label></span>
+            <input id="selected-date-input" type="text" class="datepicker" autocomplete="off" onchange="setDate(this.value)" value="{$control->selectedDate->format(App\Core\Utils\DateTime::CZ_DATE)}"/>
+        </div>
+
+        <div style="display: flex; margin-top: 5px;">
+            <div style="width: 65px; color: white; padding-top: 5px;">Zobrazit</div>
+            <div style="width: 85%;">
+                <div style="width: 75px; display: inline-block;">
+                    <input id="view-mode-table"
+                           type="radio"
+                           name="view-mode"
+                           value="{$control::TABLE_VIEW}"
+                           {if $control->viewMode === $control::TABLE_VIEW}checked{/if}
+                           onchange="setState('viewMode', this.value)"
+                    >
+                    <label for="view-mode-table">tabulka</label>
+                </div>
+
+                <div style="width: 55px; display: inline-block;">
+                    <input id="view-mode-graph"
+                           type="radio"
+                           name="view-mode"
+                           value="{$control::GRAPH_VIEW}"
+                           {if $control->viewMode === $control::GRAPH_VIEW}checked{/if}
+                           onchange="setState('viewMode', this.value)"
+                    >
+                    <label for="view-mode-graph">graf</label>
+                </div>
+
+                <div style="width: 70px; display: inline-block;">
+                    <input id="view-mode-sum"
+                           type="radio"
+                           name="view-mode"
+                           value="{$control::SUM_VIEW}"
+                           {if $control->viewMode === $control::SUM_VIEW}checked{/if}
+                           onchange="setState('viewMode', this.value)"
+                    >
+                    <label for="view-mode-sum">sumář</label>
+                </div>
+
+                <div n:if="$user->isSuperAdmin()" style="width: 130px; display: inline-block;">
+                    <input id="view-mode-absolute-sum"
+                           type="radio"
+                           name="view-mode"
+                           value="{$control::ABSOLUTE_SUM_VIEW}"
+                           {if $control->viewMode === $control::ABSOLUTE_SUM_VIEW}checked{/if}
+                           onchange="setState('viewMode', this.value)"
+                    >
+                    <label for="view-mode-absolute-sum">absolutní sumář</label>
+                </div>
+
+                <div style="width: 120px; display: inline-block;">
+                    <input id="view-mode-current"
+                           type="radio"
+                           name="view-mode"
+                           value="{$control::CURRENT_DATE_VIEW}"
+                           {if $control->viewMode === $control::CURRENT_DATE_VIEW}checked{/if}
+                           onchange="setState('viewMode', this.value)"
+                    >
+                    <label for="view-mode-current">zvolený den</label>
+                </div>
+            </div>
+        </div>
+
+        <div n:if="$control->viewMode === $control::TABLE_VIEW || ($user->isSuperAdmin() && in_array($control->viewMode, [$control::SUM_VIEW, $control::ABSOLUTE_SUM_VIEW]))" style="display: flex; margin-top: 5px;">
+            <div style="width: 65px; color: white; padding-top: 5px;"></div>
+            <div style="width: 85%;">
+                <div style="width: 200px; display: inline-block;">
+                    <input id="show-oz-groups"
+                           type="checkbox"
+                           name="show-oz-groups"
+                           {if $control->showOzGroups}checked{/if}
+                           onchange="setShowOzGroups(this.checked ? 1 : 0)"
+                    >
+                    <label for="show-oz-groups">obchodní zástupci prodejen</label>
+                </div>
+            </div>
+        </div>
+
+        <div n:if="$control->viewMode === $control::CURRENT_DATE_VIEW">
+            <span style="width: 65px; display: inline-block; color: white; padding-top: 8px;">Porovnat</span>
+
+            <input id="comparison-mode-plan"
+                   class="comparison-mode-checkbox"
+                   type="checkbox"
+                   name="comparison-mode-plan"
+                   value="{$control::PLAN_COMPARISON}"
+                   {if in_array($control::PLAN_COMPARISON, $control->selectedComparisons)}checked{/if}
+                   onchange="setComparison()"
+            >
+            <label for="comparison-mode-plan" style="padding-right: 10px;">dle plánu</label>
+
+            <input id="comparison-mode-last-year"
+                   class="comparison-mode-checkbox"
+                   type="checkbox"
+                   name="comparison-mode-last-year"
+                   value="{$control::LAST_YEAR_COMPARISON}"
+                   {if in_array($control::LAST_YEAR_COMPARISON, $control->selectedComparisons)}checked{/if}
+                   onchange="setComparison()"
+            >
+            <label for="comparison-mode-last-year">dle minulého roku</label>
+        </div>
+
+        <div n:if="$user->isSuperAdmin() && $control->viewMode === $control::CURRENT_DATE_VIEW">
+            <label for="selected-stores-select" style="padding: 5px 0;">Pobočky :</label>
+            <div class="select2-wrapper">
+                <select name="selectedStores" id="selected-stores-select" multiple onchange="setStores(this)">
+                    <option value="0">Vše</option>
+                    {foreach $control->storeAccess as $storeId}
+                        {continueIf $storeId === 90}
+                        <option value="{$storeId}"{if in_array($storeId, $control->selectedStores)} selected{/if}>{$control::SALE_GROUPS[$storeId]}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div n:if="$control->viewMode === $control::TABLE_VIEW">
+        <div n:foreach="$yearSalesData as $store => $salesData" style="margin-top: 15px;">
+            {include #storeSalesTable salesData => $salesData, store => $store, season => $season, fulfillment => $fulfillment}
+        </div>
+    </div>
+
+    <div n:if="$control->viewMode === $control::GRAPH_VIEW">
+        <h2>Na požadované funkcionalitě se ještě pracuje</h2>
+    </div>
+
+    <div n:if="$control->viewMode === $control::SUM_VIEW">
+        <div class="jas-red-gradient" style="margin-top: 15px;"></div>
+        <div class="row" style="background-color: rgba(242, 242, 242, 0.5);">
+            {for $i = 1; $i < 5; $i++}
+                {var string $resultType = ''}
+                {switch $i}
+                    {case 1}
+                    {php $resultType = 'lastSaleResult'}
+                    {case 2}
+                    {php $resultType = 'salePlanResult'}
+                    {case 3}
+                    {php $resultType = 'lastProfitResult'}
+                    {case 4}
+                    {php $resultType = 'profitPlanResult'}
+                {/switch}
+                {var array $resultData = array_map(static fn(stdClass $data) => $data->$resultType, $fulfillment)}
+                {php arsort($resultData)}
+                <div n:class="scroll-x, col-md-6, col-sm-12, col-xs-12, text-sm-center, $i % 2 !== 0 ? text-md-right">
+                    <div style="display: inline-block">
+                        {include #storeSumTable resultData => $resultData, resultType => $resultType}
+                    </div>
+                </div>
+            {/for}
+        </div>
+    </div>
+
+    <div n:if="$control->viewMode === $control::ABSOLUTE_SUM_VIEW">
+        <div class="jas-red-gradient" style="margin-top: 15px;"></div>
+        <div class="text-center" style="background-color: rgba(242, 242, 242, 0.5);">
+            <div n:foreach="['sale', 'profit'] as $resultType">
+                <div n:foreach="[$control::LAST_YEAR_COMPARISON, $control::PLAN_COMPARISON] as $compareType" style="display: inline-block;">
+                    {include #storeAbsuluteSumTable resultData => $fulfillment, resultType => $resultType, compareType => $compareType}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div n:if="$control->viewMode === $control::CURRENT_DATE_VIEW">
+        <div style="margin-bottom: 10px; margin-top: 15px;" class="jas-red-gradient"></div>
+        <div class="text-center">
+            {include #salesProgressTable fulfillment => $fulfillment, selectedMonth => $selectedMonth}
+        </div>
+    </div>
+</div>
+
+<script>
+    function setState(stateParam, value) {
+        $.nette.ajax({
+            url: {link setState!},
+            data: { stateParam, value }
+        });
+    }
+
+    function setAllMonths(value) {
+        $.nette.ajax({
+            url: {link setAllMonths!},
+            data: { value }
+        });
+    }
+
+    function setMonths() {
+        var selectedMonths = [];
+
+        $('input.month-checkbox').each(function (index, element) {
+            var input = $(element);
+
+            if (input.is(':checked')) {
+                selectedMonths.push(input.val());
+            }
+        });
+
+        $.nette.ajax({
+            url: {link setMonths!},
+            data: { selectedMonths }
+        });
+    }
+
+    function setDate(value) {
+        if (moment(value, 'DD.MM.YYYY', true).isValid()) {
+            $.nette.ajax({
+                url: {link setDate!},
+                data: { value }
+            });
+        }
+    }
+
+    function setStores(select) {
+        var stores = [];
+        $(select).select2('data').forEach(function (selectItem) {
+            stores.push(parseInt(selectItem.id));
+        });
+        $.nette.ajax({
+            url: {link setStores!},
+            data: { stores }
+        });
+    }
+
+    function setComparison() {
+        var comparisons = [];
+
+        $('input.comparison-mode-checkbox').each(function (index, element) {
+            var input = $(element);
+
+            if (input.is(':checked')) {
+                comparisons.push(input.val());
+            }
+        });
+        $.nette.ajax({
+            url: {link setComparison!},
+            data: { comparisons }
+        });
+    }
+
+    function setShowOzGroups(showOzGroups) {
+        $.nette.ajax({
+            url: {link setShowOzGroups!},
+            data: { showOzGroups }
+        });
+    }
+</script>
+
+{define storeSalesTable}
+    <div class="jas-red-gradient"></div>
+    <div style="background-color: rgba(242, 242, 242, 0.5);">
+        <div class="row">
+            <div class="col-xlg-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center scroll-x" style="padding: 15px;">
+                <div>Srovnání dle množství prodeje za období {$season}/{$control->selectedYear}</div>
+                <div style="padding-bottom: 10px;">{$store}</div>
+                <table class="overview-table">
+                    <thead class="fix-width-110">
+                        <tr>
+                            <th>Měsíc</th>
+                            <th>Prodej skutečnost {$control->selectedYear - 1}</th>
+                            <th>Prodejní plán {$control->selectedYear}</th>
+                            <th>Prodej skutečnost {$control->selectedYear}</th>
+                            <th>Rozdíl proti plánu</th>
+                            <th>Rozdíl proti {$control->selectedYear - 1}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $salesData as $index => $overviewData}
+                            {continueIf !$salesData[$index]}
+                            <tr n:if="$index === selectedSum || $index === yearSum" class="hover-ignore"><td colspan="6">&nbsp;</td></tr>
+                            <tr>
+                                <td>{if $index === 'selectedSum'}
+                                        Suma
+                                    {elseif $index === 'yearSum'}
+                                        Suma za rok
+                                    {else}
+                                        {App\Core\Utils\DateTime::CZ_MONTHS[$index]}
+                                    {/if}
+                                </td>
+                                <td>{$overviewData->lastSale |number:0, ',', ' '}</td>
+                                <td>{$overviewData->salePlan |number:0, ',', ' '}</td>
+                                <td>{if $index !== 'yearSum'}{$overviewData->realSale |number:0, ',', ' '}{/if}</td>
+                                <td>{if $index !== 'yearSum'}{$overviewData->salePlanDifference |number:0, ',', ' '}{/if}</td>
+                                <td>{if $index !== 'yearSum'}{$overviewData->lastSaleDifference |number:0, ',', ' '}{/if}</td>
+                            </tr>
+                        {/foreach}
+                        <tr>
+                            <td>Plnění</td>
+                            <td>{$fulfillment[$store]->lastSaleResult}%</td>
+                            <td>{$fulfillment[$store]->salePlanResult}%</td>
+                            <td colspan="3">Plnění zahrnuje měsíce, v nichž byl prodej >0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-xlg-6 col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center scroll-x" style="padding: 15px;">
+                <div>Srovnání dle hrubého zisku za období {$season}/{$control->selectedYear}</div>
+                <div style="padding-bottom: 10px;">{$store}</div>
+                <table class="overview-table">
+                    <thead class="fix-width-110">
+                        <tr>
+                            <th>Měsíc</th>
+                            <th>Hrubý zisk skutečnost {$control->selectedYear - 1}</th>
+                            <th>Hrubý zisk plán {$control->selectedYear}</th>
+                            <th>Hrubý zisk skutečnost {$control->selectedYear}</th>
+                            <th>Rozdíl proti plánu</th>
+                            <th>Rozdíl proti {$control->selectedYear - 1}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $salesData as $index => $overviewData}
+                        {continueIf !$salesData[$index]}
+                        <tr n:if="$index === selectedSum || $index === yearSum" class="hover-ignore"><td colspan="6">&nbsp;</td></tr>
+                        <tr>
+                            <td>{if $index === 'selectedSum'}
+                                    Suma
+                                {elseif $index === 'yearSum'}
+                                    Suma za rok
+                                {else}
+                                    {App\Core\Utils\DateTime::CZ_MONTHS[$index]}
+                                {/if}
+                            </td>
+                            <td>{$overviewData->lastProfit |number:0, ',', ' '}</td>
+                            <td>{$overviewData->profitPlan |number:0, ',', ' '}</td>
+                            <td>{if $index !== 'yearSum'}{$overviewData->realProfit |number:0, ',', ' '}{/if}</td>
+                            <td>{if $index !== 'yearSum'}{$overviewData->profitPlanDifference |number:0, ',', ' '}{/if}</td>
+                            <td>{if $index !== 'yearSum'}{$overviewData->lastProfitDifference |number:0, ',', ' '}{/if}</td>
+                        </tr>
+                    {/foreach}
+                    <tr>
+                        <td>Plnění</td>
+                        <td>{$fulfillment[$store]->lastProfitResult}%</td>
+                        <td>{$fulfillment[$store]->profitPlanResult}%</td>
+                        <td colspan="3">Plnění zahrnuje měsíce, v nichž byl prodej >0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{/define}
+
+{define storeSumTable}
+    {var $headingFistLine = '', $headingSecondLine = ''}
+    {switch $resultType}
+        {case 'lastSaleResult'}
+            {php $headingFistLine = "Statistika prodeje za období $season/" . $control->selectedYear}
+            {php $headingSecondLine = "ve srovnání s prodejem $season/" . ($control->selectedYear - 1)}
+        {case 'salePlanResult'}
+            {php $headingFistLine = "Statistika prodeje za období $season/" . $control->selectedYear}
+            {php $headingSecondLine = "ve srovnání s plánem prodeje $season/" . ($control->selectedYear)}
+        {case 'lastProfitResult'}
+            {php $headingFistLine = "Statistika hrubého zisku za období $season/" . $control->selectedYear}
+            {php $headingSecondLine = "ve srovnání s hrubým ziskem $season/" . ($control->selectedYear - 1)}
+        {case 'profitPlanResult'}
+            {php $headingFistLine = "Statistika hrubého zisku za období $season/" . $control->selectedYear}
+            {php $headingSecondLine = "ve srovnání s plánem hrubého zisku $season/" . ($control->selectedYear)}
+    {/switch}
+    <div class="overview-sum-wrapper">
+        <div class="text-center" style="padding: 10px;">
+            <div>{$headingFistLine}</div>
+            <div>{$headingSecondLine}</div>
+        </div>
+        <div class="overview-sum-table-wrapper">
+            <table class="overview-sum">
+                <thead>
+                <tr>
+                    <th>Pořadí</th>
+                    <th>Středisko</th>
+                    <th>Výsledek</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr n:foreach="$resultData as $store => $result" n:class="$result >= 0 ? positive-row : negative-row ">
+                    <td>{$iterator->counter}.</td>
+                    <td>{$store}</td>
+                    <td>{$result}%</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{/define}
+
+{define storeAbsuluteSumTable}
+    {php uasort($resultData, fn($a, $b) => $b[$resultType] <=> $a[$resultType])}
+    <div class="overview-sum-wrapper" style="width: 450px;">
+        <div class="text-center" style="padding: 10px;">
+            <div>Statistika {if $resultType === 'sale'}prodeje{else}hrubého zisku{/if} za období {$season . '/' . $control->selectedYear}</div>
+            <div>ve srovnání s
+                {if $compareType === $control::PLAN_COMPARISON}
+                    plánem {if $resultType === 'sale'}prodeje{else}hrubého zisku{/if} {$season . '/' . $control->selectedYear}
+                {else}
+                    {if $resultType === 'sale'}prodejem{else}hrubým ziskem{/if} {$season . '/' . ($control->selectedYear - 1)}
+                {/if}
+            </div>
+        </div>
+        <div class="overview-sum-table-wrapper">
+            <table class="overview-sum">
+                <thead>
+                    <tr>
+                        <th>Pořadí</th>
+                        <th>Středisko</th>
+                        <th style="width: 200px;">Výsledek</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr n:foreach="$resultData as $store => $result" n:class="$result[$compareType][$resultType . 'Score'] ? positive-row : negative-row ">
+                        <td>{$iterator->counter}.</td>
+                        <td>{$store}</td>
+                        <td>{$result[$resultType] |number:0,',',' '} Kč</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{/define}
+
+{define salesProgressTable}
+    {var int $selectedMonth = (int) $control->selectedDate->format('n')}
+    {var int $selectedYear = (int) $control->selectedDate->format('Y')}
+    <div class="sale-progress-overview-table-wrapper">
+        <h3 style="text-align: left;">Průběžný měsíční prodej k {$control->selectedDate->format('d.m.Y')}</h3>
+        <table class="overview-table">
+            <thead class="fix-width-110">
+                <tr>
+                    <th style="width: 210px;">{App\Core\Utils\DateTime::CZ_MONTHS[$selectedMonth] |firstUpper}</th>
+                    <th>Prodej {$selectedYear - 1}</th>
+                    <th>Prodejní plán {$selectedYear}</th>
+                    <th>Skutečný prodej {$control->selectedDate->format('d.m.Y')}</th>
+                    <th n:if="$currentDataView">Průběžný prodej {$control->selectedDate->format('d.m.Y')}</th>
+                    <th>Plnění proti {$selectedYear - 1}</th>
+                    <th>Plnění proti plánu</th>
+                    <th>Hrubý zisk {$selectedYear - 1}</th>
+                    <th>Plán hrubého zisku {$selectedYear}</th>
+                    <th>Skutečný hrubý zisk {$control->selectedDate->format('d.m.Y')}</th>
+                    <th n:if="$currentDataView">Průběžný hrubý zisk</th>
+                    <th>Plnění proti {$selectedYear - 1}</th>
+                    <th>Plnění proti plánu</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {foreach $fulfillment as $storeId => $monthSales}
+                {continueIf $storeId === 90}
+                <tr>
+                    <td>{$control::SALE_GROUPS[$storeId]}</td>
+                    <td>{$monthSales->lastYearSale |number:0,',',' '}</td>
+                    <td>{$monthSales->salePlan |number:0,',',' '}</td>
+                    <td>
+                        <a n:tag-if="$user->isAdmin()" href="{plink salesSumCheck store => $storeId, year => $selectedYear, month => $selectedMonth}" target="_blank" style="cursor: pointer;">{$monthSales->realSale |number:0,',',' '}</a>
+                    </td>
+                    <td n:if="$currentDataView">{$monthSales->progressSale |number:0,',',' '}</td>
+                    <td>{if $monthSales->lastYearSale}{(($monthSales->realSale / $monthSales->lastYearSale) * 100) |number:1,',',''}{else}-{/if} %</td>
+                    <td>{if $monthSales->salePlan}{(($monthSales->realSale / $monthSales->salePlan) * 100) |number:1,',',''}{else}-{/if} %</td>
+                    <td>{$monthSales->lastYearProfit |number:0,',',' '}</td>
+                    <td>{$monthSales->profitPlan |number:0,',',' '}</td>
+                    <td>{$monthSales->realProfit |number:0,',',' '}</td>
+                    <td n:if="$currentDataView">{$monthSales->progressProfit |number:0,',',' '}</td>
+                    <td>{if $monthSales->lastYearProfit}{(($monthSales->realProfit / $monthSales->lastYearProfit) * 100) |number:1,',',''}{else}-{/if} %</td>
+                    <td>{if $monthSales->profitPlan}{(($monthSales->realProfit / $monthSales->profitPlan) * 100) |number:1,',',''}{else}-{/if} %</td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+
+        <br>
+
+        <div n:if="$control->selectedComparisons" style="text-align: left;">
+            {foreach $fulfillment as $storeId => $monthSales}
+                {continueIf $storeId === 90}
+                <hr>
+                <h4>{$control::SALE_GROUPS[$storeId]} - průběžné měsíční plnění k {$control->selectedDate |date:'d.m.Y'}</h4>
+                <table class="sale-overview-day-progress-table">
+                    <tr n:if="$monthSales->salePlan && in_array($control::PLAN_COMPARISON, $control->selectedComparisons)">
+                        <td>
+                            <div>Plnění prodeje {$control->selectedDate |date:'n/Y'}</div>
+                            <div>ve srovnání s plánem</div>
+                            <div>prodeje {$control->selectedDate |date:'n/Y'}</div>
+                        </td>
+                        <td>{include #fulfillmentProgressBar
+                            sale => $monthSales->realSale,
+                            lastSale => $monthSales->lastYearProgressSale,
+                            compareValue => $monthSales->salePlan,
+                            type => $control::PLAN_COMPARISON,
+                            label => 'plán'
+                        }</td>
+                    </tr>
+                    <tr n:if="$monthSales->lastYearSale && in_array($control::LAST_YEAR_COMPARISON, $control->selectedComparisons)">
+                        <td>
+                            <div>Plnění prodeje {$control->selectedDate |date:'n/Y'}</div>
+                            <div>ve srovnání s</div>
+                            <div>prodejem {$control->selectedDate->modify('-1 year') |date:'n/Y'}</div>
+                        </td>
+                        <td>{include #fulfillmentProgressBar
+                            sale => $monthSales->realSale,
+                            lastSale => $monthSales->lastYearProgressSale,
+                            compareValue => $monthSales->lastYearSale,
+                            type => $control::LAST_YEAR_COMPARISON,
+                            label => 'prodej'
+                        }</td>
+                    </tr>
+                    <tr n:if="$monthSales->profitPlan && in_array($control::PLAN_COMPARISON, $control->selectedComparisons)">
+                        <td>
+                            <div>Plnění hrubého</div>
+                            <div>zisku {$control->selectedDate |date:'n/Y'} ve srovnání</div>
+                            <div>s plánem hrubého</div>
+                            <div>zisku {$control->selectedDate |date:'n/Y'}</div>
+                        </td>
+                        <td>{include #fulfillmentProgressBar
+                            sale => $monthSales->realProfit,
+                            lastSale => $monthSales->lastYearProgressProfit,
+                            compareValue => $monthSales->profitPlan,
+                            type => $control::PLAN_COMPARISON,
+                            label => 'plán'
+                        }</td>
+                    </tr>
+                    <tr n:if="$monthSales->lastYearProfit && in_array($control::LAST_YEAR_COMPARISON, $control->selectedComparisons)">
+                        <td>
+                            <div>Plnění hrubého</div>
+                            <div>zisku {$control->selectedDate |date:'n/Y'} ve srovnání</div>
+                            <div>s hrubým ziskem {$control->selectedDate->modify('-1 year') |date:'n/Y'}</div>
+                        </td>
+                        <td>{include #fulfillmentProgressBar
+                            sale => $monthSales->realProfit,
+                            lastSale => $monthSales->lastYearProgressProfit,
+                            compareValue => $monthSales->lastYearProfit,
+                            type => $control::LAST_YEAR_COMPARISON,
+                            label => 'hrubý zisk'
+                        }</td>
+                    </tr>
+                </table>
+            {/foreach}
+        </div>
+    </div>
+{/define}
+
+{define fulfillmentProgressBar}
+    {var int $score = ($sale / $compareValue) * 100}
+    {var int $lastScore = ($lastSale / $compareValue) * 100}
+    {var bool $isWinning = $score >= $lastScore}
+
+    <div class="sale-progress-bar-year-label">
+        {$control->selectedDate->modify('-1 year') |date:'Y'}
+        <div n:if="$type === $control::LAST_YEAR_COMPARISON" class="sale-progress-bar-compare-label">
+            {$label} {$control->selectedDate->modify('-1 year') |date:'n/Y'}:
+            {$compareValue |number:0,',',' '} Kč
+        </div>
+    </div>
+
+    <div class="text-right sale-progress-bar-progress-label" style="width: {round($lastScore)}%">
+        <div>{$lastScore |number:1,',',' '} %</div>
+        <div>{$lastSale |number:0,',',' '} Kč</div>
+    </div>
+
+    <div class="sales-progress-bar">
+        <div class="sales-progress-bar-wrapper">
+            {if $isWinning}
+                <div class="sales-win-progress" style="width: {round($score)}%;">&nbsp;</div>
+                <div class="last-sales-loose-progress" style="width: {round($lastScore)}%;">&nbsp;</div>
+            {else}
+                <div class="last-sales-win-progress" style="width: {round($lastScore)}%;">&nbsp;</div>
+                <div class="sales-loose-progress" style="width: {round($score)}%;">&nbsp;</div>
+            {/if}
+            &nbsp;
+        </div>
+    </div>
+
+    <div class="text-right sale-progress-bar-progress-label" style="width: {round($score)}%">
+        <div>{$score |number:1,',',' '} %</div>
+        <div>{$sale |number:0,',',' '} Kč</div>
+    </div>
+
+    <div class="sale-progress-bar-year-label">
+        {$control->selectedDate |date:'Y'}
+        <div n:if="$type === $control::PLAN_COMPARISON" class="sale-progress-bar-compare-label">
+            {$label} {$control->selectedDate |date:'n/Y'}: {$compareValue |number:0,',',' '} Kč
+        </div>
+    </div>
+{/define}

@@ -1,0 +1,11 @@
+{varType array $stockGroups}
+{block content}
+{sideDialog}
+    {foreach $stockGroups as $producer => $groups}
+        {php ksort($groups)}
+        <h3>{$producer}</h3>
+        <ul>
+            <li n:foreach="$groups as $group">{$group}</li>
+        </ul>
+    {/foreach}
+{/sideDialog}

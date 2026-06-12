@@ -1,0 +1,13 @@
+{varType App\Modules\StockModule\Orm\Stands\Stand $stand}
+{varType int $order}
+{block content}
+<div class="jas-link-wrapper">
+    {var string $anchorLink = $order < 10 ? 'standPlates' : ('standPlates#plate-id-' .  (intval($order / 10) * 10))}
+    <a title="Zpět" n:href="$anchorLink id => $stand->id">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět</strong>
+    </a>
+</div>
+<h2>{$stand->title}</h2>
+<h2>{$order}. plato</h2>
+{control standHistoryPlates}

@@ -1,0 +1,1323 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Modules\CliModule\Service;
+
+use App\Core\Orm\BaseMapper;
+use App\Core\Utils\DateTime;
+use App\Modules\CliModule\Service\Entity\PartnerImport;
+use App\Modules\CliModule\Service\Entity\StoreStockImport;
+use App\Modules\StockModule\Orm\StockGroups\StockGroup;
+use App\Modules\StockModule\Orm\StockItems\StockItem;
+use App\Modules\StockModule\Orm\StockSeries\StockSeries;
+use App\Modules\SystemModule\Orm\Stores\Store;
+use App\Modules\SystemModule\Orm\Users\User;
+use App\Service\OrmModel;
+use Nette\Utils\Strings;
+use Nextras\Dbal\Utils\DateTimeImmutable;
+
+/**
+ * Sluzba pro import skladovych dat
+ *  - Polozky (vykon) skladniku
+ *  - Zasoby pobocek
+ *  - Povinny sortiment pobocek
+ */
+class WarehouseImporter
+{
+    private OrmModel $orm;
+
+    public function __construct(OrmModel $orm)
+    {
+        $this->orm = $orm;
+    }
+
+    /** Import polozek (vykon) skladniku */
+    public function importWarehousemanItems(): \stdClass
+    {
+        $importName = 'Položky skladníků';
+        $import = $this->orm->imports->getImportByName($importName);
+
+        $result = new \stdClass();
+        $result->deletedCount = 0;
+        $result->importCount = 0;
+
+        $fileName = 'polozky_hod.csv';
+        $filePath = DATA_DIR . "/sklad/$fileName";
+
+        if (!file_exists($filePath)) {
+            $result->error = "Import neproběhl. Nelze načíst zdrojový soubor '$fileName'";
+            return $result;
+        }
+
+        if ($import && $import->date->getTimestamp() >= filemtime($filePath)) {
+            $result->error = 'Import neproběhl, data jsou aktuální (' . $import->date->format(DateTime::CZ_DATETIME) . ')';
+            return $result;
+        }
+
+        $handle = fopen($filePath, 'r');
+        $this->orm->warehousemanItems->beginTransaction();
+
+        try {
+            $deleteOld = true;
+            $importItems = [];
+
+            while (($data = fgetcsv($handle, 1000, ';')) !== false) {
+                if ($deleteOld) {
+                    $year = DateTime::createFromFormat(DateTime::DB_DATE, $data[5])->format('Y');
+                    $result->deletedCount = $this->orm->warehousemanItems->deleteByYear((int) $year);
+                    $deleteOld = false;
+                }
+
+                $webId = intval($data[3] ?? null);
+                $quantity = intval($data[4] ?? null);
+                $date = $data[5] ?? null;
+
+                if (!$webId || !$quantity || !$date) {
+                    continue;
+                }
+
+                $result->importCount++;
+                $importItems[] = [
+                    'web_id' => $webId,
+                    'quantity' => $quantity,
+                    'date' => $date
+                ];
+
+                if ($result->importCount % 500 === 0) {
+                    $this->orm->warehousemanItems->insertItems($importItems);
+                    $importItems = [];
+                }
+            }
+
+            if ($importItems) {
+                $this->orm->warehousemanItems->insertItems($importItems);
+            }
+
+            if (!$import) {
+                $this->orm->imports->insertEntity(null, [
+                    'name' => $importName,
+                    'date' => (new DateTime())->setTimestamp(filemtime($filePath))
+                ]);
+            } else {
+                $import->date = (new DateTime())->setTimestamp(filemtime($filePath));
+                $import->getRepository()->persistAndFlush($import);
+            }
+
+            $this->orm->warehousemanItems->commitTransaction();
+        } catch (\Exception $e) {
+            $this->orm->warehousemanItems->rollbackTransaction();
+            throwDebug($e);
+            $result->error = $e->getMessage();
+        }
+
+        fclose($handle);
+        return $result;
+    }
+
+    /** Import skladovych zasob vybrane pobocky */
+    public function importStockItems(int $storeId): string
+    {
+        $storeName = $this->orm->stores->getById($storeId)->name ?? '?';
+        $importName = "Skladové položky - $storeName";
+        $import = $this->orm->imports->getImportByName($importName);
+
+        $zipName = 'intranet.zip';
+        $fileName = 'intranet.csv';
+        $zip = new \ZipArchive();
+
+        if ($zip->open(DATA_DIR . "/$storeId/$zipName") !== true) {
+            return "Import skladových zásob pobočky '$storeName' neproběhl. Nelze načíst zdrojový soubor '$zipName'";
+        }
+
+        $fileStats = $zip->statName($fileName);
+
+        if (!$fileStats) {
+            $zip->close();
+            return "Import skladových zásob pobočky '$storeName' neproběhl. Nelze načíst zdrojový soubor '$fileName'";
+        }
+
+        if ($import && $import->date->getTimestamp() >= $fileStats['mtime'] && false) {
+            $zip->close();
+            return "Import skladových zásob pobočky '$storeName' neproběhl, data jsou aktuální (" . $import->date->format(DateTime::CZ_DATETIME) . ')';
+        }
+
+        $fp = $zip->getStream($fileName);
+
+        $i = 0;
+        $fileContent = '';
+        $fileContent_2 = '';
+        while (!feof($fp)) {
+            if($i<=50000){
+                $fileContent .= fgets($fp);
+            }
+            else{
+                $fileContent_2 .= fgets($fp);
+            }
+            $i++;
+        }
+        fclose($fp);
+        //file_put_contents(DATA_DIR . "/$storeId/intranet_1.csv",$contents);
+        file_put_contents(DATA_DIR . "/$storeId/intranet_2.csv",$fileContent_2);
+
+        //$fileContent = $zip->getFromName($fileName);
+
+        $zip->close();
+
+        $localStockItems = $this->orm->stockItems->findAll()->fetchPairs('regNumber', 'id');
+        $newStockItems = [];
+        $imports = [];
+        $separator = "\r\n";
+        $line = strtok(iconv('WINDOWS-1250', 'UTF-8', $fileContent), $separator);
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+
+            if (strlen($csvData[3]) !== 1 && count($csvData) < 14) {
+                // Fix when supplement === '\'
+                array_splice($csvData, 3, 0, "\\");
+                $csvData[4] = str_replace('\";', '', rtrim($csvData[4], '"'));
+
+                if (count($csvData) < 14 && Strings::startsWith($csvData[4], '";')) {
+                    array_splice($csvData, 4, 0, '');
+                    $csvData[5] = str_replace('";', '', $csvData[5]);
+                }
+            }
+
+            $importData = new StoreStockImport();
+            $importData->regNumber = trim($csvData[0]);
+            $importData->name = trim($csvData[1]);
+            // fix to remove non-breaking space pro catalog name
+            $importData->catalog = trim(str_replace("\xc2\xa0", ' ', $csvData[2])) ?: null;
+            $importData->supplement = $csvData[3];
+            $importData->remark = trim($csvData[4]) ?: null;
+            $importData->producer = (int) trim($csvData[5]);
+            $importData->group = (int) trim($csvData[6]);
+            $importData->price = (float) str_replace(',', '.', trim($csvData[7]));
+            $importData->quantity = (float) trim($csvData[8]);
+            $importData->unit = trim($csvData[9]);
+            $importData->paletteQuantity = (float) str_replace(',', '.', trim($csvData[11]));
+            $importData->weight = (int) trim($csvData[12]);
+            $importData->sector = trim($csvData[13]) ?: null;
+
+            if (!isset($localStockItems[$importData->regNumber])) {
+                $newStockItems[] = $importData;
+                $localStockItems[$importData->regNumber] = true;
+            }
+
+            $imports[] = $importData;
+            $line = strtok($separator);
+        }
+
+        $this->insertNewStockItems($newStockItems);
+        $this->updateStockVariants($storeId, $imports);
+        $this->updateStockVariantLocalCatalogs($storeId, $imports);
+
+        if (!$import) {
+            $this->orm->imports->insertEntity(null, [
+                'name' => $importName,
+                'date' => (new DateTime())->setTimestamp($fileStats['mtime'])
+            ]);
+        } else {
+            $import->date = (new DateTime())->setTimestamp($fileStats['mtime']);
+            $import->getRepository()->persistAndFlush($import);
+        }
+
+        return "Import skladových zásob pobočky '$storeName' proběhl úspěšně (načteno " . count($imports) . (' položek)');
+    }
+
+    /** Aktualizace cen zbozi */
+    public function updateItemPrice(): string
+    {
+        $zipName = 'intranet.zip';
+        $fileName = 'intranet.csv';
+        $zip = new \ZipArchive();
+
+        if ($zip->open(DATA_DIR . '/' . Store::OSTRAVA_MAIN_STORAGE . "/$zipName") !== true) {
+            return "Update cen neproběhl, nelze načíst soubor '$zipName'";
+        }
+
+        $fileStats = $zip->statName($fileName);
+
+        if (!$fileStats) {
+            $zip->close();
+            return "Update cen neproběhl, nelze načíst zdrojový soubor '$fileName'";
+        }
+
+        $fileContent = $zip->getFromName($fileName);
+        $zip->close();
+
+        $stockItems = $this->orm->stockItems->findAll()->fetchPairs('regNumber');
+        $separator = "\r\n";
+        $line = strtok(iconv('WINDOWS-1250', 'UTF-8', $fileContent), $separator);
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+
+            if (strlen($csvData[3]) !== 1 && count($csvData) < 14) {
+                // Fix when supplement === '\'
+                array_splice($csvData, 3, 0, "\\");
+                $csvData[4] = str_replace('\";', '', rtrim($csvData[4], '"'));
+            }
+
+            $regNumber = trim($csvData[0]);
+            $price = (float) str_replace(',', '.', trim($csvData[7]));
+            /** @var StockItem $stockItem */
+            $stockItem = $stockItems[$regNumber] ?? null;
+
+            if ($stockItem && $stockItem->price !== $price) {
+                $stockItem->price = $price;
+                $this->orm->stockItems->persist($stockItem);
+            }
+
+            unset($stockItems[$regNumber]);
+            $line = strtok($separator);
+        }
+
+        $this->orm->stockItems->flush();
+        return '';
+    }
+
+    /** Aktualizace skupin zbozi */
+    public function updateItemGroup(): string
+    {
+        $zipName = 'intranet.zip';
+        $fileName = 'intranet.csv';
+        $zip = new \ZipArchive();
+
+        if ($zip->open(DATA_DIR . '/' . Store::OSTRAVA_MAIN_STORAGE . "/$zipName") !== true) {
+            return "Update skupin neproběhl, nelze načíst soubor '$zipName'";
+        }
+
+        $fileStats = $zip->statName($fileName);
+
+        if (!$fileStats) {
+            $zip->close();
+            return "Update skupin neproběhl, nelze načíst zdrojový soubor '$fileName'";
+        }
+
+        $fileContent = $zip->getFromName($fileName);
+        $zip->close();
+
+        $separator = "\r\n";
+        $line = strtok(iconv('WINDOWS-1250', 'UTF-8', $fileContent), $separator);
+
+        $stockItems = $this->orm->stockItems->findAll()->fetchPairs('regNumber');
+        $stockGroups = $this->orm->stockGroups->findAll()->fetchPairs('groupId', 'id');
+        $stockItemsGroup = $this->orm->stockItems->loadGroupId();
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+
+            if (strlen($csvData[3]) !== 1 && count($csvData) < 14) {
+                // Fix when supplement === '\'
+                array_splice($csvData, 3, 0, "\\");
+                $csvData[4] = str_replace('\";', '', rtrim($csvData[4], '"'));
+            }
+
+            $regNumber = trim($csvData[0]);
+            $producer = (int) trim($csvData[5]);
+            $group = (int) trim($csvData[6]);
+            $groupId = $producer . '-' . $group;
+
+            $stockItem = $stockItems[$regNumber] ?? null;
+
+            if($stockItem && isset($stockGroups[$groupId]) && $stockItemsGroup[$regNumber] != $stockGroups[$groupId]){
+                $stockItem->group = $this->orm->stockGroups->getById($stockGroups[$groupId]);
+                $this->orm->stockItems->persistAndFlush($stockItem);
+                /*if(!isset($stockItem->group)){
+                //if(!isset($stockItem->group) || $stockItem->group->id !== $stockGroups[$groupId]){
+                    $stockItem->group = $this->orm->stockGroups->getById($stockGroups[$groupId]);
+                    $this->orm->stockItems->persistAndFlush($stockItem);
+                }*/
+            }
+
+            if($stockItem && !isset($stockGroups[$groupId])){
+                $asdfad = 1;
+            }
+
+
+            unset($stockItems[$regNumber]);
+            $line = strtok($separator);
+        }
+
+        return '';
+    }
+
+    /** Aktualizace zrusenych polozek */
+    public function updateItemInactiveState(): string
+    {
+        $zipName = 'intranet.zip';
+        $fileName = 'intranet.csv';
+        $zip = new \ZipArchive();
+
+        if ($zip->open(DATA_DIR . '/' . Store::OSTRAVA_MAIN_STORAGE . "/$zipName") !== true) {
+            return "Update zrušených položek neproběhl, nelze načíst soubor '$zipName'";
+        }
+
+        $fileStats = $zip->statName($fileName);
+
+        if (!$fileStats) {
+            $zip->close();
+            return "Update zrušených položek neproběhl, nelze načíst zdrojový soubor '$fileName'";
+        }
+
+        $fileContent = $zip->getFromName($fileName);
+        $zip->close();
+
+        $stockItems = $this->orm->stockItems->findAll()->fetchPairs('regNumber');
+        $separator = "\r\n";
+        $line = strtok(iconv('WINDOWS-1250', 'UTF-8', $fileContent), $separator);
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+
+            if (strlen($csvData[3]) !== 1 && count($csvData) < 14) {
+                // Fix when supplement === '\'
+                array_splice($csvData, 3, 0, "\\");
+                $csvData[4] = str_replace('\";', '', rtrim($csvData[4], '"'));
+            }
+
+            $regNumber = trim($csvData[0]);
+            /** @var StockItem $stockItem */
+            $stockItem = $stockItems[$regNumber] ?? null;
+
+            if (!$stockItem) {
+                $line = strtok($separator);
+                continue;
+            }
+
+            $group = (int) trim($csvData[6]);
+            $isActive = !in_array($group, StockGroup::INACTIVE_ITEMS);
+
+            if ($stockItem->isActive !== $isActive) {
+                $stockItem->inactiveFrom = $isActive ? null : new DateTimeImmutable();
+                $this->orm->stockItems->persist($stockItem);
+            }
+
+            unset($stockItems[$regNumber]);
+            $line = strtok($separator);
+        }
+
+        $this->orm->stockItems->flush();
+        return '';
+    }
+
+    /** Import obchodnich portneru pobocky */
+    public function importPartners(int $storeId): string
+    {
+        $storeName = $this->orm->stores->getById($storeId)->name ?? '?';
+        $importName = "Obchodní partneři - $storeName";
+        $import = $this->orm->imports->getImportByName($importName);
+
+        $zipName = 'intranet.zip';
+        $fileName = 'obchodni_partneri.csv';
+        $zip = new \ZipArchive();
+
+        if ($zip->open(DATA_DIR . "/$storeId/$zipName") !== true) {
+            return "Import neproběhl. Nelze načíst zdrojový soubor '$zipName'";
+        }
+
+        $fileStats = $zip->statName($fileName);
+
+        if (!$fileStats) {
+            $zip->close();
+            return "Import neproběhl. Nelze načíst zdrojový soubor '$fileName'";
+        }
+
+        if ($import && $import->date->getTimestamp() >= $fileStats['mtime']) {
+            $zip->close();
+            return "Import neproběhl, data jsou aktuální (" . $import->date->format(DateTime::CZ_DATETIME) . ')';
+        }
+
+        $fileContent = $zip->getFromName($fileName);
+        $zip->close();
+
+        $partners = [];
+        $separator = "\r\n";
+        $line = strtok(iconv('WINDOWS-1250', 'UTF-8', $fileContent), $separator);
+
+        while ($line !== false) {
+            $data = str_getcsv($line, ';');
+            $ico = (int) ltrim(trim($data[1]), '0');
+
+            if (count($data) < 13) {
+                // doslo ke spojeni dvou sloupcu, kdy text obsahuje uvozovky
+                $data = array_map(
+                    static fn(string $val) => rtrim($val, '"'),
+                    explode(';', implode(';', $data))
+                );
+            }
+
+            $partnerData = new PartnerImport();
+            $partnerData->cip = (int) $data[0];
+            $partnerData->ico = $ico;
+            $partnerData->dic = ltrim(trim($data[2]), '0');
+            $partnerData->voj = trim($data[3]);
+            $partnerData->name = trim($data[4]);
+            $partnerData->name .= ' ' . trim($data[5]);
+            $partnerData->street = trim($data[6]);
+            $partnerData->city = trim($data[7]);
+            $partnerData->businessCity = trim($data[8]);
+            $partnerData->zipCode = trim($data[9]);
+            $partnerData->countryCode = trim($data[10]);
+            $partnerData->group = (int) ltrim(trim($data[11]), '0');
+            $partnerData->title = trim($data[12] ?? '');
+            $partners[] = $partnerData;
+
+            $line = strtok($separator);
+        }
+
+        $this->updatePartners($storeId, $partners);
+
+        if (!$import) {
+            $this->orm->imports->insertEntity(null, [
+                'name' => $importName,
+                'date' => (new DateTime())->setTimestamp($fileStats['mtime'])
+            ]);
+        } else {
+            $import->date = (new DateTime())->setTimestamp($fileStats['mtime']);
+            $import->getRepository()->persistAndFlush($import);
+        }
+
+        return "Import obchodních partnerů pobočky '$storeName' proběhl úspěšně (načteno " . count($partners) . (' položek)');
+    }
+
+    /**
+     * @param StoreStockImport[] $imports
+     */
+    private function insertNewStockItems(array $imports): void
+    {
+        $producers = $this->orm->producers->findAll()->fetchPairs('number', 'id');
+        $stockGroups = $this->orm->stockGroups->findAll()->fetchPairs('groupId', 'id');
+        $units = $this->orm->stockUnits->findAll()->fetchPairs('name', 'id');
+        $newItems = [];
+        $counter = 0;
+
+        foreach ($imports as $import) {
+            $counter++;
+            $groupId = $import->group ? $import->producer . '-' . $import->group : null;
+
+            if (!isset($producers[$import->producer])) {
+                $newEntity = $this->orm->producers->insertEntity(null, [
+                    'name' => '',
+                    'number' => $import->producer
+                ]);
+                $producers[$import->producer] = $newEntity->id;
+            }
+
+            if ($groupId && !isset($stockGroups[$groupId])) {
+                $newEntity = $this->orm->stockGroups->insertEntity(null, [
+                    'producer' => $producers[$import->producer],
+                    'name' => '',
+                    'number' => $import->group
+                ]);
+                $stockGroups[$groupId] = $newEntity->id;
+            }
+
+            if (!isset($units[$import->unit])) {
+                $newEntity = $this->orm->stockUnits->insertEntity(null, [
+                    'name' => $import->unit
+                ]);
+                $units[$import->unit] = $newEntity->id;
+            }
+
+            $newItems[] = [
+                'reg_number' => $import->regNumber,
+                'name' => $import->name,
+                'producer' => $producers[$import->producer],
+                'group' => $groupId ? $stockGroups[$groupId] : null,
+                'unit' => $units[$import->unit],
+                'price' => $import->price ?: null
+            ];
+
+            if ($counter === 500) {
+                $this->orm->stockItems->insertItems($newItems);
+                $counter = 0;
+                $newItems = [];
+            }
+        }
+
+        if ($newItems) {
+            $this->orm->stockItems->insertItems($newItems);
+        }
+    }
+
+    /**
+     * @param int $storeId
+     * @param StoreStockImport[] $imports
+     */
+    private function updateStockVariants(int $storeId, array $imports): void
+    {
+
+        $localStockItems = $this->orm->stockItems->findAll()->fetchPairs('regNumber', 'id');
+        $sectors = $this->orm->stockSectors->findBy(['store' => $storeId])->fetchPairs('name', 'id');
+        $localStoreVariants = $this->orm->stockVariants->loadStoreVariants($storeId);
+        $newVariants = [];
+        $updateVariants = [];
+        //$updateColumns = ['quantity', 'sector', 'remark', 'catalog', 'weight', 'palette_quantity', 'sample', 'deleted', 'outlet_type'];
+        $updateColumns = ['quantity', 'sector', 'remark', 'weight', 'palette_quantity', 'sample', 'deleted', 'outlet_type'];
+        $newCounter = 0;
+        $updateCounter = 0;
+
+
+        foreach ($imports as $importData) {
+            $itemDataKey = $importData->regNumber
+                . BaseMapper::DATA_STRING_SEPARATOR
+                . ($importData->supplement === ' ' ? '' : $importData->supplement);
+            $catalogDataKey = $importData->regNumber . BaseMapper::DATA_STRING_SEPARATOR . $importData->catalog;
+
+            if ($importData->sector && !isset($sectors[$importData->sector])) {
+                $newEntity = $this->orm->stockSectors->insertEntity(null, [
+                    'store' => $storeId,
+                    'name' => $importData->sector
+                ]);
+                $sectors[$importData->sector] = $newEntity->id;
+            }
+
+            if (!isset($localStoreVariants[$itemDataKey])) {
+                $newCounter++;
+                $newVariants[] = [
+                    'item' => $localStockItems[$importData->regNumber],
+                    'store' => $storeId,
+                    'supplement' => $importData->supplement,
+                    'remark' => $importData->remark,
+                    'sector' => $importData->sector ? $sectors[$importData->sector] : null,
+                    'weight' => $importData->weight ?: null,
+                    'quantity' => $importData->quantity,
+                    'palette_quantity' => $importData->paletteQuantity ?: null,
+                    'outlet_type' => $importData->getOutletType()
+                ];
+
+                if ($newCounter === 500) {
+                    $this->orm->stockVariants->insertItems($newVariants);
+                    $newCounter = 0;
+                    $newVariants = [];
+                }
+
+                continue;
+            }
+
+            $updateCounter++;
+            $updateVariants[] = [
+                'id' => $localStoreVariants[$itemDataKey],
+                'item' => $localStockItems[$importData->regNumber],
+                'store' => $storeId,
+                'supplement' => $importData->supplement,
+                'remark' => $importData->remark,
+                'sector' => $importData->sector ? $sectors[$importData->sector] : null,
+                'quantity' => $importData->quantity,
+                'weight' => $importData->weight ?: null,
+                'palette_quantity' => $importData->paletteQuantity ?: null,
+                'sample' => $importData->producer === 31,
+                'deleted' => false,
+                'outlet_type' => $importData->getOutletType()
+            ];
+
+            if ($updateCounter === 500) {
+                $this->orm->stockVariants->updateItems($updateVariants, $updateColumns);
+                $updateCounter = 0;
+                $updateVariants = [];
+            }
+        }
+
+        if ($newVariants) {
+            $this->orm->stockVariants->insertItems($newVariants);
+        }
+
+        if ($updateVariants) {
+            $this->orm->stockVariants->updateItems($updateVariants, $updateColumns);
+        }
+    }
+
+    private function updateStockVariantLocalCatalogs(int $storeId, array $imports): void
+    {
+
+        //$localStockItems = $this->orm->stockItems->findAll()->fetchPairs('regNumber', 'id');
+        $localStoreVariants = $this->orm->stockVariants->loadStoreVariants($storeId);
+        $localCatalogs = $this->orm->catalogNumbers->loadCatalogNumbers();
+        $updateVariants = [];
+        $updateColumns = ['catalog'];
+        $updateCounter = 0;
+
+
+        foreach ($imports as $importData) {
+
+            $localStockItem = $this->orm->stockItems->findBy(['regNumber' => $importData->regNumber])->fetchPairs('regNumber', 'id');
+
+            $itemDataKey = $importData->regNumber
+                . BaseMapper::DATA_STRING_SEPARATOR
+                . ($importData->supplement === ' ' ? '' : $importData->supplement);
+            $catalogDataKey = $importData->regNumber . BaseMapper::DATA_STRING_SEPARATOR . $importData->catalog;
+
+            if ($importData->catalog && !isset($localCatalogs[$catalogDataKey])) {
+                $newEntity = $this->orm->catalogNumbers->insertEntity(null, [
+                    'name' => $importData->catalog,
+                    'item' => $localStockItem[$importData->regNumber]
+                ]);
+                $localCatalogs[$catalogDataKey] = $newEntity->id;
+            }
+
+            $updateCounter++;
+            $updateVariants[] = [
+                'id' => $localStoreVariants[$itemDataKey],
+                'item' => $localStockItem[$importData->regNumber],
+                'store' => $storeId,
+                'supplement' => $importData->supplement,
+                'quantity' => $importData->quantity,
+                'catalog' => $importData->catalog ? $localCatalogs[$catalogDataKey] : null
+            ];
+
+            if ($updateCounter === 500) {
+                $this->orm->stockVariants->updateItems($updateVariants, $updateColumns);
+                $updateCounter = 0;
+                $updateVariants = [];
+            }
+        }
+
+        if ($updateVariants) {
+            $this->orm->stockVariants->updateItems($updateVariants, $updateColumns);
+        }
+    }
+
+    /**
+     * @param int $storeId
+     * @param PartnerImport[] $imports
+     */
+    private function updatePartners(int $storeId, array $imports): void
+    {
+        $companies = $this->orm->companies->findAll()->fetchPairs('ico');
+        $groups = $this->orm->companyGroups->findAll()->fetchPairs('number', 'id');
+        $updates = [];
+        $updateColumns = ['city', 'group', 'title', 'information'];
+        $counter = 0;
+
+        foreach ($imports as $importData) {
+            if (!isset($groups[$importData->group])) {
+                $newEntity = $this->orm->companyGroups->insertEntity(null, [
+                    'number' => $importData->group
+                ]);
+                $groups[$importData->group] = $newEntity->id;
+            }
+
+            if (!isset($companies[$importData->ico])) {
+                $companies[$importData->ico] = $this->orm->companies->insertEntity(null, [
+                    'ico' => $importData->ico,
+                    'name' => $importData->name,
+                    'countryCode' => $importData->countryCode,
+                    'information' => [
+                        'dic' => $importData->dic,
+                        'street' => $importData->street,
+                        'city' => $importData->city,
+                        'zipCode' => $importData->zipCode
+                    ]
+                ]);
+            } elseif ($companies[$importData->ico]->name === '???') {
+                $this->orm->companies->updateEntity($companies[$importData->ico]->id, null, [
+                    'ico' => $importData->ico,
+                    'name' => $importData->name,
+                    'countryCode' => $importData->countryCode,
+                    'information' => [
+                        'dic' => $importData->dic,
+                        'street' => $importData->street,
+                        'city' => $importData->city,
+                        'zipCode' => $importData->zipCode
+                    ]
+                ]);
+            }
+
+            $counter++;
+
+            $address = [
+                'street' => $importData->street,
+                'city' => $importData->city,
+                'zipCode' => $importData->zipCode
+            ];
+
+            $updates[] = [
+                'store' => $storeId,
+                'company' => $companies[$importData->ico]->id,
+                'voj' => $importData->voj,
+                'city' => $importData->businessCity,
+                'group' => $groups[$importData->group],
+                'title' => $importData->title,
+                'information' => json_encode($address)
+            ];
+
+            if ($counter === 500) {
+                $this->orm->companyDepots->updateItems($updates, $updateColumns);
+                $counter = 0;
+                $updates = [];
+            }
+        }
+
+        if ($updates) {
+            $this->orm->companyDepots->updateItems($updates, $updateColumns);
+        }
+    }
+
+    /** Import povinneho sortimentu */
+    public function importObligatoryItems(?string $fileContent): string
+    {
+        if (!$fileContent) {
+            return 'Soubor neobsahuje žádná data';
+        }
+
+        $localRegNumbers = $this->orm->stockItems->findAll()->fetchPairs('regNumber', 'id');
+        $localObligatoryItems = $this->orm->obligatoryItems->findAll()->fetchPairs('item->id');
+
+        $imports = [];
+        $separator = "\r\n";
+        $line = strtok($fileContent, $separator);
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+            $regNumber = trim($csvData[0] ?? '');
+
+            if (!is_numeric($regNumber)) {
+                $line = strtok($separator);
+                continue;
+            }
+
+            $stockItemId = $localRegNumbers[$regNumber] ?? null;
+
+            if (!$stockItemId) {
+                return "Položka $regNumber v systému neexistuje";
+            }
+
+            $quantity = str_replace(',', '.', trim($csvData[8] ?? ''));
+            $minOrder = str_replace(',', '.', trim($csvData[7] ?? ''));
+
+            if (!is_numeric($quantity) || !is_numeric($minOrder)) {
+                return "Položka $regNumber neobsahuje povinné množství na pobočce";
+            }
+
+            $imports[] = [
+                'item' => $stockItemId,
+                'quantity' => $quantity,
+                'min_order' => $minOrder
+            ];
+            unset($localObligatoryItems[$stockItemId]);
+
+            $line = strtok($separator);
+        }
+
+        $this->orm->obligatoryItems->updateItems($imports, ['quantity', 'min_order']);
+
+        foreach ($localObligatoryItems as $obligatoryItem) {
+            $this->orm->obligatoryItems->remove($obligatoryItem);
+        }
+
+        $this->orm->flush();
+
+        return '';
+    }
+
+    /** Import statusu polozky sortimentu */
+    public function importItemStatuses(?string $fileContent, User $user): string
+    {
+        if (!$fileContent) {
+            return 'Soubor neobsahuje žádná data';
+        }
+
+        $statusMapper = [
+            'paleta' => StockItem::STATUS_PALETTE,
+            'vyřazeno' => StockItem::STATUS_DISCARDED,
+            'komis' => StockItem::STATUS_COMMISSION
+        ];
+
+        $items = $this->orm->stockItems->findAll()->fetchPairs('regNumber');
+        $separator = "\r\n";
+        $line = strtok($fileContent, $separator);
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+
+            if (count($csvData) !== 2) {
+                return 'Chyba: Nesprávný formát dat na řádku ' . implode(';', $csvData);
+            }
+
+            $regNumber = trim($csvData[0]);
+            $status = trim($csvData[1]);
+
+            if (!isset($items[$regNumber])) {
+                return "Chyba: Položka s číslem '$regNumber' nebyla v systému nalezena";
+            }
+
+            if (!isset($statusMapper[$status])) {
+                return "Chyba: Neznámý status '$status'";
+            }
+
+            $status = $statusMapper[$status];
+            /** @var StockItem $stockItem */
+            $stockItem = $items[$regNumber];
+
+            if ($stockItem->status === $status) {
+                // status se nezmenil
+                $line = strtok($separator);
+                continue;
+            }
+
+            $stockItem->status = $status;
+
+            if ($user->id !== 1) {
+                $stockItem->statusChangedBy = $user;
+                $stockItem->statusChangedAt = new DateTimeImmutable();
+            } else {
+                unset($items[$regNumber]);
+            }
+
+            $this->orm->stockItems->persist($stockItem);
+
+            $line = strtok($separator);
+        }
+
+        $this->orm->stockItems->flush();
+
+        // Pri prvodnim importu statu se ostatni polozky oznaci na vyrazene
+        if ($user->id === 1) {
+            foreach ($items as $stockItem) {
+                $stockItem->status = StockItem::STATUS_DISCARDED;
+                $this->orm->stockItems->persist($stockItem);
+            }
+
+            $this->orm->stockItems->flush();
+        }
+
+        return '';
+    }
+
+    /** Import statusu polozky sortimentu */
+    public function importItemQuantities(?string $fileContent): string
+    {
+        if (!$fileContent) {
+            return 'Soubor neobsahuje žádná data';
+        }
+
+        $items = $this->orm->stockItems->findAll()->fetchPairs('regNumber');
+        $separator = "\r\n";
+        $line = strtok($fileContent, $separator);
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+            $dataCount = count($csvData);
+
+            if ($dataCount < 3 || $dataCount > 4) {
+                return 'Chyba: Nesprávný formát dat na řádku ' . implode(';', $csvData);
+            }
+
+            $regNumber = trim($csvData[0]);
+            $palette = (float) str_replace(',', '.', trim($csvData[1]));
+            $package = (float) str_replace(',', '.', trim($csvData[2]));
+            $minOrder = isset($csvData[3]) ? intval($csvData[3]) : null;
+
+            if (!isset($items[$regNumber])) {
+                return "Chyba: Položka s číslem '$regNumber' nebyla v systému nalezena";
+            }
+
+            /** @var StockItem $stockItem */
+            $stockItem = $items[$regNumber];
+            $stockItem->palette = $palette ?: null;
+            $stockItem->package = $package ?: null;
+
+            if (!is_null($minOrder)) {
+                $stockItem->minOrder = $minOrder ?: null;
+            }
+
+            $this->orm->stockItems->persist($stockItem);
+
+            $line = strtok($separator);
+        }
+
+        $this->orm->stockItems->flush();
+
+        return '';
+    }
+
+    /** Import vyrobcu a skupin zbozi k produktu */
+    public function updateItemProducers(?string $fileContent): string
+    {
+        if (!$fileContent) {
+            return 'Soubor neobsahuje žádná data';
+        }
+
+        $items = $this->orm->stockItems->findAll()->fetchPairs('regNumber');
+        $producers = $this->orm->producers->findAll()->fetchPairs('number');
+        $units = $this->orm->stockUnits->findAll()->fetchPairs('name');
+        $groups = [];
+        $separator = "\r\n";
+        $line = strtok($fileContent, $separator);
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+
+            if (count($csvData) !== 4) {
+                return 'Chyba: Nesprávný formát dat na řádku ' . implode(';', $csvData);
+            }
+
+            $regNumber = trim($csvData[0]);
+            $producerNumber = (int) trim($csvData[1]);
+            $groupNumber = (int) trim($csvData[2]);
+            $unitName = trim($csvData[3]);
+
+            // Vyrobce 21 jsou vyrazene produkty, ktere nas nezajimaji
+            if (!$producerNumber || !$groupNumber || !$unitName || !isset($items[$regNumber])) {
+                $line = strtok($separator);
+                continue;
+            }
+
+            if (!isset($groups[$producerNumber][$groupNumber])) {
+                $groups[$producerNumber][$groupNumber] = $this->orm->stockGroups->getBy([
+                    'producer->number' => $producerNumber,
+                    'number' => $groupNumber
+                ]);
+            }
+
+            $producer = $producers[$producerNumber] ?? null;
+            $group = $groups[$producerNumber][$groupNumber];
+            $unit = $units[$unitName] ?? null;
+
+            if (!$producer || !$unit) {
+                return 'Chyba: Nenalezen vyrobce nebo jednotka: ' . implode(';', $csvData);
+            }
+
+            if (!$group) {
+                $group = new StockGroup();
+                $group->producer = $producer;
+                $group->number = $groupNumber;
+                $group->name = '';
+                $this->orm->stockGroups->persistAndFlush($group);
+                $groups[$producerNumber][$groupNumber] = $group;
+            }
+
+            /** @var StockItem $stockItem */
+            $stockItem = $items[$regNumber];
+            $stockItem->producer = $producer;
+            $stockItem->group = $group;
+            $stockItem->unit = $unit;
+            $this->orm->stockItems->persist($stockItem);
+
+            $line = strtok($separator);
+        }
+
+        $this->orm->stockItems->flush();
+
+        return '';
+    }
+
+    public function updateItemNames(?string $fileContent): string
+    {
+        if (!$fileContent) {
+            return 'Soubor neobsahuje žádná data';
+        }
+
+        $items = $this->orm->stockItems->findAll()->fetchPairs('regNumber');
+        $separator = "\r\n";
+        $line = strtok($fileContent, $separator);
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+
+            if (count($csvData) !== 2) {
+                return 'Chyba: Nesprávný formát dat na řádku ' . implode(';', $csvData);
+            }
+
+            $regNumber = trim($csvData[0]);
+            $ItemName = trim($csvData[1]);
+
+            if (!isset($items[$regNumber])) {
+                $line = strtok($separator);
+                continue;
+            }
+
+            /** @var StockItem $stockItem */
+            $stockItem = $items[$regNumber];
+            $stockItem->name = $ItemName;
+            $this->orm->stockItems->persist($stockItem);
+
+            $line = strtok($separator);
+        }
+
+        $this->orm->stockItems->flush();
+
+        return '';
+    }
+
+    /** Import serii ke skladovym polozkam */
+    public function updateItemSeries(?string $fileContent): string
+    {
+        if (!$fileContent) {
+            return 'Soubor neobsahuje žádná data';
+        }
+
+        $stockItems = $this->orm->stockItems->findAll()->fetchPairs('regNumber');
+        $stockSeries = $this->orm->stockSeries->findAll()->fetchPairs('key');
+        $itemSeries = $this->orm->stockSeries->loadStockSeries();
+        $separator = "\r\n";
+
+        if (!mb_check_encoding($fileContent, 'UTF-8')) {
+            $fileContent = iconv('WINDOWS-1250', 'UTF-8', $fileContent);
+        }
+
+        $line = strtok($fileContent, $separator);
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+
+            if (count($csvData) !== 3) {
+                return 'Chyba: Nesprávný počet sloupců na řádku ' . implode(';', $csvData);
+            }
+
+            $regNumber = trim($csvData[0]);
+            $seriesKey = trim($csvData[2]);
+
+            if (!preg_match('/^[a-z0-9-.]*$/', $seriesKey)) {
+                return 'Chyba: Nevalidní formát klíče serie: ' . $seriesKey;
+            }
+
+            if (!is_numeric($regNumber)) {
+                $line = strtok($separator);
+                continue;
+            }
+
+            $seriesData = explode('-', $seriesKey);
+            $seriesProducer = $seriesData[0] ?? '';
+
+            if (!$seriesProducer) {
+                return 'Chyba: Nesprávný kód serie: ' . implode('-', $seriesData);
+            }
+
+            if (!isset($stockItems[$regNumber])) {
+                return "Chyba: Produkt s číslem '$regNumber' nenalezen";
+            }
+
+            /** @var StockItem $stockItem */
+            $stockItem = $stockItems[$regNumber];
+
+            if (isset(StockSeries::GLOBAL_SERIES[$seriesProducer])) {
+                $globalProducer = StockSeries::GLOBAL_SERIES[$seriesProducer];
+
+                if ($stockItem->globalProducer !== $globalProducer) {
+                    $stockItem->globalProducer = StockSeries::GLOBAL_SERIES[$seriesProducer];
+                    $this->orm->stockItems->persistAndFlush($stockItem);
+                }
+            }
+
+            if (!isset($stockSeries[$seriesKey])) {
+                $stockSeries[$seriesKey] = $this->orm->stockSeries->insertEntity(null, [
+                    'name' => ucfirst($seriesKey),
+                    'key' => $seriesKey
+                ]);
+            }
+
+            $seriesItemKey = "$regNumber-$seriesKey";
+
+            if (!isset($itemSeries[$seriesItemKey])) {
+                /** @var StockSeries $addStockSeries */
+                $addStockSeries = $stockSeries[$seriesKey];
+                $addStockSeries->items->add($stockItem);
+                $addStockSeries->items->doPersist();
+                $itemSeries[$seriesItemKey] = true;
+            }
+
+            $line = strtok($separator);
+        }
+
+        $this->orm->stockSeries->flush();
+
+        return '';
+    }
+
+    public function importGroupDiscounts(): string
+    {
+        $importName = 'Slevy na skupiny';
+        $import = $this->orm->imports->getImportByName($importName);
+
+        $zipName = 'intranet.zip';
+        $fileName = '9-slevy.csv';
+        $zip = new \ZipArchive();
+
+        if ($zip->open(DATA_DIR . "/9/$zipName") !== true) {
+            return "Import slev produktových skupin neproběhl. Nelze načíst zdrojový soubor '$zipName'";
+        }
+
+        $fileStats = $zip->statName($fileName);
+
+        if (!$fileStats) {
+            $zip->close();
+            return "Import slev produktových skupin neproběhl. Nelze načíst zdrojový soubor '$fileName'";
+        }
+
+        if ($import && $import->date->getTimestamp() >= $fileStats['mtime']) {
+            $zip->close();
+            return "Import slev produktových skupin neproběhl, data jsou aktuální (" . $import->date->format(DateTime::CZ_DATETIME) . ')';
+        }
+
+        $fileContent = $zip->getFromName($fileName);
+        $zip->close();
+
+        $discountGroups = $this->orm->discountGroups->findAll()->fetchPairs('number', 'id');
+        $stockGroups = array_flip($this->orm->stockGroups->findAll()->fetchPairs('id', 'groupId'));
+        $separator = "\r\n";
+        $line = strtok(iconv('WINDOWS-1250', 'UTF-8', $fileContent), $separator);
+        $discounts = [];
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+            $discountGroup = intval(explode('x', trim($csvData[0] ?? ''))[1] ?? null);
+
+            if (!$discountGroup) {
+                return "Import slev produktových skupin neproběhl, neplatný formát slevové skupiny na řádku $line";
+            }
+
+            $regNumber = trim($csvData[1] ?? '');
+
+            if ($regNumber) {
+                $line = strtok($separator);
+                continue;
+            }
+
+            $producer = intval(trim($csvData[2] ?? ''));
+            $group = intval(trim($csvData[3] ?? ''));
+            $groupId = "$producer-$group";
+
+            if (!isset($stockGroups[$groupId])) {
+                $line = strtok($separator);
+                continue;
+            }
+
+            if (!isset($discountGroups[$discountGroup])) {
+                $entity = $this->orm->discountGroups->insertEntity(null, ['number' => $discountGroup]);
+                $discountGroups[$discountGroup] = $entity->id;
+            }
+
+            $value = floatval(str_replace(',', '.', trim($csvData[5] ?? '')));
+
+            $discounts[] = [
+                'stock_group' => $stockGroups[$groupId],
+                'discount_group' => $discountGroups[$discountGroup],
+                'value' => $value
+            ];
+
+            $line = strtok($separator);
+        }
+
+        foreach (array_chunk($discounts, 500) as $discountsChunk) {
+            $this->orm->discountStockGroups->updateItems($discountsChunk, ['value']);
+        }
+
+        if (!$import) {
+            $this->orm->imports->insertEntity(null, [
+                'name' => $importName,
+                'date' => (new DateTime())->setTimestamp($fileStats['mtime'])
+            ]);
+        } else {
+            $import->date = (new DateTime())->setTimestamp($fileStats['mtime']);
+            $import->getRepository()->persistAndFlush($import);
+        }
+
+        return 'Import slev produktových skupin proběhl v pořádku';
+    }
+
+    public function importItemDiscounts(): string
+    {
+        $importName = 'Slevy na produkty';
+        $import = $this->orm->imports->getImportByName($importName);
+
+        $zipName = 'intranet.zip';
+        $fileName = '9-slevy.csv';
+        $zip = new \ZipArchive();
+
+        if ($zip->open(DATA_DIR . "/9/$zipName") !== true) {
+            return "Import slev produktovů neproběhl. Nelze načíst zdrojový soubor '$zipName'";
+        }
+
+        $fileStats = $zip->statName($fileName);
+
+        if (!$fileStats) {
+            $zip->close();
+            return "Import slev produktů neproběhl. Nelze načíst zdrojový soubor '$fileName'";
+        }
+
+        if ($import && $import->date->getTimestamp() >= $fileStats['mtime']) {
+            $zip->close();
+            return "Import slev produktů neproběhl, data jsou aktuální (" . $import->date->format(DateTime::CZ_DATETIME) . ')';
+        }
+
+        $fileContent = $zip->getFromName($fileName);
+        $zip->close();
+
+        $stockItems = $this->orm->stockItems->findAll()->fetchPairs('regNumber', 'id');
+        $discountGroups = $this->orm->discountGroups->findAll()->fetchPairs('number', 'id');
+        $separator = "\r\n";
+        $line = strtok(iconv('WINDOWS-1250', 'UTF-8', $fileContent), $separator);
+        $discounts = [];
+
+        while ($line !== false) {
+            $csvData = str_getcsv($line, ';');
+            $discountGroup = intval(explode('x', trim($csvData[0] ?? ''))[1] ?? null);
+
+            if (!$discountGroup) {
+                return "Import slev produktů neproběhl, neplatný formát slevové skupiny na řádku $line";
+            }
+
+            $regNumber = trim($csvData[1] ?? '');
+
+            if (!$regNumber) {
+                $line = strtok($separator);
+                continue;
+            }
+
+            if (!isset($stockItems[$regNumber])) {
+                $line = strtok($separator);
+                continue;
+            }
+
+            if (!isset($discountGroups[$discountGroup])) {
+                $entity = $this->orm->discountGroups->insertEntity(null, ['number' => $discountGroup]);
+                $discountGroups[$discountGroup] = $entity->id;
+            }
+
+            $value = floatval(str_replace(',', '.', trim($csvData[5] ?? '')));
+
+            $discounts[] = [
+                'stock_item' => $stockItems[$regNumber],
+                'discount_group' => $discountGroups[$discountGroup],
+                'value' => $value
+            ];
+
+            $line = strtok($separator);
+        }
+
+        foreach (array_chunk($discounts, 500) as $discountsChunk) {
+            $this->orm->discountStockItems->updateItems($discountsChunk, ['value']);
+        }
+
+        if (!$import) {
+            $this->orm->imports->insertEntity(null, [
+                'name' => $importName,
+                'date' => (new DateTime())->setTimestamp($fileStats['mtime'])
+            ]);
+        } else {
+            $import->date = (new DateTime())->setTimestamp($fileStats['mtime']);
+            $import->getRepository()->persistAndFlush($import);
+        }
+
+        return 'Import slev produktů proběhl v pořádku';
+    }
+
+    public static function getNextStockItemsImport(int $storeId, \DateTimeImmutable $lastImport): \DateTimeImmutable
+    {
+        // Importy skladovych zasob jsou nastaveny na kazdych 15 min, prvni aktualni data jsou v 7. minute
+        $lastImportAt = (int) $lastImport->format('i');
+        $nextImportAt = $storeId < 9
+            ? ($lastImportAt + $storeId + 18)
+            : ($lastImportAt + $storeId + 8);
+
+        if ($nextImportAt >= 60) {
+            $nextImportAt -= 60;
+            $lastImport = $lastImport->modify('+1 hour');
+        }
+
+        return $lastImport->setTime((int) $lastImport->format('G'), $nextImportAt);
+    }
+}

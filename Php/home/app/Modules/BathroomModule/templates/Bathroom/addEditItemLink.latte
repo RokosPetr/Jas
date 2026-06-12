@@ -1,0 +1,50 @@
+{varType App\Modules\BathroomModule\Orm\Bathrooms\Bathroom $bathroom}
+{varType float $posX}
+{varType float $posY}
+{varType int $nextId}
+{varType int $prevId}
+
+{block content}
+<div class="row">
+    <div class="col-sm-6 col-xs-12"><h2 style="display: inline-block;">{$bathroom->name}</h2></div>
+    <div class="col-sm-6 col-xs-12 text-right">
+        <div n:if="$presenter->getAction() === editItemLink" style="height: 50px; line-height: 50px;">
+            <a n:href="editItemLink id => $prevId">
+                <span class="fa fa-chevron-left" style="vertical-align: middle; font-size: 26px"></span>
+                <span style="vertical-align: middle;">předchozí bod</span>
+            </a>
+            <span style="width: 50px; display: inline-block;"></span>
+            <a n:href="editItemLink id => $nextId">
+                <span style="vertical-align: middle;">další bod</span>
+                <span class="fa fa-chevron-right" style="vertical-align: middle; font-size: 26px"></span>
+            </a>
+        </div>
+    </div>
+</div>
+
+{control bathItemLinkForm}
+
+<div class="container">
+    <div class="bathroom-link-container">
+        <img src="{if $bathroom->linkPicture}{$bathroom->linkPicture->thumbnail(1280, 90)}{else}/image/no-image.png{/if}" alt="link-picture">
+        <span id="draggable-link" class="bath-item-link" style="top: {$posY |noescape}%; left: {$posX |noescape}%;"></span>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        initProductSearch('frm-bathItemLinkForm-item');
+        var inputPosX = $('#frm-bathItemLinkForm-positionX');
+        var inputPosY = $('#frm-bathItemLinkForm-positionY');
+        var draggableLink = $('#draggable-link');
+        var draggableContainer = draggableLink.parent();
+
+        draggableLink.draggable({
+            containment: 'parent',
+            drag: function(event, ui) {
+                inputPosX.val(Math.round((ui.position.left / draggableContainer.width()) * 1000) / 10);
+                inputPosY.val(Math.round((ui.position.top / draggableContainer.height()) * 1000) / 10);
+            }
+        });
+    });
+</script>

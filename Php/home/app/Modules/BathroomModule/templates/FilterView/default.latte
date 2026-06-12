@@ -1,0 +1,4 @@
+{block content}
+<a n:if="$user->isAllowed(':Bathroom:Bathroom:default')" n:href="Bathroom:default" class="btn btn-secondary">Nastavení koupelen</a>
+<a n:if="$user->isAllowed(':Bathroom:BathParameter:default')" n:href="BathParameter:default" class="btn btn-secondary">Nastavení parametrů</a>
+{control bathroomFilter}

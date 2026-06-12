@@ -1,0 +1,88 @@
+{varType App\Modules\StockModule\Orm\Stands\Stand $stand}
+{block content}
+{sideDialog}
+    <div class="stand-preview-wrapper">
+        <a n:if="$user->isAllowed(':Stock:Stand:exportExcel')" class="btn btn-default pull-right" n:href="exportExcel id => $stand->id">Excel</a>
+        <div n:if="$user->isAllowed(':Stock:Stand:exportPdf')" class="dropdown pull-right">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" style="margin-bottom: 0; margin-right: 0;">
+                PDF <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a n:href="exportPdf id => $stand->id, type => 1">Stručné</a></li>
+                <li class="divider" style="margin: 3px 0;"></li>
+                {if !$stand->hasPlates}
+                    <li><a n:href="exportPdf id => $stand->id, type => 1, showPrice => true">Stručné s cenami</a></li>
+                    <li class="divider" style="margin: 3px 0;"></li>
+                {/if}
+                <li><a n:href="exportPdf id => $stand->id, type => 0">Pobrobné</a></li>
+                <li class="divider" style="margin: 3px 0;"></li>
+                <li><a n:href="exportPdf id => $stand->id, type => 0, showPrice => true">Pobrobné s cenami</a></li>
+                {if $stand->piecePriceTag}
+                <li class="divider" style="margin: 3px 0;"></li>
+                <li><a href="https://koupelnyprokazdeho.cz/PriceTag?company=koupelny-jas&catalog=cenovky-mo&idStand={$stand->id}">Kusové cenovky MO </a></li>
+                <li class="divider" style="margin: 3px 0;"></li>
+                <li><a href="https://koupelnyprokazdeho.cz/PriceTag?company=partneri&catalog=cenovky-vo&idStand={$stand->id}">Kusové cenovky VO</a></li>
+                <li class="divider" style="margin: 3px 0;"></li>
+                <li><a href="https://koupelnyprokazdeho.cz/PriceTag?company=partneri&catalog=cenovky-ph&idStand={$stand->id}">Print House</a></li>
+                {/if}
+                {if $stand->platePriceTag}
+                    <li class="divider" style="margin: 3px 0;"></li>
+                    <li><a href="https://koupelnyprokazdeho.cz/koupelny-jas/pricetagplate/{$stand->id}/">Platové cenovky MO</a></li>
+                {/if}
+            </ul>
+        </div>
+        <h1>{$stand->title}</h1>
+        <div n:if="$stand->picture">
+            <img src="{$stand->picture->src}" alt="{$stand->picture->name}" style="object-fit: contain; width: 300px;">
+        </div>
+        <div n:if="$stand->secondPicture">
+            <br n:if="$stand->picture">
+            <img src="{$stand->secondPicture->src}" alt="{$stand->secondPicture->name}" style="object-fit: contain; width: 300px;">
+        </div>
+        <br>
+        Šířka {$stand->width} cm/Hloubka {$stand->depth} cm/Výška {$stand->height} cm
+        <br><br>
+        <br>
+        <div class="list-group">
+            {if $stand->hasPlates}
+                {var array $plates = $stand->loadPlates()}
+                {for $i = 1; $i <= $stand->unitCount; $i++}
+                    {var App\Modules\StockModule\Orm\Stands\StandPlate $plate = $plates[$i] ?? null}
+                    <a class="list-group-item" data-toggle="collapse" data-target="#plate-items-{$i}">
+                        <span n:class="$plate && $plate->state === $plate::STATE_INACTIVE ? text-red, $plate && $plate->state === $plate::STATE_PARTLY_ACTIVE ? text-blue">
+                            {$i}. {if $stand->plateOrderType === $stand::PLATE_ORDER_RIGHT_FIRST}({$i % 2 ? 'P' : 'L'}){/if}
+                            {if $plate}
+                                {$plate->description}{if $plate->dimension} - {$plate->dimension}{/if}
+                            {/if}
+                        </span>
+                    </a>
+                    <div class="collapse" id="plate-items-{$i}" style="margin-top: 5px;">
+                        <div n:if="$plate && $plate->picture">
+                            <img src="{$plate->picture->src}" alt="{$plate->picture->name}" style="object-fit: contain; width: 300px;">
+                        </div>
+                        <ol style="margin-top: 5px; padding-left: 30px;">
+                            <li n:foreach="($plate ? $plate->loadItems() : []) as $item" n:class="!$item->isActive ? text-red">
+                                <span n:tag-if="$item->photoItem" class="bg-disabled">{$item->item->title}</span>
+                            </li>
+                        </ol>
+                    </div>
+                {/for}
+            {else}
+                {var App\Modules\StockModule\Orm\Stands\StandPlate $plate = $stand->getPlate()}
+                {var App\Modules\StockModule\Orm\Stands\StandPlateItem[] $standItems = $plate ? $plate->loadItems() : []}
+                {for $i = 1; $i <= $stand->unitCount; $i++}
+                    {var App\Modules\StockModule\Orm\Stands\StandPlateItem $standItem = $standItems[$i] ?? null}
+                    <a class="list-group-item" data-toggle="collapse" data-target="#stand-items-{$i}">
+                        <span n:class="$standItem && !$standItem->isActive ? text-red">{$i}. {$standItem->item->title ?? '-'}</span>
+                    </a>
+                    <div class="collapse" id="stand-items-{$i}" style="margin-top: 5px;">
+                        <div n:if="$standItem && $standItem->picture">
+                            <img src="{$standItem->picture->src}" alt="{$standItem->picture->name}" style="object-fit: contain; width: 300px;">
+                            <br><br>
+                        </div>
+                    </div>
+                {/for}
+            {/if}
+        </div>
+    </div>
+{/sideDialog}

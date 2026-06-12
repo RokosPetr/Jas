@@ -1,0 +1,9 @@
+{varType App\Modules\StockModule\Orm\Stands\Stand $row}
+
+{define cell-type}
+    {['1' => 'Kusový', '2' => 'Platový', '3' => 'Sanita'][$row->type] ?? ''}
+{/define}
+
+{define cell-name}
+    <a href="{plink ($row->hasPlates ? standPlates : standItems) id => $row->id}">{$row->name}</a>
+{/define}

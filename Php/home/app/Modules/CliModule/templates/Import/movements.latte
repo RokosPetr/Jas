@@ -1,0 +1,31 @@
+{block content}
+<a n:href="noteServiceImport" class="btn btn-secondary">Import služeb</a>
+<a n:href="serviceNotesImport" class="btn btn-secondary">Import hlaviček ke službám</a>
+<a n:href="noteDataUpdate" class="btn btn-secondary">Aktualizace hlaviček</a>
+<table class="table datagrid-table jambo_table">
+    <thead>
+        <tr class="headings">
+            <th>Název</th>
+            <th>Data aktuální k datu</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Import vyvezených dodacích listů</td>
+            <td>-</td>
+            <td><a n:href="deliveryItems" class="fa fa-play" title="Spustit import"></a></td>
+        </tr>
+        <tr n:foreach="$stores as $id => $storeName">
+            {var string $importName = "Pohyby zboží - $storeName"}
+            <td>{$importName}</td>
+            <td>{isset($importDates[$importName]) ? $importDates[$importName]->format(App\Core\Utils\DateTime::CZ_DATETIME) : '-'}</td>
+            <td><a n:href="currentMovements id => $id" class="fa fa-play" title="Spustit import"></a></td>
+        </tr>
+        <tr>
+            <td>Napárovat převodky</td>
+            <td>-</td>
+            <td><a n:href="transfers" class="fa fa-play" title="Spustit import"></a></td>
+        </tr>
+    </tbody>
+</table>

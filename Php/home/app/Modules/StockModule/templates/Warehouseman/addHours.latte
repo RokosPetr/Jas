@@ -1,0 +1,32 @@
+{block content}
+{form addHoursForm class => 'jas-form-wrapper'}
+    <div class="jas-red-gradient"></div>
+
+    <div class="jas-link-wrapper">
+        <a title="Zpět na položky" n:href="items">
+            <img width="20" height="20" src="/image/zpet.png">
+            <strong> zpět na položky</strong>
+        </a>
+    </div>
+
+    <h4 class="text-center bold">Zadat hodiny skladníků</h4>
+    <h4 class="text-center bold">{$selectedYear}</h4>
+
+    <table class="add-hours-table">
+        <thead>
+            <tr>
+                <th>den</th>
+                <th>hodiny</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr n:foreach="$form['days']->getComponents() as $dayInput">
+                <td n:class="$dayInput->getOption('weekend') ? text-red">{label $dayInput /}</td>
+                <td>{input $dayInput}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    {input add class => 'jas-submit-input'}
+    {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+{/form}

@@ -1,0 +1,49 @@
+{varType App\Modules\DeliveryModule\Orm\Companies\Depot $depot}
+{varType array $producers}
+{varType array $selectedProducers}
+{block content}
+<style>
+    table td.row-actions { width: 50px; }
+</style>
+<div class="jas-link-wrapper">
+    <a title="Zpět na partnery" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na seznam partnerů</strong>
+    </a>
+</div>
+<a n:if="$user->isAllowed(':Delivery:Depot:exportDiscounts')" class="btn btn-default pull-right" n:href="exportDiscounts id => $depot->id">Export</a>
+<h2>{$depot->name}</h2>
+<h3>Slevová skupina: {$depot->discountGroup->number ?? 0}</h3>
+<div class="overview-control-panel">
+    <div style="width: 80px; display: inline-block;">
+        <label for="producer-filter" style="padding: 5px 0;">Výrobci:</label>
+    </div>
+    <div style="display: inline-block; width: 100%; margin-top: 4px;">
+        <div class="select2-wrapper">
+            <select name="producers" id="producer-filter" multiple onchange="filterByProducers(this)">
+                <option n:foreach="$producers as $id => $name" value="{$id}"{if in_array($id, $selectedProducers)} selected{/if}>{$name}</option>
+            </select>
+        </div>
+    </div>
+</div>
+<br>
+<div n:snippet="discount-grids">
+{control depotGroupDiscounts}
+<br>
+{control depotItemDiscounts}
+</div>
+
+<script>
+    function filterByProducers(multiselect) {
+        var producers = [];
+
+        $(multiselect).select2('data').forEach(function (selectItem) {
+            producers.push(selectItem.id);
+        });
+
+        $.nette.ajax({
+            url: {link setProducers!},
+            data: { producers }
+        });
+    }
+</script>

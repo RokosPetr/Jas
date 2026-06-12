@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using X.PagedList;
 using X.PagedList.Extensions;
 using StatusEnum = Jas.Globals.Srv.Enums.Status;
+using RepairCategory = Jas.Globals.Srv.Enums.RepairCategory; // Added just in case it's in the same namespace as Status
 
 namespace Jas.Areas.Srv.Pages
 {
@@ -275,6 +276,63 @@ namespace Jas.Areas.Srv.Pages
                     Name = d.Name ?? string.Empty
                 })
                 .ToList();
+        }
+
+        public string GetFormattedCategoryText(int userCategory, int? adminCategory)
+        {
+            string GetCategoryText(int cat) => cat switch
+            {
+                (int)RepairCategory.Light   => "Lehká (60 dní)",
+                (int)RepairCategory.Serious => "Vážná (30 dní)",
+                (int)RepairCategory.Urgent  => "Urgentní (5 dní)",
+                _                           => "Neznámá"
+            };
+
+            string userCatText = GetCategoryText(userCategory);
+            bool hasDifferentAdminCat = adminCategory.HasValue && adminCategory.Value != userCategory;
+            
+            if (hasDifferentAdminCat)
+            {
+                string adminCatText = GetCategoryText(adminCategory.Value);
+                return $"{adminCatText} ({userCatText})"; 
+            }
+
+            return userCatText; 
+        }
+
+        public string GetFormattedRepairDateText(DateTime createdDate, int userCategory, int? adminCategory)
+        {
+            if (createdDate == default || userCategory == 0)
+            {
+                return string.Empty;
+            }
+
+            int GetDays(int cat) => cat switch
+            {
+                (int)RepairCategory.Light   => 60,
+                (int)RepairCategory.Serious => 30,
+                (int)RepairCategory.Urgent  => 5,
+                _                           => 0
+            };
+
+            int userDays = GetDays(userCategory);
+            string userDateText = userDays > 0 
+                ? createdDate.AddDays(userDays).ToString("dd.MM.yyyy") 
+                : string.Empty;
+
+            bool hasDifferentAdminCat = adminCategory.HasValue && adminCategory.Value != userCategory;
+
+            if (hasDifferentAdminCat)
+            {
+                int adminDays = GetDays(adminCategory.Value);
+                string adminDateText = adminDays > 0 
+                    ? createdDate.AddDays(adminDays).ToString("dd.MM.yyyy") 
+                    : string.Empty;
+
+                return $"{adminDateText} ({userDateText})";
+            }
+
+            return userDateText;
         }
     }
 }

@@ -1,0 +1,21 @@
+{varType App\Modules\DeliveryModule\Orm\CustomerComplaints\CustomerComplaint $row}
+
+{define cell-store}
+    {$row->store->name}
+{/define}
+
+{define cell-id}
+    {$row->id |padLeft: 5, '0'}
+{/define}
+
+{define cell-createdBy}
+    {$row->createdBy->name}
+{/define}
+
+{define cell-item}
+    {$row->item->name}
+{/define}
+
+{define cell-daysLeft}
+    {$row->daysLeft ?? 'vyřízeno'}
+{/define}

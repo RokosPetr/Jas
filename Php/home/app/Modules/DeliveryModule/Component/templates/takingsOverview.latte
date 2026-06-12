@@ -1,0 +1,790 @@
+{varType App\Modules\DeliveryModule\Component\TakingsOverview $control}
+
+<div n:snippet="takingsOverview">
+    <div class="overview-control-panel">
+        <div class="pull-right">
+            <button type="button" onclick="location.href = {link excelExport!};">Export</button>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <span style="width: 65px; display: inline-block;"><label for="selected-year-input">Rok</label></span>
+            <select name="selectedYear" class="select2-ignore" id="selected-year-input" onchange="setYear(this.value)">
+                <option value="0"{if $control->selectedYear === 0} selected{/if}>Vše</option>
+                {var int $firstYear = $control->viewType === App\Modules\StockModule\Orm\CustomGroups\CustomGroup::VIEW_TYPE_TAKINGS_SUM ? 2003 : 2011}
+                {for $i = intval(date('Y')); $i >= $firstYear; $i--}
+                    <option value="{$i}"{if $i === $control->selectedYear} selected{/if}>{$i}</option>
+                {/for}
+            </select>
+        </div>
+
+        <div>
+            <span style="width: 65px; display: inline-block;"><label for="selected-group-input">Zboží</label></span>
+            <select name="selectedGroup" class="select2-ignore" id="selected-group-input" onchange="setGroup(this.value)">
+                <option n:foreach="$groups as $groupId => $groupName" value="{$groupId}"{if $groupId === $control->selectedGroup} selected{/if}>{$groupName}</option>
+            </select>
+        </div>
+
+        <div n:if="isset($groups[$control->selectedGroup])">
+            <span style="width: 65px; display: inline-block;"><label for="selected-producers-input">Výrobci</label></span>
+            <div style="display: inline-block; width: 350px; margin-top: 10px;">
+                <div class="select2-wrapper">
+                    <select name="selectedProducers" id="selected-producers-input" multiple onchange="setProducers(this)">
+                        <option value="0">Vše</option>
+                        <option n:foreach="$producers as $producerId => $producerName" value="{$producerId}"{if in_array($producerId, $control->selectedProducers)} selected{/if}>{$producerName}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div n:if="$control->viewType === App\Modules\StockModule\Orm\CustomGroups\CustomGroup::VIEW_TYPE_STORE_TAKINGS">
+            <label for="selected-stores-select" style="padding: 5px 0;">Pobočky :</label>
+            <div class="select2-wrapper">
+                <select name="selectedStores" id="selected-stores-select" multiple onchange="setStores(this)">
+                    <option value="0">Vše</option>
+                    {foreach $stores as $storeId => $storeName}
+                        <option value="{$storeId}"{if in_array($storeId, $control->selectedStores)} selected{/if}>{$storeName}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+
+        <div n:if="!$control->totalSumView" style="margin-top: 10px;">
+            <span style="width: 225px; display: inline-block;"><label for="show-difference-checkbox">Zobrazit srovnání s minulým rokem</label></span>
+            <input type="checkbox" id="show-difference-checkbox" onchange="showDifference(this.checked)" {if $control->showDifference}checked {/if}/>
+        </div>
+
+        <div n:if="$control->totalSumView" style="margin-top: 10px;">
+            <span style="width: 65px; display: inline-block; color: white;">Graf</span>
+            <select class="select2-ignore" onchange="setGraphYearFrom(this.value)">
+                {var int $firstYearRecord = $control->selectedGroup !== 1 ? 2011 : ($control->graphViewType === App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_UNIT ? 2003 : 2006)}
+                <option n:for="$year = $firstYearRecord; $year < $control->graphYearTill; $year++" value="{$year}"{if $year === $control->graphYearFrom} selected{/if}>{$year}</option>
+            </select>
+            <span style="color: white;">-</span>
+            <select class="select2-ignore" onchange="setGraphYearTill(this.value)">
+                <option n:for="$year = $control->graphYearFrom + 1; $year <= intval(date('Y')); $year++" value="{$year}"{if $year === $control->graphYearTill} selected{/if}>{$year}</option>
+            </select>
+        </div>
+
+        <div n:if="$control->totalSumView && $control->selectedGroup === 1" style="margin-top: 10px;">
+            <span style="width: 65px; display: inline-block; color: white;">Zobrazit</span>
+            <input type="radio"
+                   id="price-view-graph"
+                   name="graph-view-radio"
+                   value="{App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_PRICE}"
+                   onchange="setGraphViewType(this.value)"
+                   {if $control->graphViewType === App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_PRICE}checked{/if}
+            >
+            <label for="price-view-graph">Kč/rok</label>
+            <input type="radio"
+                   id="unit-view-graph"
+                   name="graph-view-radio"
+                   value="{App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_UNIT}"
+                   onchange="setGraphViewType(this.value)"
+                   {if $control->graphViewType === App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_UNIT}checked{/if}
+            >
+            <label for="unit-view-graph">m2/rok</label>
+        </div>
+    </div>
+
+    <div>
+        {if $control->viewType === App\Modules\StockModule\Orm\CustomGroups\CustomGroup::VIEW_TYPE_TAKINGS_SUM}
+            {if $control->totalSumView}
+                {include #totalTakingsSumView}
+            {else}
+                {include #takingsSumView}
+            {/if}
+        {else}
+            {if $control->totalSumView}
+                {include #totalProducerTakingsSumView}
+                {* docasne vypnuto - pry neni potraba, ale kdo vi... *}
+                {if false}{include #totalStoreTakingsSumView}{/if}
+            {else}
+                {include #storeTakingsSumView}
+            {/if}
+        {/if}
+
+        <div n:if="$user->isAdmin() && !$control->totalSumView" style="background-color: rgba(242, 242, 242, 0.5);">
+            <div class="text-center scroll-x" style="padding: 15px;">
+                <div style="padding-bottom: 10px;">Rozsahy měsíců</div>
+                <table class="overview-table">
+                    <tr n:foreach="App\Modules\DeliveryModule\Service\TakingsOverviewCacheService::prepareMonthSpans($control->selectedYear) as $montsIndex => $span">
+                        <td>{App\Core\Utils\DateTime::CZ_MONTHS[$montsIndex]}:</td>
+                        <td>{$span['start']->format(App\Core\Utils\DateTime::CZ_DATE)} - {$span['end']->format(App\Core\Utils\DateTime::CZ_DATE)}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setYear(year) {
+        $.nette.ajax({
+            url: {link setYear!},
+            data: { year }
+        });
+    }
+
+    function setGroup(group) {
+        $.nette.ajax({
+            url: {link setGroup!},
+            data: { group }
+        });
+    }
+
+    function setProducers(select) {
+        var producers = [];
+        $(select).select2('data').forEach(function (selectItem) {
+            producers.push(parseInt(selectItem.id));
+        });
+        $.nette.ajax({
+            url: {link setProducers!},
+            data: { producers }
+        });
+    }
+
+    function setStores(select) {
+        var stores = [];
+        $(select).select2('data').forEach(function (selectItem) {
+            stores.push(parseInt(selectItem.id));
+        });
+        $.nette.ajax({
+            url: {link setStores!},
+            data: { stores }
+        });
+    }
+
+    function showDifference(value) {
+        $.nette.ajax({
+            url: {link showDifference!},
+            data: { showDifference: value ? 1 : 0 }
+        });
+    }
+
+    function setGraphViewType(graphViewType) {
+        $.nette.ajax({
+            url: {link setGraphViewType!},
+            data: { graphViewType }
+        });
+    }
+
+    function setGraphYearFrom(graphYearFrom) {
+        $.nette.ajax({
+            url: {link setGraphYearFrom!},
+            data: { graphYearFrom }
+        });
+    }
+
+    function setGraphYearTill(graphYearTill) {
+        $.nette.ajax({
+            url: {link setGraphYearTill!},
+            data: { graphYearTill }
+        });
+    }
+</script>
+
+{define totalTakingsSumView}
+    {var array $graphData = []}
+    {var int $maxValue = 0}
+    <div n:if="$control->selectedProducers && $takings" style="background-color: rgba(242, 242, 242, 0.5);">
+        <div class="text-center scroll-x text-center" style="padding: 15px;">
+            <div id="takings-sum-chart" style="height: 500px; width: 880px; display: inline-block;"></div>
+        </div>
+    </div>
+    <div n:if="$control->selectedProducers && $takings" style="background-color: rgba(242, 242, 242, 0.5);">
+        <div class="text-center scroll-x" style="padding: 15px;">
+            <h2>{if $control->graphViewType === App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_UNIT}Odebrané množství m2{else}Kč{/if} / rok</h2>
+            <table class="overview-table">
+                <thead class="fix-width-110">
+                    <tr>
+                        <th>Rok</th>
+                        <th n:foreach="$control->selectedProducers as $producerId">{$producers[$producerId]}</th>
+                        <th>Celkem</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {for $year = $control->graphViewType === App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_UNIT ? 2003 : 2006; $year <= intval(date('Y')); $year++}
+                        {var int $producerYearSum = 0}
+                        {var bool $setGraphData = $year >= $control->graphYearFrom && $year <= $control->graphYearTill}
+                        {if $setGraphData}
+                            {var array $yearGraphData = ['year' => (string) $year]}
+                        {/if}
+                        <tr>
+                            <td>{$year}</td>
+                            <td n:foreach="$control->selectedProducers as $producerId">
+                                {var int $yearTakings = $takings[$year][$producerId] ?? 0}
+                                {$yearTakings |number:0,',',' '}
+                                {php $producerYearSum += $yearTakings}
+                                {if $setGraphData}
+                                    {php $yearGraphData[$producerId] = $yearTakings}
+                                    {if $yearTakings > $maxValue}
+                                        {php $maxValue = $yearTakings}
+                                    {/if}
+                                {/if}
+                            </td>
+                            <td>{$producerYearSum |number:0,',',' '}</td>
+                            {if $setGraphData}
+                                {php $graphData[] = (object) $yearGraphData}
+                            {/if}
+                        </tr>
+                    {/for}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script n:if="$takings">
+        {var $producerNames = array_values(array_filter($producers, fn(int $id) => in_array($id, $control->selectedProducers), ARRAY_FILTER_USE_KEY))}
+        {var $colors = array_values(array_filter($producerColors, fn(int $id) => in_array($id, $control->selectedProducers), ARRAY_FILTER_USE_KEY))}
+        {var $unit = $control->graphViewType === App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_UNIT ? 'm2' : 'Kč'}
+        new Morris.Line({
+            element: 'takings-sum-chart',
+            data: {$graphData},
+            xkey: 'year',
+            ykeys: {$control->selectedProducers},
+            labels: {$producerNames},
+            hideHover: true,
+            ymax: getGraphMax({$maxValue}),
+            lineColors: {$colors},
+            yLabelFormat: function (value) { return value.toLocaleString() + ' ' + {$unit}; }
+        });
+
+        function getGraphMax(maxValue) {
+            var stringValue = String(maxValue);
+            var firstNumber = stringValue.charAt(0);
+            var secondNumber = stringValue.charAt(1);
+
+            if (secondNumber <= 5) {
+                return Number(firstNumber + '5'.padEnd(stringValue.length - 1, '0'));
+            }
+
+            if (firstNumber === '9') {
+                return Number('10'.padEnd(stringValue.length + 1, '0'));
+            }
+
+            return Number(String(++firstNumber).padEnd(stringValue.length, '0'));
+        }
+    </script>
+{/define}
+
+{define takingsSumView}
+    {var array $renderProducers = array_intersect(array_keys($producers), $control->selectedProducers)}
+    {var array $prizePerUnitData = []}
+    {var array $prizePerUnitDiffData = []}
+    {var int $currentYear = (int) date('Y')}
+    {var int $currentMonth = (int) date('n')}
+    {php $showDifference = fn(int $month = 13) => $control->showDifference && ($control->selectedYear !== $currentYear || $month < $currentMonth)}
+    <div n:if="$renderProducers" n:foreach="[App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_PRICE, App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_UNIT] as $dataType" style="background-color: rgba(242, 242, 242, 0.5);">
+        {continueIf $dataType === App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_PRICE && $control->selectedYear < 2006}
+        {var array $yearTakings = $takings[$dataType] ?? []}
+        {var array $lastYearTakings = $lastTakings[$dataType] ?? []}
+        {var string $linkAction = $dataType === App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_UNIT ? 'producerSumByUnit' : 'producerSumByPrice'}
+        <div class="text-center" style="padding: 15px 0; overflow-x: auto;">
+            <h2>{if $dataType === App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_UNIT}Odebrané množství m2{else}Kč{/if} / rok {$control->selectedYear}{if $control->showDifference} s rozdílem oproti minulému roku{/if}</h2>
+            <table n:class="takings-overview, $control->showDifference ? takings-overview-difference-enabled">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th n:foreach="$producers as $producerId => $producerName" n:if="in_array($producerId, $control->selectedProducers)" {if $control->showDifference} colspan="2"{/if}>{$producerName}</th>
+                        <th{if $control->showDifference} colspan="2"{/if}>Celkem</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {var array $producerSums = []}
+                    {var array $producerPartSums = []}
+                    {var array $producerDiffSums = []}
+                    {var array $producerDiffPartSums = []}
+                    {var int $columnCount = count($renderProducers) + 1}
+                    {if $control->showDifference}{php $columnCount *= 2}{/if}
+                    <tr class="hover-ignore">
+                        <td><b>Rok</b></td>
+                        {for $i = 0; $i < (count($renderProducers) + 1); $i++}
+                            <td n:class="$control->showDifference ? even : ($i % 2 ? odd : even)"><b>{$control->selectedYear}</b></td>
+                            <td n:if="$control->showDifference" class="odd"><b>srovnání s {$control->selectedYear - 1}</b></td>
+                        {/for}
+                    </tr>
+                    {foreach App\Core\Utils\DateTime::CZ_MONTHS as $index => $month}
+                        <tr>
+                            {var float $monthSum = 0}
+                            {var float $monthDiff = 0}
+                            <td>{$month |firstUpper}</td>
+                            {foreach $renderProducers as $producerIndex => $producerId}
+                                {var float $monthTakings = $yearTakings[$index][$producerId] ?? 0}
+                                {var float $diffTakings = $showDifference($index) ? ($monthTakings - (isset($lastYearTakings[$index][$producerId]) ? ($lastYearTakings[$index][$producerId] ?? 0) : 0)) : 0}
+                                {php $monthSum += $monthTakings; $monthDiff += $diffTakings}
+                                <td n:class="$control->showDifference ? even : ($producerIndex % 2 ? odd : even)">
+                                    <a n:tag-if="$user->isAdmin()"
+                                        target="_blank"
+                                        href="{plink ":Delivery:TakingsOverview:$linkAction" producer => $producerId, month => $index, year => $control->selectedYear}"
+                                    >{$monthTakings |number:0,',',' '}</a>
+                                </td>
+                                <td n:if="$control->showDifference" class="odd">{include #difference value => $monthTakings, difference => $diffTakings}</td>
+                                {php
+                                    if ($index === 1) {
+                                        $producerSums[$producerId] = 0;
+                                        $producerPartSums[$producerId] = 0;
+                                        $producerDiffSums[$producerId] = 0;
+                                        $producerDiffPartSums[$producerId] = 0;
+                                    }
+                                    $producerSums[$producerId] += $monthTakings;
+                                    $producerPartSums[$producerId] += $monthTakings;
+                                    $producerDiffSums[$producerId] += $diffTakings;
+                                    $producerDiffPartSums[$producerId] += $diffTakings;
+                                }
+                            {/foreach}
+                            <td n:class="$control->showDifference ? even : ($producerIndex % 2 ? even : odd)">{$monthSum |number:0,',',' '}</td>
+                            <td n:if="$control->showDifference" class="odd">{include #difference value => $monthSum, difference => $monthDiff}</td>
+                        </tr>
+                        {if $index % 3 === 0}
+                            <tr class="sum-row">
+                                <td>Celkem {$index - 2}-{$index}</td>
+                                {var float $partTotalSum = array_sum($producerPartSums)}
+                                {var float $partTotalDiff = array_sum($producerDiffPartSums)}
+                                {foreach $producerPartSums as $producerId => $partSum}
+                                    {var float $lastPartDiff = $producerDiffPartSums[$producerId]}
+                                    {var string $cellClass = $control->showDifference ? even : ($iterator->isEven() ? odd : even)}
+                                    <td class="{$cellClass}">{$partSum |number:0,',',' '}</td>
+                                    <td n:if="$control->showDifference" class="odd">{include #difference value => $partSum, difference => $lastPartDiff}</td>
+                                    {php $producerPartSums[$producerId] = 0; $producerDiffPartSums[$producerId] = 0}
+                                {/foreach}
+                                <td n:class="$control->showDifference ? even : ($cellClass === 'even' ? odd : even)">{$partTotalSum |number:0,',',' '}</td>
+                                <td n:if="$control->showDifference" class="odd">{include #difference value => $partTotalSum, difference => $partTotalDiff}</td>
+                            </tr>
+                            <tr class="hover-ignore">
+                                <td>&nbsp;</td>
+                                <td n:for="$i = 0; $i < $columnCount; $i++" n:class="$i % 2 ? odd : even"></td>
+                            </tr>
+                        {/if}
+                    {/foreach}
+                    {var float $totalSum = array_sum($producerSums)}
+                    {var float $totalDiff = array_sum($producerDiffSums)}
+                    <tr class="sum-row">
+                        <td>Celkem 1-12</td>
+                        {foreach $producerSums as $sumIndex => $sum}
+                            {var float $diff = $producerDiffSums[$sumIndex]}
+                            <td class="sum-cell">{$sum |number:0,',',' '}</td>
+                            <td class="sum-cell" n:if="$control->showDifference">{include #difference value => $sum, difference => $diff}</td>
+                        {/foreach}
+                        <td class="sum-cell">{$totalSum |number:0,',',' '}</td>
+                        <td class="sum-cell" n:if="$control->showDifference">{include #difference value => $totalSum, difference => $totalDiff}</td>
+                    </tr>
+                    <tr class="share-row">
+                        <td>Tržní podíl</td>
+                        {foreach $producerSums as $sumIndex => $sum}
+                            {var float $diff = $producerDiffSums[$sumIndex]}
+                            {var float $portion = round(($sum / ($totalSum ?: 1)) * 100, 1)}
+                            {var float $lastPortion = round((($sum - $diff) / (($totalSum - $totalDiff) ?: 1)) * 100, 1)}
+                            <td>{$portion |number:1,',',' '} %</td>
+                            <td n:if="$control->showDifference">{include #difference value => $portion, difference => ($portion - $lastPortion), precision => 1}</td>
+                        {/foreach}
+                        <td>100 %</td>
+                        <td n:if="$control->showDifference"></td>
+                    </tr>
+                    <tr class="hover-ignore">
+                        <td>&nbsp;</td>
+                        <td n:for="$i = 0; $i < $columnCount; $i++" n:class="$i % 2 ? odd : even"></td>
+                    </tr>
+                    {if $dataType === App\Modules\DeliveryModule\Component\TakingsOverview::VIEW_BY_UNIT && $control->selectedYear > 2005}
+                        <tr>
+                            <td>Kč/m2</td>
+                            {foreach $producerSums as $producerId => $sum}
+                                {var float $diff = $producerDiffSums[$producerId]}
+                                {var float $price = $prizePerUnitData[$producerId]}
+                                {var float $lastPrice = $price - $prizePerUnitDiffData[$producerId]}
+                                {var float $pricePerUnit = $price / ($sum ?: 1)}
+                                {var float $lastPricePerUnit = $lastPrice / (($sum - $diff) ?: 1)}
+                                {var string $cellClass = $control->showDifference ? even : ($iterator->isEven() ? odd : even)}
+                                <td class="{$cellClass}">{$pricePerUnit |number:1,',',' '}</td>
+                                <td n:if="$control->showDifference" class="odd">{include #difference value => $pricePerUnit, difference => ($pricePerUnit - $lastPricePerUnit), precision => 1}</td>
+                            {/foreach}
+                            {var float $totalPrice = array_sum($prizePerUnitData)}
+                            {var float $totalPricePerUnit = $totalPrice / ($totalSum ?: 1)}
+                            {var float $lastTotalPricePerUnit = ($totalPrice - array_sum($prizePerUnitDiffData)) / (($totalSum - $totalDiff) ?: 1)}
+                            <td n:class="$control->showDifference ? even : ($cellClass === 'even' ? odd : even)">{$totalPricePerUnit |number:1,',',' '}</td>
+                            <td n:if="$control->showDifference" class="odd">{include #difference value => $totalPricePerUnit, difference => ($totalPricePerUnit - $lastTotalPricePerUnit), precision => 1}</td>
+                        </tr>
+                        <tr class="hover-ignore">
+                            <td>&nbsp;</td>
+                            <td n:for="$i = 0; $i < $columnCount; $i++" n:class="$i % 2 ? odd : even"></td>
+                        </tr>
+                    {else}
+                        {php $prizePerUnitData = $producerSums; $prizePerUnitDiffData = $producerDiffSums}
+                    {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{/define}
+
+{define storeTakingsSumView}
+    {var int $currentYear = (int) date('Y')}
+    {var int $currentMonth = (int) date('n')}
+    {php $showDifference = fn(int $month = 13) => $control->showDifference && ($control->selectedYear !== $currentYear || $month < $currentMonth)}
+    {var int $columnCount = count($control->selectedStores) + 1}
+    {if $control->showDifference}{php $columnCount *= 2}{/if}
+    <div style="background-color: rgba(242, 242, 242, 0.5);">
+        <div class="text-center" style="padding: 15px 0; overflow-x: auto;">
+            <h2>Kč / rok {$control->selectedYear}{if $control->showDifference} s rozdílem oproti minulému roku{/if}</h2>
+            <table n:class="takings-overview, $control->showDifference ? takings-overview-difference-enabled">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th n:foreach="$control->selectedStores as $storeId" {if $control->showDifference} colspan="2"{/if}>{$stores[$storeId]}</th>
+                        <th{if $control->showDifference} colspan="2"{/if}>Celkem</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {var array $columnSum = []}
+                    {var array $culumnDiff = []}
+                    <tr class="hover-ignore">
+                        <td><b>Rok</b></td>
+                        {for $i = 0; $i < (count($control->selectedStores) + 1); $i++}
+                            <td n:class="$control->showDifference ? even : ($i % 2 ? odd : even)"><b>{$control->selectedYear}</b></td>
+                            <td n:if="$control->showDifference" class="odd"><b>srovnání s {$control->selectedYear - 1}</b></td>
+                        {/for}
+                    </tr>
+                    <tr n:foreach="$producers as $producerId => $producerName">
+                        {var float $rowSum = 0}
+                        {var float $rowDiff = 0}
+                        <td>{$producerName}</td>
+                        {foreach $control->selectedStores as $storeIndex => $storeId}
+                            {php $columnSum[$storeId] ??= 0; $culumnDiff[$storeId] ??= 0}
+                            {var float $storeSum = $takings['sum'][$producerId][$storeId] ?? 0}
+                            {var float $storeDiff =  0}
+                            {for $month = 1; $month < 13; $month++}
+                                {continueIf !$showDifference($month)}
+                                {php $storeDiff += (($takings[$month][$producerId][$storeId] ?? 0) - ($lastTakings[$month][$producerId][$storeId] ?? 0))}
+                            {/for}
+                            <td n:class="$control->showDifference ? even : ($storeIndex % 2 ? odd : even)">{$storeSum |number:0,',',' '}</td>
+                            <td n:if="$control->showDifference" class="odd">{include #difference value => $storeSum, difference => $storeDiff}</td>
+                            {php $rowSum += $storeSum;
+                                $columnSum[$storeId] += $storeSum;
+                                $rowDiff += $storeDiff;
+                                $culumnDiff[$storeId] += $storeDiff;
+                            }
+                        {/foreach}
+                        <td n:class="$control->showDifference ? even : ($storeIndex % 2 ? even : odd)">{$rowSum |number:0,',',' '}</td>
+                        <td n:if="$control->showDifference" class="odd">{include #difference value => $rowSum, difference => $rowDiff}</td>
+                    </tr>
+                    <tr class="share-row hover-ignore">
+                        <td>&nbsp;</td>
+                        <td n:for="$i = 0; $i < $columnCount; $i++"></td>
+                    </tr>
+                    <tr class="sum-row">
+                        <td>Celkem</td>
+                        {foreach $columnSum as $columnIndex => $sum}
+                            <td class="sum-cell">{$sum |number:0,',',' '}</td>
+                            <td class="sum-cell" n:if="$control->showDifference">{include #difference value => $sum, difference => $culumnDiff[$columnIndex]}</td>
+                        {/foreach}
+                        {var float $totalSum = array_sum($columnSum)}
+                        {var float $totalDiff = array_sum($culumnDiff)}
+                        <td class="sum-cell">{$totalSum |number:0,',',' '}</td>
+                        <td class="sum-cell" n:if="$control->showDifference">{include #difference value => $totalSum, difference => $totalDiff}</td>
+                    </tr>
+                    <tr class="share-row">
+                        <td>Tržní podíl</td>
+                        {foreach $columnSum as $columnIndex => $sum}
+                            {var $share = $totalSum ? (($sum / $totalSum) * 100) : 0}
+                            {var $lastTotalSum = $totalSum - $totalDiff}
+                            {var $lastShare = $lastTotalSum ? ((($sum - $culumnDiff[$columnIndex]) / $lastTotalSum) * 100) : 0}
+                            <td>{$share |number:1,',',' '} %</td>
+                            <td n:if="$control->showDifference">{include #difference value => $share, difference => ($share - $lastShare), precision => 1}</td>
+                        {/foreach}
+                        <td>100 %</td>
+                        <td n:if="$control->showDifference"></td>
+                    </tr>
+                    <tr class="hover-ignore">
+                        <td>&nbsp;</td>
+                        <td n:for="$i = 0; $i < $columnCount; $i++" n:class="$i % 2 ? odd : even"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div n:foreach="$producers as $producerId => $producerName" n:if="in_array($producerId, $control->selectedProducers)" style="background-color: rgba(242, 242, 242, 0.5);">
+        <div class="text-center" style="padding: 15px 0; overflow-x: auto;">
+            <h2>{$producerName} / Kč / rok {$control->selectedYear}{if $control->showDifference} s rozdílem oproti minulému roku{/if}</h2>
+            <table n:class="takings-overview, $control->showDifference ? takings-overview-difference-enabled">
+                <thead>
+                    <tr>
+                        <th>{$producerName}</th>
+                        <th n:foreach="$control->selectedStores as $storeId" {if $control->showDifference} colspan="2"{/if}>{$stores[$storeId]}</th>
+                        <th{if $control->showDifference} colspan="2"{/if}>Celkem</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {var array $columnSum = []}
+                    {var array $columnDiff = []}
+                    <tr class="hover-ignore">
+                        <td><b>Rok</b></td>
+                        {for $i = 0; $i < (count($control->selectedStores) + 1); $i++}
+                            <td n:class="$control->showDifference ? even : ($i % 2 ? odd : even)"><b>{$control->selectedYear}</b></td>
+                            <td n:if="$control->showDifference" class="odd"><b>srovnání s {$control->selectedYear - 1}</b></td>
+                        {/for}
+                    </tr>
+                    {foreach App\Core\Utils\DateTime::CZ_MONTHS as $index => $month}
+                        <tr>
+                            {var float $rowSum = 0}
+                            {var float $rowDiff = 0}
+                            <td>{$month |firstUpper}</td>
+                            {foreach $control->selectedStores as $storeIndex => $storeId}
+                                {var float $storeMonthSum = $takings[$index][$producerId][$storeId] ?? 0}
+                                {var float $storeMonthLastSum = $lastTakings[$index][$producerId][$storeId] ?? 0}
+                                {var float $storeMonthDiff = $showDifference($index) ? ($storeMonthSum - $storeMonthLastSum) : 0}
+                                <td n:class="$control->showDifference ? even : ($storeIndex % 2 ? odd : even)">
+                                    <a n:tag-if="$user->isAdmin()"
+                                        target="_blank"
+                                        href="{plink ":Delivery:TakingsOverview:producerSumByPricePerStore" producer => $producerId, store => $storeId, month => $index, year => $control->selectedYear}"
+                                    >{$storeMonthSum |number:0,',',' '}</a>
+                                </td>
+                                <td n:if="$control->showDifference" class="odd">{include #difference value => $storeMonthSum, difference => $storeMonthDiff}</td>
+                                {php $rowSum += $storeMonthSum;
+                                    $columnSum[$storeId][$index] = $storeMonthSum;
+                                    $rowDiff += $storeMonthDiff;
+                                    $columnDiff[$storeId][$index] = $storeMonthDiff;
+                                }
+                            {/foreach}
+                            <td n:class="$control->showDifference ? even : ($storeIndex % 2 ? even : odd)">{$rowSum |number:0,',',' '}</td>
+                            <td n:if="$control->showDifference" class="odd">{include #difference value => $rowSum, difference => $rowDiff}</td>
+                        </tr>
+
+                        {if $index % 3 === 0}
+                            <tr class="sum-row">
+                                <td>Celkem {$index - 2}-{$index}</td>
+                                {var float $partSum = 0}
+                                {var float $partDiff = 0}
+                                {foreach $control->selectedStores as $storeIndex => $storeId}
+                                    {var float $tempSum = $columnSum[$storeId][$index] + $columnSum[$storeId][$index - 1] + $columnSum[$storeId][$index - 2]}
+                                    {var float $tempDiff = $columnDiff[$storeId][$index] + $columnDiff[$storeId][$index - 1] + $columnDiff[$storeId][$index - 2]}
+                                    <td n:class="$control->showDifference ? even : ($storeIndex % 2 ? odd : even)">{$tempSum |number:0,',',' '}</td>
+                                    <td n:if="$control->showDifference" class="odd">{include #difference value => $tempSum, difference => $tempDiff}</td>
+                                    {php $partSum += $tempSum; $partDiff += $tempDiff}
+                                {/foreach}
+                                <td n:class="$control->showDifference ? even : ($storeIndex % 2 ? even : odd)">{$partSum |number:0,',',' '}</td>
+                                <td n:if="$control->showDifference" class="odd">{include #difference value => $partSum, difference => $partDiff}</td>
+                            </tr>
+                            <tr n:if="$index !== 12" class="hover-ignore">
+                                <td>&nbsp;</td>
+                                <td n:for="$i = 0; $i < $columnCount; $i++" n:class="$i % 2 ? odd : even"></td>
+                            </tr>
+                        {/if}
+                    {/foreach}
+                    <tr class="share-row hover-ignore">
+                        <td>&nbsp;</td>
+                        <td n:for="$i = 0; $i < $columnCount; $i++"></td>
+                    </tr>
+                    <tr class="sum-row">
+                        <td>Celkem 1-12</td>
+                        {var float $totalSum = 0}
+                        {var float $totalDiff = 0}
+                        {foreach $columnSum as $storeId => $sums}
+                            {var float $sum = array_sum($sums)}
+                            {var float $diff = array_sum($columnDiff[$storeId])}
+                            <td class="sum-cell">{$sum |number:0,',',' '}</td>
+                            <td class="sum-cell" n:if="$control->showDifference">{include #difference value => $sum, difference => $diff}</td>
+                            {php $totalSum += $sum; $totalDiff += $diff}
+                        {/foreach}
+                        <td class="sum-cell">{$totalSum |number:0,',',' '}</td>
+                        <td class="sum-cell" n:if="$control->showDifference">{include #difference value => $totalSum, difference => $totalDiff}</td>
+                    </tr>
+                    <tr class="share-row">
+                        <td>Tržní podíl</td>
+                        {foreach $columnSum as $storeId => $sums}
+                            {var float $sum = array_sum($sums)}
+                            {var float $share = $totalSum ? (($sum / $totalSum) * 100) : 0}
+                            {var float $lastSum = $totalSum - $totalDiff}
+                            {var float $lastShare = $lastSum ? ((($sum - array_sum($columnDiff[$storeId])) / $lastSum) * 100) : 0}
+                            <td>{$share |number:1,',',' '} %</td>
+                            <td n:if="$control->showDifference">{include #difference value => $share, difference => ($share - $lastShare), precision => 1}</td>
+                        {/foreach}
+                        <td>100 %</td>
+                        <td n:if="$control->showDifference"></td>
+                    </tr>
+                    <tr class="hover-ignore">
+                        <td>&nbsp;</td>
+                        <td n:for="$i = 0; $i < $columnCount; $i++" n:class="$i % 2 ? odd : even"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{/define}
+
+{define totalProducerTakingsSumView}
+    {var array $graphData = []}
+    {var int $maxValue = 0}
+    <div n:if="$control->selectedProducers && $control->selectedStores" style="background-color: rgba(242, 242, 242, 0.5);">
+        <div class="text-center scroll-x text-center" style="padding: 15px;">
+            <div id="takings-sum-chart" style="height: 500px; width: 880px; display: inline-block;"></div>
+        </div>
+    </div>
+    <div n:if="$control->selectedProducers && $control->selectedStores" style="background-color: rgba(242, 242, 242, 0.5);">
+        <div class="text-center scroll-x" style="padding: 15px;">
+            <h2>Kč / rok</h2>
+            <table class="overview-table">
+                <thead class="fix-width-110">
+                    <tr>
+                        <th>Rok</th>
+                        <th n:foreach="$control->selectedProducers as $producerId">{$producers[$producerId]}</th>
+                        <th>Celkem</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {foreach $takings as $year => $producerTakings}
+                    {var int $producerYearSum = 0}
+                    {var bool $setGraphData = $year >= $control->graphYearFrom && $year <= $control->graphYearTill}
+                    {if $setGraphData}
+                        {var array $yearGraphData = ['year' => (string) $year]}
+                    {/if}
+                    <tr>
+                        <td>{$year}</td>
+                        <td n:foreach="$control->selectedProducers as $producerId">
+                            {var int $yearTakings = array_sum(array_filter($producerTakings[$producerId] ?? [], fn(int $id) => in_array($id, $control->selectedStores), ARRAY_FILTER_USE_KEY))}
+                            {$yearTakings |number:0,',',' '}
+                            {php $producerYearSum += $yearTakings}
+                            {if $setGraphData}
+                                {php $yearGraphData[$producerId] = $yearTakings}
+                                {if $yearTakings > $maxValue}
+                                    {php $maxValue = $yearTakings}
+                                {/if}
+                            {/if}
+                        </td>
+                        <td>{$producerYearSum |number:0,',',' '}</td>
+                        {if $setGraphData}
+                            {php $graphData[] = (object) $yearGraphData}
+                        {/if}
+                    </tr>
+                {/foreach}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script n:if="$control->selectedProducers && $control->selectedStores">
+        {var $producerNames = array_values(array_filter($producers, fn(int $id) => in_array($id, $control->selectedProducers), ARRAY_FILTER_USE_KEY))}
+        {var $colors = array_values(array_filter($producerColors, fn(int $id) => in_array($id, $control->selectedProducers), ARRAY_FILTER_USE_KEY))}
+        new Morris.Line({
+            element: 'takings-sum-chart',
+            data: {$graphData},
+            xkey: 'year',
+            ykeys: {$control->selectedProducers},
+            labels: {$producerNames},
+            hideHover: true,
+            ymax: getGraphMax({$maxValue}),
+            lineColors: {$colors},
+            yLabelFormat: function (value) { return value.toLocaleString() + ' Kč'; }
+        });
+
+        function getGraphMax(maxValue) {
+            var stringValue = String(maxValue);
+            var firstNumber = stringValue.charAt(0);
+            var secondNumber = stringValue.charAt(1);
+
+            if (secondNumber <= 5) {
+                return Number(firstNumber + '5'.padEnd(stringValue.length - 1, '0'));
+            }
+
+            if (firstNumber === '9') {
+                return Number('10'.padEnd(stringValue.length + 1, '0'));
+            }
+
+            return Number(String(++firstNumber).padEnd(stringValue.length, '0'));
+        }
+    </script>
+{/define}
+
+{define totalStoreTakingsSumView}
+    <div n:foreach="$producers as $producerId => $producerName" n:if="in_array($producerId, $control->selectedProducers)" style="background-color: rgba(242, 242, 242, 0.5);">
+        <div class="text-center scroll-x text-center" style="padding: 15px;">
+            {var string $graphId = "$producerName-takings-sum-chart"}
+            {var array $graphData = []}
+            {var int $maxValue = 0}
+            <h2>{$producerName}</h2>
+            <div id="{$graphId}" style="height: 500px; width: 880px; display: inline-block;"></div>
+        </div>
+
+        <div class="text-center scroll-x" style="padding: 15px;">
+            <h2>{$producerName} / Kč / rok</h2>
+            <table class="overview-table">
+                <thead class="fix-width-110">
+                    <tr>
+                        <th>{$producerName}</th>
+                        <th n:foreach="$control->selectedStores as $storeId">{$stores[$storeId]}</th>
+                        <th>Celkem</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {for $year = 2011; $year <= intval(date('Y')); $year++}
+                    {var bool $setGraphData = $year >= $control->graphYearFrom && $year <= $control->graphYearTill}
+                    {if $setGraphData}
+                        {var array $yearGraphData = ['year' => (string) $year]}
+                    {/if}
+                    <tr>
+                        {var int $rowSum = 0}
+                        <td>{$year}</td>
+                        <td n:foreach="$control->selectedStores as $storeId">
+                            {var int $storeYearSum = $takings[$year][$producerId][$storeId] ?? 0}
+                            {$storeYearSum |number:0,',',' '}
+                            {php $rowSum += $storeYearSum}
+                            {if $setGraphData}
+                                {php $yearGraphData[$storeId] = $storeYearSum}
+                                {if $storeYearSum > $maxValue}
+                                    {php $maxValue = $storeYearSum}
+                                {/if}
+                            {/if}
+                        </td>
+                        <td>{$rowSum |number:0,',',' '}</td>
+                        {if $setGraphData}
+                            {php $graphData[] = (object) $yearGraphData}
+                        {/if}
+                    </tr>
+                {/for}
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            {var $storeNames = array_values(array_filter($stores, fn(int $id) => in_array($id, $control->selectedStores), ARRAY_FILTER_USE_KEY))}
+            {var $colors = array_values(array_filter($storeColors, fn(int $id) => in_array($id, $control->selectedStores), ARRAY_FILTER_USE_KEY))}
+            new Morris.Line({
+                element: {$graphId},
+                data: {$graphData},
+                xkey: 'year',
+                ykeys: {$control->selectedStores},
+                labels: {$storeNames},
+                hideHover: true,
+                ymax: getGraphMax({$maxValue}),
+                lineColors: {$colors},
+                yLabelFormat: function (value) { return value.toLocaleString() + ' Kč'; }
+            });
+
+            function getGraphMax(maxValue) {
+                var stringValue = String(maxValue);
+                var firstNumber = stringValue.charAt(0);
+                var secondNumber = stringValue.charAt(1);
+
+                if (secondNumber <= 5) {
+                    return Number(firstNumber + '5'.padEnd(stringValue.length - 1, '0'));
+                }
+
+                if (firstNumber === '9') {
+                    return Number('10'.padEnd(stringValue.length + 1, '0'));
+                }
+
+                return Number(String(++firstNumber).padEnd(stringValue.length, '0'));
+            }
+        </script>
+    </div>
+{/define}
+
+{define difference}
+    {php $precision ??= 0}
+    {if $value && $difference}<span n:class="$difference < 0 ? negative-value : positive-value">({if $difference < 0}-{else}+{/if} {abs($difference) |number:$precision,',',' '})</span>{/if}
+{/define}

@@ -1,0 +1,54 @@
+{block content}
+{form customStockGroupForm class => 'form-horizontal form-label-left'}
+    {var Nette\Forms\Controls\TextInput $nameInput = $form['name']}
+    <div class="form-group required{if $nameInput->hasErrors()} has-error{/if}">
+        {label $nameInput class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+        <div class='col-md-6 col-sm-6 col-xs-12'>
+            {input $nameInput class => 'form-control col-md-7 col-xs-12'}
+            <span n:if="$nameInput->hasErrors()" class="help-block">
+                <i class="glyphicon glyphicon-exclamation-sign"> </i>
+                Skupina s tímto názvem již existuje!
+            </span>
+        </div>
+    </div>
+
+    <div class="form-group required">
+        {label viewType class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+        <div class='col-md-6 col-sm-6 col-xs-12'>
+            {input viewType class => 'form-control col-md-7 col-xs-12'}
+        </div>
+    </div>
+
+    <div id="accordion">
+        {var Nette\Forms\Container $groupContainer = $form['stockGroups']}
+        {foreach $producers as $producer}
+            <h3> {$producer->name}</h3>
+            <div>
+                <div n:foreach="$producer->stockGroups->toCollection()->orderBy('number')->fetchPairs(null, 'id') as $groupId">
+                    {var $checkbox = $groupContainer[$groupId]}
+                    {input $checkbox style => 'margin-right: 20px;'} {label $checkbox /}
+                </div>
+            </div>
+        {/foreach}
+    </div>
+
+    <div class="ln_solid"></div>
+    <div class="col-md-offset-3">
+        <div class="form-group">
+            <div class="col-md-6 col-sm-6 col-xs-12">{input $presenter->action class => 'btn btn-secondary'}</div>
+        </div>
+    </div>
+    {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+{/form}
+
+<script>
+    $('#accordion').accordion({
+        active: false,
+        heightStyle: 'content',
+        icons: {
+            header: 'ui-icon-circle-arrow-e',
+            activeHeader: 'ui-icon-circle-arrow-s'
+        },
+        collapsible: true
+    });
+</script>

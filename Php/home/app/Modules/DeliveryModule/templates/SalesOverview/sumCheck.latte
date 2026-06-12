@@ -1,0 +1,49 @@
+{varType App\Modules\DeliveryModule\Orm\DeliveryNotes\NoteItem[] $noteItems}
+{var int $cancelNote = App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote::TYPE_CANCEL}
+{block content}
+<h3>Výrobce: {$producer}</h3>
+<h3>Rok: {$year}</h3>
+<h3>Měsíc: {$month}</h3>
+<h3 n:ifset="$company">Partner: {$company->name}</h3>
+<h3 n:ifset="$series">Série: {$series->name}</h3>
+<h3 n:ifset="$item">Položka: {$item->name}</h3>
+<table class="table datagrid-table jambo_table">
+    <thead>
+    <tr>
+        <th style="width: 130px;">Číslo dokladu</th>
+        <th>Datum</th>
+        <th>Pobočka</th>
+        <th>Partner</th>
+        <th>Položka</th>
+        <th style="width: 150px;">Suma</th>
+        <th></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {var float $totalSum = 0}
+    <tr n:foreach="$noteItems as $noteItem" n:class="$noteItem->note->movementType === $cancelNote ? legend_red">
+        <td>{$noteItem->note->number}</td>
+        <td>{$noteItem->note->date |date:'d.m.Y'}</td>
+        <td>{$noteItem->note->store->name}</td>
+        <td>{$noteItem->note->depot->name ?? '-'}</td>
+        <td>{$noteItem->item->name}</td>
+        <td style="text-align: right;">{if $noteItem->note->movementType === $cancelNote}-{/if}{$noteItem->sellSum |number:0,',',' '} Kč</td>
+        <td>
+            <a class="side-dialog" data-sd-history="on" href="{plink :Delivery:DeliveryNote:preview id => $noteItem->note->id}">
+                <span class="fa fa-search"></span>
+            </a>
+        </td>
+        {if $noteItem->note->movementType === $cancelNote}
+            {php $totalSum -= $noteItem->sellSum}
+        {else}
+            {php $totalSum += $noteItem->sellSum}
+        {/if}
+    </tr>
+    <tr>
+        <td style="text-align: right;" colspan="5"><b>Suma</b></td>
+        <td style="text-align: right;">{$totalSum |number:0,',',' '} Kč</td>
+        <td>{count($noteItems)} položek</td>
+    </tr>
+    </tbody>
+</table>

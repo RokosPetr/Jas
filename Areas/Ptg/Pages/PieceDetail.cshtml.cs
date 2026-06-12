@@ -3,6 +3,7 @@ using Jas.Application.Abstractions.Ptg;
 using Jas.Models.Ptg;
 using Jas.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Playwright;
@@ -16,15 +17,18 @@ namespace Jas.Areas.Ptg.Pages
         private readonly IImageStore _imageStore;
         private readonly IStandDetailReader _standReader;
         private readonly IRazorRenderer _renderer;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public PieceDetailModel(
             IImageStore imageStore,
             IStandDetailReader standReader,
-            IRazorRenderer renderer)
+            IRazorRenderer renderer,
+            IWebHostEnvironment webHostEnvironment)
         {
             _imageStore = imageStore;
             _standReader = standReader;
             _renderer = renderer;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public StandCompany? Stand { get; set; }
@@ -100,7 +104,7 @@ namespace Jas.Areas.Ptg.Pages
 
         private async Task GenerateTagsAsync(CancellationToken ct)
         {
-            var standPrintModel = new StandPrintModel(_imageStore, _standReader, null!, _renderer)
+            var standPrintModel = new StandPrintModel(_imageStore, _standReader, null!, _renderer, _webHostEnvironment)
             {
                 Stand = Stand,
                 Plates = Plates,

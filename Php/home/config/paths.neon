@@ -1,0 +1,11 @@
+# ALL paths are RELATIVE to project dir
+web_dir: '/www'
+app_dir: '/app'
+modules_dir: '/Modules'
+core_dir: '/Core'
+temp_dir: '/temp'
+log_dir: '/log'
+data_dir: '/data'
+config_dir: '/config'
+assets_dir: '/assets'
+cache_dir: '/cache'

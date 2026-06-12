@@ -1,0 +1,9 @@
+{varType App\Modules\SystemModule\Orm\Users\User $dealer}
+{block content}
+<h1>{$dealer->name} ({$dealer->internalLogin})</h1>
+<div>Požadovaný CSV formát: IdMopPobočky;ICO;voj</div>
+<div>Pro velkosklad lze zadat IdMop = 90 (přiřadí se Hlučín i Michalkovice)</div>
+<div>Příklad: 9;62301977;1</div>
+<div>Příklad: 90;82501877;</div>
+<br>
+{control dealerImportForm}

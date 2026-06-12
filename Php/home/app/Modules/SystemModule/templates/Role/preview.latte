@@ -1,0 +1,15 @@
+{varType App\Modules\SystemModule\Orm\Roles\Role $role}
+{block content}
+{sideDialog}
+    <h1>{$role->name}</h1>
+    <br>
+    <h4>Uživatelé:</h4>
+    <ul>
+        <li n:foreach="$role->users as $sysUser">{$sysUser->name}</li>
+    </ul>
+    <br>
+    <h4>Privilegia:</h4>
+    <ul>
+        <li n:foreach="$role->resources as $resource">{$resource->description}</li>
+    </ul>
+{/sideDialog}

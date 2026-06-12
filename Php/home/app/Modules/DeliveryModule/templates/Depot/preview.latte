@@ -1,0 +1,31 @@
+{varType App\Modules\DeliveryModule\Orm\Companies\Depot $depot}
+{block content}
+{sideDialog}
+    <h1>{$depot->companyName}</h1>
+    <h2>{$depot->title} ({$depot->city})</h2>
+    {var App\Modules\DeliveryModule\Orm\Contacts\Contact[] $contacts = $depot->contacts->toCollection()->findBy(['deleted' => false])->orderBy('order')->fetchAll()}
+    <div n:if="count($contacts)">
+        <h3>Kontakty:</h3>
+        <table>
+            <tr n:foreach="$contacts as $contact">
+                <td style="padding-right: 5px;">{$contact->name}</td>
+                <td style="padding-right: 5px;">{$contact->position}</td>
+                <td style="padding-right: 5px;">{$contact->phone}</td>
+            </tr>
+        </table>
+    </div>
+    <div n:if="$depot->contactAddress">
+        {var App\Modules\DeliveryModule\Orm\Addresses\Address $address = $depot->contactAddress}
+        <h3>Adresa provozovny:</h3>
+        <div>{$address->street ?: $address->city} {$address->number}</div>
+        <div n:if="$address->street">{$address->city}</div>
+        <div>{$address->zip}</div>
+        <div n:if="$address->openHours">Otevřeno: {$address->openHours}</div>
+        <div n:if="$address->billingEmail">Email pro fakturaci: {$address->billingEmail}</div>
+        <div n:if="$address->complainEmail">Email pro dobropisy: {$address->complainEmail}</div>
+    </div>
+    <div n:if="$depot->address">
+        <h3>Fakturační adresa</h3>
+        <div>{$depot->address |breaklines}</div>
+    </div>
+{/sideDialog}

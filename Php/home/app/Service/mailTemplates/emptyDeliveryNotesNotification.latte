@@ -1,0 +1,11 @@
+{varType App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote[] $notes}
+{var string $activeStore = ''}
+<p>Nalezené prázdné doklady:</p>
+{foreach $notes as $note}
+    {if $activeStore !== $note->store->name}
+        {php $activeStore = $note->store->name}
+        <br>
+        <div>{$activeStore}:</div>
+    {/if}
+    {$note->number}{sep}, {/sep}
+{/foreach}

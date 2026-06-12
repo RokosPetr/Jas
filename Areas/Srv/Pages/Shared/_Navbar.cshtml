@@ -64,7 +64,7 @@
                         {
                             <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
                                   aria-disabled="true" tabindex="-1">
-                                V procesu
+                                V řešení
                                 <span class="badge"></span>
                             </span>
                         }
@@ -72,7 +72,7 @@
                         {
                             <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap @(isIndexInProgress ? "active" : "")"
                                asp-area="Srv" asp-page="/Index" asp-route-filter="inprogress-requests">
-                                V procesu
+                                V řešení
                                 <span class="badge">@inProgressCount</span>
                             </a>
                         }
@@ -87,7 +87,7 @@
                         {
                             <span class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap disabled"
                                   aria-disabled="true" tabindex="-1">
-                                K potvrzení
+                                K odsouhlašení
                                 <span class="badge"></span>
                             </span>
                         }
@@ -95,7 +95,7 @@
                         {
                             <a class="nav-link py-xl-3 px-xl-4 py-lg-2 px-lg-3 py-md-1 px-md-2 py-sm-0 px-sm-1 badge-wrap @(isIndexToConfirm ? "active" : "")"
                                asp-area="Srv" asp-page="/Index" asp-route-filter="toconfirm-requests">
-                                K potvrzení
+                                K odsouhlašení
                                 <span class="badge">@toConfirmCount</span>
                             </a>
                         }
@@ -178,6 +178,7 @@
                 <span class="user">@NavbarService.JasUser?.Name</span>
             </div>
             <div id="top-panel-dropdown-menu">
+                <a asp-area="Srv" asp-page="/IndexInTime" title="Nevyřešené požadavky po termínu">Požadavky po termínu</a>
                 @if (NavbarService.IsExternalLoggedIn)
                 {
                     <a href="https://www.mamekoupelny.eu">Zpět intranet</a>

@@ -1,0 +1,10 @@
+{varType App\Modules\BathroomModule\Orm\Parameters\BathParameter $parameter}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na parametry" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na parametry</strong>
+    </a>
+</div>
+<h2>Parametr: {$parameter->name}</h2>
+{control bathOptions}

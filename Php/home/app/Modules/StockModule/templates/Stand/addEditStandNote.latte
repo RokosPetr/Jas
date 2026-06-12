@@ -1,0 +1,46 @@
+{varType App\Modules\StockModule\Orm\Stands\Stand $stand}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na stojany" n:href="standNotes id => $stand->id">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na stojany</strong>
+    </a>
+</div>
+{control standNoteForm}
+
+<script>
+    $(function () {
+        var select = $('#frm-standNoteForm-depot');
+        var select2Data;
+
+        select.select2({
+            language: 'cs',
+            ajax: {
+                url: {link loadDepotOption!},
+                type: 'get',
+                dataType: 'json',
+                delay: 300,
+                data: function (params) {
+                    return { search: params.term }
+                },
+                success: function (data){
+                    select2Data = data;
+                },
+                cache: true,
+            },
+            minimumInputLength: 3
+        }).on('change', function (e) {
+            $.each(select2Data, function( index, value ) {
+                $("#depot_err").remove();
+                $.each(value, function( index, value ) {
+                    if(value.selected && value.hasStand){
+                        $( "#frm-standNoteForm-depot_message" ).append(function() {
+                            return "<span id=\"depot_err\" class=\"help-block\" style=\"color: #a94442;\"><i class=\"glyphicon glyphicon-exclamation-sign\"></i>Partnerská pobočka již tento stojan má</span>";
+                        });
+                    }
+                });
+            });
+           // var neco = select2Data.find(item.id == e.value && item.hasStand);
+        });
+    })
+</script>

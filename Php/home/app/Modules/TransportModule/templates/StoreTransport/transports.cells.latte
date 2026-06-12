@@ -1,0 +1,29 @@
+{varType App\Modules\TransportModule\Orm\Transports\StoreTransport $row}
+{define cell-driver}
+    {$row->driver->name}
+{/define}
+
+{define cell-car}
+    {$row->car->licensePlate}
+{/define}
+
+{define cell-timeFrom}
+    {$row->timeFrom |floatToHour}
+{/define}
+
+{define cell-timeTill}
+    {$row->timeTill |floatToHour}
+{/define}
+
+{define cell-customers}
+    {var array $customers = $row->customers}
+    {if $customers}{$customers |implode:', '}{else}-{/if}
+{/define}
+
+{define cell-targets}
+    {if $row->targets->count()}{$row->targets->toCollection()->fetchPairs(null, 'name') |implode:', '}{else}-{/if}
+{/define}
+
+{define cell-deliveryNotes}
+    {if count($row->deliveryNotes)}{$row->deliveryNotes |implode:', '}{else}-{/if}
+{/define}

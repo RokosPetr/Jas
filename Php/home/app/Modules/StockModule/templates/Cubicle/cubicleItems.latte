@@ -1,0 +1,10 @@
+{varType App\Modules\StockModule\Orm\Cubicles\Cubicle $cubicle}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na kóje" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na kóje</strong>
+    </a>
+</div>
+<h2>{$cubicle->title}</h2>
+{control cubicleItems}

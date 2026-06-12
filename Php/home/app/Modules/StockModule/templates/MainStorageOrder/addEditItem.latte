@@ -1,0 +1,53 @@
+{block content}
+{sideDialog}
+    {control addEditMainStorageOrderItemForm}
+
+    <script n:if="$presenter->action === editItem">
+        var paletteQuantityHidden = $('input[name="paletteQuantity"]');
+
+        if (paletteQuantityHidden.length) {
+            var paletteQuantity = paletteQuantityHidden.val();
+            var quantityInput = $('input[name="quantity"]');
+            var paletteQuantityInput = $('input[name="paletteCount"]');
+            paletteQuantityInput.on('input', function () {
+                quantityInput.val(Math.round(paletteQuantity * paletteQuantityInput.val() * 100) / 100);
+            })
+        }
+    </script>
+
+    <script n:if="$presenter->action === addItem">
+        var quantityInput = $('input[name="quantity"]');
+        var paletteQuantityInput = $('input[name="paletteCount"]');
+        var helpBlock = $('<span class="help-block"></span>');
+        quantityInput.parent().append(helpBlock.hide());
+
+        $('select[name="item"]').on('select2:select', function () {
+            $.nette.ajax({
+                type: 'post',
+                url: {link 'getStockItemPaletteCount!'},
+                data: { id: $(this).val() },
+                success: function (response) {
+                    var palette = response.result.palette;
+                    var minOrder = response.result.minOrder;
+                    if (palette && !minOrder) {
+                        helpBlock.hide();
+                        quantityInput.val(Math.round(palette * paletteQuantityInput.val() * 100) / 100);
+                        quantityInput.attr('readonly', true);
+                        paletteQuantityInput.on('input', function () {
+                            quantityInput.val(Math.round(palette * paletteQuantityInput.val() * 100) / 100);
+                        })
+                    } else {
+                        quantityInput.val(palette ? palette : minOrder);
+                        quantityInput.attr('readonly', false);
+                        paletteQuantityInput.off('input');
+                        var text = palette ? ('Množství na paletě: ' + palette) : 'Neznámé množství na paletě';
+                        if (minOrder) {
+                            text += ', minimum: ' + minOrder;
+                        }
+                        helpBlock.text(text).show();
+                    }
+                }
+            });
+        });
+    </script>
+{/sideDialog}

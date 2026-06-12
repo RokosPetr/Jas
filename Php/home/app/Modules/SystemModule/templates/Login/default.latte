@@ -1,0 +1,17 @@
+{block content}
+
+<div id="login-form">
+    <h1>Vstup vyžaduje přihlášení</h1>
+    {form loginForm}
+        <div><img src="/image/uzivatel_login.png">{label username}</div>
+        <div style="margin-bottom: 15px;width: 96.5%">{input username}</div>
+        <div><img src="/image/heslo_login.png">{label password}</div>
+        <div style="margin-bottom: 15px;width: 96.5%">{input password}</div>
+        <div class="prihlaseni">
+            <div style="margin-top: 5px"><a n:href="forgottenPassword">Zapomenuté heslo -změna</a></div>
+            {input login}
+        </div>
+        {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+    {/form}
+    <div class="login-form-footer">Pokud heslo nemáte, nastavte si ho přes odkaz Zapomenuté heslo</div>
+</div>

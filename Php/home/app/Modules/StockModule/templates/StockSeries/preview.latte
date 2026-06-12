@@ -1,0 +1,8 @@
+{varType App\Modules\StockModule\Orm\StockSeries\StockSeries $stockSeries}
+{block content}
+{sideDialog}
+    <h1>{$stockSeries->name}</h1>
+    <ul>
+        <li n:foreach="$stockSeries->items as $stockItem">{$stockItem->producer->name ?? '???'} - {$stockItem->title}</li>
+    </ul>
+{/sideDialog}

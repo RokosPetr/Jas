@@ -1,0 +1,161 @@
+{varType App\Modules\StockModule\Orm\StockItems\StockItem $itemFilter}
+{varType App\Modules\StockModule\Orm\Stands\Stand[] $itemFilterStands}
+
+{block content}
+<div n:snippet="stand-product-filter">
+    <label for="product-filter">Produkt</label>
+    <select name="product" id="product-filter" class="select2-ignore" style="width: 350px;">
+        <option n:if="!$itemFilter" value="0" selected>Vše</option>
+        <option n:if="$itemFilter" value="{$itemFilter->id}" selected>{$itemFilter->title}</option>
+    </select>
+    <a n:if="$itemFilter" class="ajax btn btn-xs btn-danger" n:href="setProductFilter! product => 0">x</a>
+</div>
+<br>
+{snippet stand-grid-control}
+    {if !$itemFilter}
+        {control stands}
+    {else}
+        {include #itemStands itemStands => $itemFilterStands, item => $itemFilter}
+    {/if}
+{/snippet}
+<script>
+    $.nette.ext({
+        load() {
+            initProductSearch('product-filter');
+            $('#product-filter').on('select2:select', function () {
+                $.nette.ajax({
+                    url: {link 'setProductFilter!'},
+                    data: {
+                        product: $(this).val()
+                    }
+                });
+            });
+        }
+    });
+</script>
+{/block}
+
+{define itemStands}
+    {varType App\Modules\StockModule\Orm\Stands\Stand[] $itemStands}
+    {varType App\Modules\StockModule\Orm\StockItems\StockItem $item}
+    <table class="table datagrid-table jambo_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Název</th>
+                <th>Rok</th>
+                <th>Výrobce</th>
+                <th>Typ</th>
+                <th>ŠxHxV (cm)</th>
+                <th>Počet jednotek</th>
+                <th>Na pobočkách</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach $itemStands as $stand}
+                {var App\Modules\StockModule\Orm\Stands\StandPlate[] $plates = $stand->plates->toCollection()->findBy(['items->item->id' => $item->id, 'deleted' => false])}
+                <tr>
+                    <td>{$stand->code}</td>
+                    <td>{$stand->name}</td>
+                    <td>{$stand->year}</td>
+                    <td>{$stand->producerName}</td>
+                    <td>{$stand->hasPlates ? 'Platový' : 'Kusový'}</td>
+                    <td>{$stand->dimensions}</td>
+                    <td>{$stand->unitCount}</td>
+                    <td>{$stand->count}</td>
+                    <td class="row-actions">
+                        <a n:if="$user->isAllowed(':Stock:Stand:preview')" class="side-dialog" n:href="preview id => $stand->id" data-sd-history="on">
+                            <span data-toggle="tooltip" title="Náhled" class="fa fa-search"></span>
+                        </a>
+                        <a n:if="!$stand->hasPlates && $user->isAllowed(':Stock:Stand:standItems')" n:href="standItems id => $stand->id">
+                            <span data-toggle="tooltip" title="Položky" class="fa fa-list-ol"></span>
+                        </a>
+                        <a n:if="$stand->hasPlates && $user->isAllowed(':Stock:Stand:standPlates')" n:href="standPlates id => $stand->id">
+                            <span data-toggle="tooltip" title="Položky" class="fa fa-list-ol"></span>
+                        </a>
+                        <a n:if="$user->isAllowed(':Stock:Stand:standNotes')" n:href="standNotes id => $stand->id">
+                            <span data-toggle="tooltip" title="Dodáno na pobočky" class="fa fa-fort-awesome"></span>
+                        </a>
+                        <a n:if="$user->isAllowed(':Stock:Stand:clone')" n:href="clone id => $stand->id" data-dialog-title="Potvrzení" data-dialog-text="Opravdu chcete vytvořit nový stojan jako kopii tohoto?">
+                            <span data-toggle="tooltip" title="Duplikovat" class="fa fa-code-fork"></span>
+                        </a>
+                        <a n:if="$user->isAllowed(':Stock:Stand:edit')" n:href="edit id => $stand->id">
+                            <span data-toggle="tooltip" title="Upravit" class="fa fa-pencil"></span>
+                        </a>
+                        <a n:if="$user->isAllowed(':Stock:Stand:delete')" n:href="delete id => $stand->id" class="confirmDialog" data-confirm="Opravdu chcete odstranit položku">
+                            <span data-toggle="tooltip" title="Smazat" class="fa fa-trash"></span>
+                        </a>
+                    </td>
+                </tr>
+                {foreach $plates as $plate}
+                    {var App\Modules\StockModule\Orm\Stands\StandPlateItem[] $plateItems = $plate->items->toCollection()->findBy(['item->id' => $item->id, 'deleted' => false])}
+                    {foreach $plateItems as $plateItem}
+                        <tr n:if="$stand->hasPlates">
+                            <td></td>
+                            <td colspan="7" n:class="$plate->state === $plate::STATE_INACTIVE ? text-red, $plate->state === $plate::STATE_PARTLY_ACTIVE ? text-blue">{$plate->order}. {$plate->description}</td>
+                            <td class="row-actions">
+                                <a n:if="$user->isAllowed(':Stock:Stand:platePreview')" n:href="platePreview id => $plate->id" class="side-dialog" data-sd-history="on">
+                                    <span class="fa fa-search" data-toggle="tooltip" title="Náhled"></span>
+                                </a>
+                                <a n:if="$user->isAllowed(':Stock:Stand:plateItems')" n:href="plateItems id => $plate->id">
+                                    <span class="fa fa-list-ol" data-toggle="tooltip" title="Položky"></span>
+                                </a>
+                                <a n:if="$user->isAllowed(':Stock:Stand:editPlate')" n:href="editPlate id => $plate->id, defaultAction => true">
+                                    <span class="fa fa-pencil" data-toggle="tooltip" title="Upravit plato"></span>
+                                </a>
+                                <a n:if="$user->isAllowed(':Stock:Stand:deletePlate')" n:href="deletePlate id => $plate->id, defaultAction => true" class="confirmDialog" data-confirm="Opravdu chcete odstranit položku">
+                                    <span class="fa fa-trash" data-toggle="tooltip" title="Odstranit plato"></span>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr n:class="$plateItem->photoItem ? bg-disabled">
+                            <td></td>
+                            <td n:if="$stand->hasPlates"></td>
+                            <td colspan="{$stand->hasPlates ? 6 : 7}" n:class="!$plateItem->isActive ? text-red">{$plateItem->order}. {$plateItem->item->name}</td>
+                            <td class="row-actions">
+                                <a n:if="$user->isAllowed(':Stock:Stand:plateItemPreview')" n:href="plateItemPreview id => $plateItem->id" class="side-dialog" data-sd-history="on">
+                                    <span class="fa fa-search" data-toggle="tooltip" title="Náhled"></span>
+                                </a>
+                                <a n:if="$user->isAllowed(':Stock:Stand:editPlateItem')" n:href="editPlateItem id => $plateItem->id, defaultAction => true">
+                                    <span class="fa fa-pencil" data-toggle="tooltip" title="Změnit položku"></span>
+                                </a>
+                                <a n:if="$user->isAllowed(':Stock:Stand:deletePlateItem')" n:href="deletePlateItem id => $plateItem->id, defaultAction => true" class="confirmDialog" data-confirm="Opravdu chcete odstranit položku">
+                                    <span class="fa fa-trash" data-toggle="tooltip" title="Odstranit položku"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    {/foreach}
+                {/foreach}
+            {/foreach}
+        </tbody>
+    </table>
+
+    <script>
+        $('a.confirmDialog').click(function (e) {
+            e.preventDefault();
+            var title = $(this).attr('data-confirm');
+            $('<div></div>').dialog({
+                resizable: false,
+                height: 'auto',
+                width: 400,
+                modal: true,
+                closeOnEscape: true,
+                title: 'Odstranění položky',
+                open: function open() {
+                    $(this).html(title + '?');
+                },
+                buttons: [{
+                    text: 'Ano',
+                    click: () => { window.location.href = $(this).attr('href'); }
+                }, {
+                    text: 'Ne',
+                    click: function clickClose() {
+                        $(this).dialog('close');
+                    }
+                }]
+            });
+            $('.ui-dialog-titlebar-close').html('<span>x</span>');
+        });
+    </script>
+{/define}

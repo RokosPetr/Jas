@@ -1,0 +1,215 @@
+{varType App\Modules\DeliveryModule\Orm\Companies\Depot $depot}
+{varType App\Modules\StockModule\Orm\Stands\StandNote[] $standNotes}
+{varType App\Modules\StockModule\Orm\Stands\Stand[] $stands}
+{block content}
+<div class="overview-control-panel">
+    <div style="padding: 10px 0;">
+        <div style="display: inline-block;">
+            <label for="depot-select" style="padding: 5px 0;">IČO:</label>
+        </div>
+        <span n:snippet="stand-item-search-link" class="pull-right">
+            <a n:if="$depot && $standNotes" n:href="stockItemStands id => $depot->id" class="btn btn-xs btn-default">Vyhledat produkt</a>
+        </span>
+        <div style="display: inline-block; width: 400px;">
+            <div class="select2-wrapper">
+                <select name="depot" id="depot-select" class="select2-ignore" onchange="setDepot(this.value)">
+                    <option n:if="$depot" value="{$depot->id}" selected>{$depot->companyIcoString} - {$depot->name}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div n:snippet="depot-stands-table" class="text-center">
+    {if $depot}
+        {var array $depotStands = []}
+        <br>
+        <h3>{$depot->name}</h3>
+        <br>
+        {if !$standNotes}
+            <h4>Žádné stojany nejsou v současné době evidovány</h4>
+        {else}
+            <table class="grey-table">
+                <thead>
+                    <tr>
+                        <th n:if="$user->isAllowed(':Stock:Stand:preview')" class="no-bg"></th>
+                        <th>ID</th>
+                        <th>Název</th>
+                        <th>Výrobce</th>
+                        <th>Datum dovozu</th>
+                        <th>DL</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr n:foreach="$standNotes as $standNote" n:class="$iterator->isOdd() ? odd : even">
+                        {php $depotStands[] = $standNote->stand->id}
+                        <td n:if="$user->isAllowed(':Stock:Stand:preview')" class="no-bg">
+                            <a n:href=":Stock:Stand:preview id => $standNote->stand->id" class="side-dialog" data-sd-history="on"><span class="fa fa-search"></span></a>
+                        </td>
+                        <td>{$standNote->stand->code}</td>
+                        <td>{$standNote->stand->name}</td>
+                        <td>{$standNote->stand->producerName}</td>
+                        <td>{$standNote->date |date:'d.m.Y'}</td>
+                        <td>{$standNote->note ?: '-'}</td>
+                        {if $standNote->isRelocating}
+                            {var App\Modules\DeliveryModule\Orm\DepotStandRelocations\DepotStandRelocation $relocation = $standNote->getRelocation()}
+                            <td>
+                                <span data-toggle="tooltip" title="{$relocation->target->name ?? 'Cíl nezadán'}">Relokace</span>
+                                <a n:if="$user->isAllowed(':Delivery:DepotStands:cancelRelocateStand')" n:href="cancelRelocateStand id => $relocation->id, redirectDefault => true"
+                                        class="confirmDialog"
+                                        title="Zrušit relokaci"
+                                        data-toggle="tooltip"
+                                        data-title="Zrušení relokace"
+                                        data-text="Opravdu chcete zrušit relokaci?"
+                                >
+                                    <img src="/image/smazat1.png" alt="Smazat" width="13" height="13">
+                                </a>
+                            </td>
+                        {elseif $standNote->state === $standNote::STATE_PREPARED}
+                            <td>Bude dodáno</td>
+                        {else}
+                            <td>
+                                <a n:if="$user->isAllowed(':Delivery:DepotStands:relocateStand')" class="btn btn-xs btn-default side-dialog" n:href="relocateStand id => $standNote->id" data-sd-history="on">K relokaci</a>
+                            </td>
+                        {/if}
+                    </tr>
+                </tbody>
+            </table>
+            <br><br>
+            <a class="btn btn-default" n:href="standCheck id => $depot->id">Začít kontrolu</a>
+
+            {var App\Modules\DeliveryModule\Orm\DepotStandChecks\DepotStandCheck $lastStandCheck = $depot->lastStandCheck}
+            <div n:if="$lastStandCheck && $lastStandCheck->missingStands->count()">
+                <br>
+                <h4 style="color: #6c6767;">Nenalezené stojany při poslední kontrole</h4>
+                <table class="grey-table">
+                    <tr n:foreach="$lastStandCheck->missingStands as $missingStand">
+                        <td class="no-bg">{$missingStand->standNote->stand->code}</td>
+                        <td class="no-bg">{$missingStand->standNote->stand->name}</td>
+                        <td class="no-bg">{$missingStand->standNote->stand->producerName}</td>
+                        <td class="no-bg">{$missingStand->standNote->date |date:'d.m.Y'}</td>
+                        <td class="no-bg">{$missingStand->standNote->note ?: '-'}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div n:if="$depot->standChecks->count()">
+                {var App\Modules\DeliveryModule\Orm\DepotStandChecks\DepotStandCheck[] $standChecks = $depot->standChecks->toCollection()->orderBy('createdAt', 'DESC')->fetchAll()}
+                <br>
+                <h4 style="color: #6c6767;">Provedené kontroly</h4>
+                <table class="grey-table">
+                    <tr n:foreach="$standChecks as $standCheck">
+                        <td class="no-bg">{$standCheck->created}</td>
+                        <td>
+                            <span n:if="$standCheck->remark" class="fa fa-commenting" data-toggle="tooltip" title="x" data-template="{include #remarkTooltip remark => $standCheck->remark}"></span>
+                        </td>
+                        <td class="no-bg">Počet chybějících stojanů: {$standCheck->missingStands->count()}</td>
+                    </tr>
+                </table>
+            </div>
+        {/if}
+
+        <br><br>
+        <h4 style="color: #6c6767;">Dostupné stojany</h4>
+        <table class="grey-table">
+            <thead>
+                <tr>
+                    <th n:if="$user->isAllowed(':Stock:Stand:preview')" class="no-bg"></th>
+                    <th>ID</th>
+                    <th>Název</th>
+                    <th>Výrobce</th>
+                    <th>Datum dovozu</th>
+                    <th>DL</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {foreach $stands as $stand}
+                    {skipIf in_array($stand->id, $depotStands)}
+                    <tr n:class="$iterator->isOdd() ? odd : even">
+                        <td n:if="$user->isAllowed(':Stock:Stand:preview')" class="no-bg">
+                            <a n:href=":Stock:Stand:preview id => $stand->id" class="side-dialog" data-sd-history="on"><span class="fa fa-search"></span></a>
+                        </td>
+                        <td>{$stand->code}</td>
+                        <td>{$stand->name}</td>
+                        <td>{$stand->producerName}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>
+                            <a n:if="$user->isAllowed(':Delivery:DepotStands:addStand')" n:href="addStand depot => $depot->id, stand => $stand->id"
+                                    class="confirmDialog btn btn-xs btn-default"
+                                    data-title="Přiřadit stojan"
+                                    data-text="Opravdu chcete přiřadit tento stojan partnerské pobočce?"
+                            >Přiřadit partnerovi</a>
+                        </td>
+                    </tr>
+                {/foreach}
+            </tbody>
+        </table>
+
+        <script>
+            $('a.confirmDialog').click(function (e) {
+                e.preventDefault();
+                var dialogText = $(this).data('text');
+                var dialogTitle = $(this).data('title');
+
+                $('<div></div>').dialog({
+                    resizable: false,
+                    height: 'auto',
+                    width: 400,
+                    modal: true,
+                    closeOnEscape: true,
+                    title: dialogTitle,
+                    open: function open() {
+                        $(this).html(dialogText);
+                    },
+                    buttons: [{
+                        text: 'Ano',
+                        click: () => { window.location.href = $(this).attr('href'); }
+                    }, {
+                        text: 'Ne',
+                        click: function clickClose() {
+                            $(this).dialog('close');
+                        }
+                    }]
+                });
+                $('.ui-dialog-titlebar-close').html('<span>x</span>');
+            });
+        </script>
+    {/if}
+</div>
+
+<script>
+    $(function () {
+        $('#depot-select').select2({
+            language: 'cs',
+            ajax: {
+                url: {link updateDepotSelect!},
+                type: 'get',
+                dataType: 'json',
+                delay: 300,
+                data: function (params) { return { search: params.term } },
+                cache: true,
+            },
+            minimumInputLength: 3
+        });
+    })
+
+    function setDepot(depot) {
+        $.nette.ajax({
+            url: {link setDepot!},
+            data: { depot }
+        });
+    }
+</script>
+
+{define remarkTooltip}
+    <div class="tooltip">
+        <div class="transport-calendar-tooltip-wrapper">
+            <div class="transport-calendar-tooltip">{$remark |breakLines}</div>
+            <div class="tooltip-arrow"></div>
+        </div>
+    </div>
+{/define}

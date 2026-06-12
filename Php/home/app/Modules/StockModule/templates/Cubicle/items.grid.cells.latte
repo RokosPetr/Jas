@@ -1,0 +1,5 @@
+{varType App\Modules\StockModule\Orm\Cubicles\CubicleItem $row}
+
+{define cell-item}
+    <span n:class="!$row->item->isActive ? text-red">{$row->item->title}</span>
+{/define}

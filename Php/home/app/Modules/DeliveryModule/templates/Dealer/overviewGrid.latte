@@ -1,0 +1,38 @@
+{varType App\Modules\DeliveryModule\Presenters\DealerPresenter $presenter}
+{block content}
+{snippet overviewFilter}
+    {control dealerOverviewFilter}
+{/snippet}
+
+{snippet overviewTable}
+    <div style="margin: 5px 0;">
+        <div class="btn-group" data-toggle="buttons">
+            <label n:class="btn, $gridType === $presenter::COMPANY_GRID ? btn-secondary : btn-default">
+                <input type="radio" value="{$presenter::COMPANY_GRID}" name="gridType" onchange="setGridType({link setOverviewGrid! type => $presenter::COMPANY_GRID})"{if $gridType === $presenter::COMPANY_GRID} checked{/if}>
+                Partneři
+            </label>
+            <label n:class="btn, $gridType === $presenter::DEPOT_GRID ? btn-secondary : btn-default">
+                <input type="radio" value="{$presenter::DEPOT_GRID}" name="gridType" onchange="setGridType({link setOverviewGrid! type => $presenter::DEPOT_GRID})"{if $gridType === $presenter::DEPOT_GRID} checked{/if}>
+                Pobočky partnerů
+            </label>
+        </div>
+    </div>
+
+    {if $gridType === $presenter::COMPANY_GRID}
+        {control dealerOverviewCompanyGrid}
+    {else}
+        {control dealerOverviewDepotGrid}
+    {/if}
+{/snippet}
+
+<script>
+    $.nette.ext({
+        complete() {
+            $('.floatedTable').floatThead('reflow');
+        }
+    });
+
+    function setGridType(link) {
+        $.nette.ajax(link);
+    }
+</script>

@@ -1,0 +1,6 @@
+{block content}
+<h2>Přijmové doklady s neexistujícím výdejním dokladem nebo rozdílnými cenami</h2>
+{if $user->isSuperAdmin()}
+    {control storeSelect}
+{/if}
+{control badTransfersIn}

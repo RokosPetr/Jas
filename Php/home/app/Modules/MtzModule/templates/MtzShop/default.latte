@@ -1,0 +1,67 @@
+{varType array $mtzGroups}
+{varType int $selectedMtzGroup}
+{varType array $mtzItemsTree}
+{block content}
+<a n:if="$user->isAllowed(':Mtz:MtzItem:default')" n:href=":Mtz:MtzItem:" class="btn btn-secondary">Nastavení MTZ položek</a>
+<div class="store-select-wrapper">
+    <div>
+        <label for="mtzGroupSelect">Skupina zboží:</label>
+        <select name="mtzGroupSelect" id="mtzGroupSelect" class="select2-ignore" onchange="$.nette.ajax($(this).find(':selected').attr('data-link'))">
+            <option n:foreach="$mtzGroups as $id => $title"
+                    value="{$id}"
+                    data-link="{link setMtzGroup! id => $id}"
+                    {if $id === $selectedMtzGroup}selected{/if}
+            >{$title}</option>
+        </select>
+    </div>
+    <div class="pull-right">
+        <a n:if="$user->isAllowed(':Mtz:MtzShop:basket')" n:href="basket" class="btn btn-secondary" data-toggle="tooltip" title="Košík">
+            <span class="fa fa-shopping-cart" style="font-size: 20px;"></span>
+        </a>
+        <a n:if="$user->isAllowed(':Mtz:MtzShop:myMtzOrders')" n:href="myMtzOrders" class="btn btn-secondary">Moje objednávky</a>
+    </div>
+    <br>
+</div>
+
+<div id="treeview">
+    <ul>
+    {foreach $mtzItemsTree as $rootCategories => $rootCategory}
+        <li> {$rootCategory['title']}
+        <ul n:foreach="$rootCategory['children'] as $subCategories => $subCategory">
+            <li> {$subCategory['title']}
+                <ul n:foreach="$subCategory['children'] as $mtzItems => $mtzItem">
+                    <li>{$mtzItem['title']}</li>
+                </ul>
+            </li>
+        </ul>
+        </li>
+    {/foreach}
+    </ul>
+</div>
+
+{control mtzShop}
+
+<div class="modal fade" id="shopModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" n:snippet="basketForm">
+                {control mtzAddToBasketForm}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('a.previewGrip[data-target="#shopModal"]').click(function () {
+        var modalBody = $('#shopModal .modal-body');
+        modalBody.hide();
+        $.nette.ajax({
+            url: {link updateBasketForm!},
+            data: { dataId: $(this).attr('data-id') },
+            success: function () { modalBody.show(); }
+        });
+    });
+</script>

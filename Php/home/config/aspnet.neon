@@ -1,0 +1,6 @@
+mtz:
+    url: "http://mtz.localhost:5000/Identity/Account/PhpLogin?phpsessid="
+ptg:
+    url: "http://ptg.localhost:5000/Identity/Account/PhpLogin?phpsessid="
+srv:
+    url: "http://srv.localhost:5000/Identity/Account/PhpLogin?phpsessid="

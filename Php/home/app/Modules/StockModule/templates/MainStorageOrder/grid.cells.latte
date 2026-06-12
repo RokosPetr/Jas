@@ -1,0 +1,13 @@
+{varType App\Modules\StockModule\Orm\StockItems\StockItem $row}
+
+{define cell-producer}
+    {$row->producer->name ?? '-'}
+{/define}
+
+{define cell-group}
+    {$row->group->title ?? '-'}
+{/define}
+
+{define cell-unit}
+    {$row->unit->name ?? '-'}
+{/define}

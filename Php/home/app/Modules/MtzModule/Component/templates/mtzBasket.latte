@@ -1,0 +1,31 @@
+{varType App\Modules\MtzModule\Component\MtzBasket $control}
+{varType App\Modules\MtzModule\Orm\MtzItems\MtzItem[] $basketItems}
+{varType array $basketQuantities}
+<h2 n:snippet="myMtzBasketOrderHeading">{if $basketItems}Položky k objednání{else}Váš košík je prázdný{/if}</h2>
+<div n:snippet="myMtzBasket">
+    <table n:if="$basketItems"  class="table table-condensed table-hover mtz-basket-table" style="background-color: white;">
+        <thead>
+        <tr>
+            <th>Položka</th>
+            <th>Množství</th>
+            <th></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr n:foreach="$basketItems as $basketItem">
+            <td>{$basketItem->name}</td>
+            <td>{$basketQuantities[$basketItem->id]}{if $basketItem->orderUnit} {$basketItem::UNITS_LABELS[$basketItem->orderUnit]}{/if}</td>
+            <td class="button-cell">
+                <a n:href="addToBasket! id => $basketItem->id, quantity => 1" class="ajax btn btn-xs btn-secondary" data-toggle="tooltip" title="Přidat jednotku">+</a>
+                <a n:href="addToBasket! id => $basketItem->id, quantity => -1" class="ajax btn btn-xs btn-secondary" data-toggle="tooltip" title="Odebrat jednotku">-</a>
+                <a n:href="removeFromBasket! id => $basketItem->id" class="ajax btn btn-xs btn-danger" data-toggle="tooltip" title="Odstranit položku">x</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div n:snippet="myMtzBasketOrderForm">
+    {if $basketItems}{control mtzOrderRemarkForm}{/if}
+</div>

@@ -1,0 +1,28 @@
+{block content}
+{if $presenter->action === 'edit'}
+    {control editWarehousemanForm}
+{else}
+    {form addWarehousemanForm class => 'jas-form-wrapper'}
+        <div class="jas-red-gradient"></div>
+
+        <div class="jas-link-wrapper">
+            <a title="Zpět na položky" n:href="items">
+                <img width="20" height="20" src="/image/zpet.png">
+                <strong> zpět na položky</strong>
+            </a>
+        </div>
+
+        <h2 class="text-center">Přidat skladníka</h2>
+
+        <div style="padding: 10px">
+            {label webId class => 'jas-form-label' /}
+            {input webId class => 'jas-form-input'}
+            {label name class => 'jas-form-label' /}
+            {input name class => 'jas-form-input'}
+            {label createdAt class => 'jas-form-label' /}
+            {input createdAt class => 'jas-form-input datepicker'}
+            {input add class => 'jas-submit-input'}
+            {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+        </div>
+    {/form}
+{/if}

@@ -1,0 +1,4 @@
+.text-red { color: red; }
+.text-blue { color: blue; }
+.new-page { page-break-before: always; }
+.bg-disabled { background-color: #eee; }

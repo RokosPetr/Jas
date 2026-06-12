@@ -1,0 +1,73 @@
+{varType App\Modules\StockModule\Orm\Stands\Stand $stand}
+{varType int $type}
+{varType bool $showPrice}
+<div>
+    <h1>{$stand->title}</h1>
+    <div n:if="$stand->picture">
+        <img src="{$stand->picture->link}" alt="{$stand->picture->name}" width="300">
+    </div>
+    <div n:if="$stand->secondPicture">
+        <br n:if="$stand->picture">
+        <img src="{$stand->secondPicture->link}" alt="{$stand->secondPicture->name}" width="300">
+    </div>
+
+    <br>
+    Šířka {$stand->width} cm/Hloubka {$stand->depth} cm/Výška {$stand->height} cm
+    <br><br>
+
+    {if $stand->hasPlates}
+        <ol style="padding-left: 30px;">
+            {var App\Modules\StockModule\Orm\Stands\StandPlate[] $plates = $stand->loadPlates()}
+            {for $i = 1; $i <= $stand->unitCount; $i++}
+                {var App\Modules\StockModule\Orm\Stands\StandPlate $plate = $plates[$i] ?? null}
+                <li n:class="$plate && $plate->state === $plate::STATE_INACTIVE ? text-red, $plate && $plate->state === $plate::STATE_PARTLY_ACTIVE ? text-blue">
+                    {if $stand->plateOrderType === $stand::PLATE_ORDER_RIGHT_FIRST}({$i % 2 ? 'P' : 'L'}){/if}
+                    {if $plate}
+                        {$plate->description}{if $plate->dimension} - {$plate->dimension}{/if}
+                    {else}
+                        -
+                    {/if}
+                </li>
+            {/for}
+        </ol>
+
+        <div n:if="!$type" n:foreach="$plates as $plate" class="new-page">
+            <h2 n:class="$plate->state === $plate::STATE_INACTIVE ? text-red, $plate->state === $plate::STATE_PARTLY_ACTIVE ? text-blue">
+                {$plate->order}.{if $plate->orderType} ({$plate->orderType}){/if} {$plate->description}{if $plate->dimension} - {$plate->dimension}{/if}
+            </h2>
+            <div n:if="$plate->picture">
+                <img src="{$plate->picture->link}" alt="{$plate->picture->name}" width="300">
+            </div>
+            <ol style="padding-left: 30px;">
+                <li n:foreach="$plate->loadItems() as $item" n:class="!$item->isActive ? text-red">
+                    <div n:tag-if="$showPrice" style="float: left; width: 80%">
+                        <span n:tag-if="$item->photoItem" class="bg-disabled">{$item->item->title}</span>
+                    </div>
+                    <div n:if="$showPrice" style="float: right; width: 15%; text-align: right;">{$item->item->price |number:0,',',' '},- Kč</div>
+                </li>
+            </ol>
+        </div>
+    {else}
+        <ol style="padding-left: 30px;">
+            {var App\Modules\StockModule\Orm\Stands\StandPlate $plate = $stand->getPlate()}
+            {var App\Modules\StockModule\Orm\Stands\StandPlateItem[] $standItems = $plate ? $plate->loadItems() : []}
+            {for $i = 1; $i <= $stand->unitCount; $i++}
+                {var App\Modules\StockModule\Orm\Stands\StandPlateItem $standItem = $standItems[$i] ?? null}
+                <li n:class="$standItem && !$standItem->isActive ? text-red">
+                    <div n:tag-if="$showPrice && $standItem" style="float: left; width: 80%">{$standItem->item->title ?? '-'}</div>
+                    <div n:if="$showPrice && $standItem" style="float: right; width: 15%; text-align: right;">{$standItem->item->price |number:0,',',' '},- Kč</div>
+                </li>
+            {/for}
+        </ol>
+
+        <div n:foreach="$standItems as $standItem" n:if="!$type && $standItem->picture" style="page-break-inside: avoid;">
+            <h2 n:class="!$standItem->isActive ? text-red">
+                {$standItem->order}. {$standItem->item->title}
+            </h2>
+            <div>
+                <img src="{$standItem->picture->link}" alt="{$standItem->picture->name}" width="300">
+            </div>
+            {sep}<br>{/sep}
+        </div>
+    {/if}
+</div>

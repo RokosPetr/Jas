@@ -1,0 +1,93 @@
+{varType App\Modules\StockModule\Presenters\StandPresenter $presenter}
+{varType App\Modules\StockModule\Orm\Stands\Stand $stand}
+{varType App\Modules\StockModule\Orm\Stands\StandPlate[] $plates}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na stojany" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na stojany</strong>
+    </a>
+</div>
+<h2>{$stand->title}</h2>
+<table class="table datagrid-table jambo_table">
+    <thead>
+        <tr>
+            <th style="width: 70px;">Pořadí</th>
+            <th>Série/Popis</th>
+            <th style="width: 90px;">Rozměr</th>
+            <th n:if="$stand->plateOrderType === $stand::PLATE_ORDER_RIGHT_FIRST" style="width: 70px;">Pozice</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr n:for="$i = 1; $i <= $stand->unitCount; $i++" id="plate-id-{$i}">
+            {var App\Modules\StockModule\Orm\Stands\StandPlate $plate = $plates[$i] ?? null}
+            <td>{$i}.</td>
+            {if $plate}
+                <td n:class="$plate->state === $plate::STATE_INACTIVE ? text-red, $plate->state === $plate::STATE_PARTLY_ACTIVE ? text-blue">
+                    <a n:href="plateItems id => $plate->id" style="color: inherit;">{$plate->description}</a>
+                </td>
+                <td>{$plate->dimension ?? '-'}</td>
+                <td n:if="$stand->plateOrderType === $stand::PLATE_ORDER_RIGHT_FIRST">{$i % 2 ? 'P' : 'L'}</td>
+                <td class="row-actions">
+                    <a n:if="$user->isAllowed(':Stock:Stand:platePreview')" n:href="platePreview id => $plate->id" class="side-dialog" data-sd-history="on">
+                        <span class="fa fa-search" data-toggle="tooltip" title="Náhled"></span>
+                    </a>
+                    <a n:if="$user->isAllowed(':Stock:Stand:plateItems')" n:href="plateItems id => $plate->id">
+                        <span class="fa fa-list-ol" data-toggle="tooltip" title="Položky"></span>
+                    </a>
+                    <a n:if="!$stand->deleted && $user->isAllowed(':Stock:Stand:editPlate')" n:href="editPlate id => $plate->id">
+                        <span class="fa fa-pencil" data-toggle="tooltip" title="Upravit plato"></span>
+                    </a>
+                    <a n:if="!$stand->deleted && $user->isAllowed(':Stock:Stand:deletePlate')" n:href="deletePlate id => $plate->id" class="confirmDialog" data-confirm="Opravdu chcete odstranit položku">
+                        <span class="fa fa-trash" data-toggle="tooltip" title="Odstranit plato"></span>
+                    </a>
+                    <a n:if="!$stand->deleted && $user->isAllowed(':Stock:Stand:plateHistory') && $presenter->hasStandHistoryPlates($stand->id, $i)" n:href="plateHistory id => $stand->id, order => $i">
+                        <span class="fa fa-history" data-toggle="tooltip" title="Historie plata"></span>
+                    </a>
+                </td>
+            {else}
+                <td>-</td>
+                <td>-</td>
+                <td n:if="$stand->plateOrderType === $stand::PLATE_ORDER_RIGHT_FIRST">{$i % 2 ? 'P' : 'L'}</td>
+                <td class="row-actions">
+                    <a n:if="!$stand->deleted && $user->isAllowed(':Stock:Stand:addPlate')" n:href="addPlate id => $stand->id, order => $i">
+                        <span class="fa fa-plus" data-toggle="tooltip" title="Přidat plato"></span>
+                    </a>
+                    <a n:if="!$stand->deleted && $user->isAllowed(':Stock:Stand:plateHistory') && $presenter->hasStandHistoryPlates($stand->id, $i)" n:href="plateHistory id => $stand->id, order => $i">
+                        <span class="fa fa-history" data-toggle="tooltip" title="Historie plata"></span>
+                    </a>
+                </td>
+            {/if}
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    $('a.confirmDialog').click(function (e) {
+        e.preventDefault();
+        var title = $(this).attr('data-confirm');
+        $('<div></div>').dialog({
+            resizable: false,
+            height: 'auto',
+            width: 400,
+            modal: true,
+            closeOnEscape: true,
+            title: 'Odstranění položky',
+            open: function open() {
+                $(this).html(title + '?');
+            },
+            buttons: [{
+                text: 'Ano',
+                click: () => { window.location.href = $(this).attr('href'); }
+            }, {
+                text: 'Ne',
+                click: function clickClose() {
+                    $(this).dialog('close');
+                }
+            }]
+        });
+        $('.ui-dialog-titlebar-close').html('<span>x</span>');
+    });
+</script>

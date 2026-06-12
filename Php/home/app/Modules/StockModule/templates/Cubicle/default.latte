@@ -1,0 +1,128 @@
+{varType App\Modules\StockModule\Orm\StockItems\StockItem $itemFilter}
+{varType App\Modules\StockModule\Orm\Cubicles\Cubicle[] $itemFilterCubicles}
+{block content}
+<style>
+    table thead th.grid-col-code { width: 70px; }
+    table thead th.grid-col-itemCount { width: 85px; }
+    table thead th.grid-col-date { width: 85px; }
+    table thead th.grid-col-size { width: 115px; }
+</style>
+
+<div n:snippet="cubicle-product-filter">
+    <label for="product-filter">Produkt</label>
+    <select name="product" id="product-filter" class="select2-ignore" style="width: 350px;">
+        <option n:if="!$itemFilter" value="0" selected>Vše</option>
+        <option n:if="$itemFilter" value="{$itemFilter->id}" selected>{$itemFilter->title}</option>
+    </select>
+    <a n:if="$itemFilter" class="ajax btn btn-xs btn-danger" n:href="setProductFilter! product => 0">x</a>
+</div>
+<br>
+{snippet cubicle-grid-control}
+    {if !$itemFilter}
+        {control cubicles}
+    {else}
+        {include #itemCubicles itemCubicles => $itemFilterCubicles, item => $itemFilter}
+    {/if}
+{/snippet}
+<script>
+    $.nette.ext({
+        load() {
+            initProductSearch('product-filter');
+            $('#product-filter').on('select2:select', function () {
+                $.nette.ajax({
+                    url: {link 'setProductFilter!'},
+                    data: {
+                        product: $(this).val()
+                    }
+                });
+            });
+        }
+    });
+</script>
+{/block}
+
+{define itemCubicles}
+    {varType App\Modules\StockModule\Orm\Cubicles\Cubicle[] $itemCubicles}
+    {varType App\Modules\StockModule\Orm\StockItems\StockItem $item}
+    <table class="table datagrid-table jambo_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Název</th>
+                <th>Velikost (m2)</th>
+                <th>Počet položek</th>
+                <th>Výrobci</th>
+                <th>Poznámka</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {foreach $itemCubicles as $cubicle}
+            {var App\Modules\StockModule\Orm\Cubicles\CubicleItem[] $cubicleItems = $cubicle->items->toCollection()->findBy(['item->id' => $item->id])}
+            <tr>
+                <td>{$cubicle->code}</td>
+                <td>{$cubicle->name}</td>
+                <td>{$cubicle->size |number:2,',',' '}</td>
+                <td>{$cubicle->itemCount}</td>
+                <td>{$cubicle->producers |implode:', '}</td>
+                <td>{$cubicle->remark}</td>
+                <td class="row-actions">
+                    <a n:if="$user->isAllowed(':Stock:Cubicle:preview')" class="side-dialog" n:href="preview id => $cubicle->id" data-sd-history="on">
+                        <span data-toggle="tooltip" title="Náhled" class="fa fa-search"></span>
+                    </a>
+                    <a n:if="$user->isAllowed(':Stock:Cubicle:cubicleItems')" n:href="cubicleItems id => $cubicle->id">
+                        <span data-toggle="tooltip" title="Položky" class="fa fa-list-ul"></span>
+                    </a>
+                    <a n:if="$user->isAllowed(':Stock:Cubicle:edit')" n:href="edit id => $cubicle->id">
+                        <span data-toggle="tooltip" title="Upravit" class="fa fa-pencil"></span>
+                    </a>
+                    <a n:if="$user->isAllowed(':Stock:Cubicle:delete')" n:href="delete id => $cubicle->id" class="confirmDialog" data-confirm="Opravdu chcete odstranit položku">
+                        <span data-toggle="tooltip" title="Smazat" class="fa fa-trash"></span>
+                    </a>
+                </td>
+            </tr>
+            <tr n:foreach="$cubicleItems as $cubicleItem">
+                <td></td>
+                <td colspan="5" n:class="!$cubicleItem->item->isActive ? text-red">{$cubicleItem->item->title}</td>
+                <td class="row-actions">
+                    <a n:if="$user->isAllowed(':Stock:Stand:editCubicleItem')" n:href="editCubicleItem id => $cubicleItem->id, defaultAction => true">
+                        <span class="fa fa-pencil" data-toggle="tooltip" title="Upravit položku"></span>
+                    </a>
+                    <a n:if="$user->isAllowed(':Stock:Stand:deleteCubicleItem')" n:href="deleteCubicleItem id => $cubicleItem->id, defaultAction => true" class="confirmDialog" data-confirm="Opravdu chcete odstranit položku">
+                        <span class="fa fa-trash" data-toggle="tooltip" title="Odstranit položku"></span>
+                    </a>
+                </td>
+            </tr>
+        {/foreach}
+        </tbody>
+    </table>
+
+    <script>
+        $('a.confirmDialog').click(function (e) {
+            e.preventDefault();
+            var title = $(this).attr('data-confirm');
+            $('<div></div>').dialog({
+                resizable: false,
+                height: 'auto',
+                width: 400,
+                modal: true,
+                closeOnEscape: true,
+                title: 'Odstranění položky',
+                open: function open() {
+                    $(this).html(title + '?');
+                },
+                buttons: [{
+                    text: 'Ano',
+                    click: () => { window.location.href = $(this).attr('href'); }
+                }, {
+                    text: 'Ne',
+                    click: function clickClose() {
+                        $(this).dialog('close');
+                    }
+                }]
+            });
+            $('.ui-dialog-titlebar-close').html('<span>x</span>');
+        });
+    </script>
+{/define}

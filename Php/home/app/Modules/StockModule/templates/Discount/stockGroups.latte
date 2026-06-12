@@ -1,0 +1,10 @@
+{varType App\Modules\StockModule\Orm\Discounts\DiscountGroup $discountGroup}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na slevové skupiny" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na slevové skupiny</strong>
+    </a>
+</div>
+<h2>Slevová skupiny: {$discountGroup->title}</h2>
+{control discountStockGroups}

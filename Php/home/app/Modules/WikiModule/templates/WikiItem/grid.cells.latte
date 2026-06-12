@@ -1,0 +1,16 @@
+{varType App\Modules\WikiModule\Orm\WikiItems\WikiItem $row}
+{define cell-name}
+    <a href="{plink preview id => $row->id}" class="side-dialog" data-history="on">{$row->name}</a>
+{/define}
+
+{define cell-module}
+    {$row::MODULES_LABELS[$row->module]}
+{/define}
+
+{define cell-attributes}
+    {if $row->attributes}
+        {$row->attributes |implode:', '}
+    {else}
+        -
+    {/if}
+{/define}

@@ -1,0 +1,270 @@
+{varType App\Modules\StockModule\Component\WarehousemenTable $control}
+{var App\Core\Utils\DateTime $today = new App\Core\Utils\DateTime()}
+
+<div n:if="!$control->pdfMode" class="page-control-panel">
+    <div class="page-control-panel-sub">
+        <div>
+            <label for="view-mode-days">dny</label>
+            <input id="view-mode-days"
+                   type="radio"
+                   name="view-mode"
+                   value="{App\Modules\StockModule\Component\WarehousemenTable::DAYS_VIEW}"
+                   {if $control->viewMode === App\Modules\StockModule\Component\WarehousemenTable::DAYS_VIEW}checked{/if}
+                   onchange="setState('viewMode', this.value)"
+            >
+
+            <span style="display: inline-block; width: 10px;"></span>
+
+            <label for="view-mode-months">měsíce</label>
+            <input id="view-mode-months"
+                   type="radio"
+                   name="view-mode"
+                   value="{App\Modules\StockModule\Component\WarehousemenTable::MONTHS_VIEW}"
+                   {if $control->viewMode === App\Modules\StockModule\Component\WarehousemenTable::MONTHS_VIEW}checked{/if}
+                   onchange="setState('viewMode', this.value)"
+            >
+            <span class="low-res-hide"></span>
+        </div>
+
+        <div>
+            <label for="selected-month-input">měsíc</label>
+            <select name="selectedMonth" class="select2-ignore" id="selected-month-input" onchange="setState('selectedMonth', this.value)">
+                {for $i = 1; $i <= 12; $i++}
+                    <option value="{$i}"{if $i === $control->selectedMonth} selected{/if}>{$i}</option>
+                {/for}
+            </select>
+
+            <span style="display: inline-block; width: 10px;"></span>
+
+            <label for="selected-year-input">rok</label>
+            <select name="selectedYear" class="select2-ignore" id="selected-year-input" onchange="setState('selectedYear', this.value)">
+                {for $i = 2021; $i <= intval($today->format('Y')); $i++}
+                    <option value="{$i}"{if $i === $control->selectedYear} selected{/if}>{$i}</option>
+                {/for}
+            </select>
+        </div>
+    </div>
+    <div id="table-to-pdf-wrapper"><button id="table-to-pdf" type="button" onclick="window.open({$presenter->link('tableToPdf')})">tisk PDF</button></div>
+</div>
+
+<div n:if="!$control->pdfMode" class="warehouseman-table-links-wrapper">
+    <a n:if="$user->isAllowed(':Stock:Warehouseman:add')" title="Přidat skladníka" href="{$presenter->link('add')}"><img src="/image/pridat1.png">
+        <strong> přidat skladníka</strong>
+    </a>
+    <a n:if="$user->isAllowed(':Stock:Warehouseman:addHours')" title="Zadat hodiny skladníků" href="{$presenter->link('addHours')}"><img src="/image/pridat1.png">
+        <strong> zadat hodiny skladníků</strong>
+    </a>
+    <a n:if="$user->isAllowed(':Stock:Warehouseman:addHours')" title="Import položek" href="{$presenter->link(':Cli:Import:warehouseman-items')}"><img src="/image/import1.png">
+        <strong> import položek</strong>
+    </a>
+</div>
+
+<div n:snippet="table" class="warehouseman-table-wrapper scroll-x">
+    <h2 class="text-center">{if $control->viewMode === App\Modules\StockModule\Component\WarehousemenTable::DAYS_VIEW}{$control->selectedMonth}/{/if}{$control->selectedYear}</h2>
+    {if $control->viewMode === App\Modules\StockModule\Component\WarehousemenTable::DAYS_VIEW}
+        {include #daysTable}
+    {else}
+        {include #monthsTable}
+    {/if}
+    <script>
+        $('a.confirmDialog').click(function (e) {
+            e.preventDefault();
+            $('<div></div>').dialog({
+                resizable: false,
+                height: 'auto',
+                width: 400,
+                modal: true,
+                closeOnEscape: true,
+                title: 'Deaktivace skladníka',
+                open: function open() {
+                    $(this).html('Opravdu chcete deaktivovat skladníka?');
+                },
+                buttons: [{
+                    text: 'Ano',
+                    click: () => {
+                        if ($(this).hasClass('ajax-confirmDialog')) {
+                            $.nette.ajax($(this).attr('href'));
+                            $('button.ui-dialog-titlebar-close').click();
+                        } else {
+                            window.location.href = $(this).attr('href');
+                        }
+                    }
+                }, {
+                    text: 'Ne',
+                    click: function clickClose() {
+                        $(this).dialog('close');
+                    }
+                }]
+            });
+            $('.ui-dialog-titlebar-close').html('<span>x</span>');
+        });
+    </script>
+</div>
+
+<script n:if="!$control->pdfMode">
+    function setState(stateParam, value) {
+        $.nette.ajax({
+            url: {link setState!},
+            data: { stateParam, value }
+        });
+    }
+    function setShowAll(value) {
+        $.nette.ajax({
+            url: {link setShowAll!},
+            data: { value }
+        });
+    }
+    function setSelected(webId, isChecked) {
+        if (webId === 'all') {
+            webId = [];
+
+            $('table.warehouseman-table tbody tr:not(.hide) td input[type="checkbox"]').each(function () {
+                var input = $(this);
+                input.prop('checked', isChecked);
+
+                if (isChecked) {
+                    webId.push(input.val());
+                }
+            });
+        } else {
+            $('table.warehouseman-table tfoot td input[type="checkbox"]').prop('checked', false);
+        }
+
+        isChecked = isChecked ? 1 : 0;
+
+        $.nette.ajax({
+            url: {link setSelected!},
+            data: { webId, isChecked }
+        });
+    }
+</script>
+
+{define daysTable}
+    {var App\Core\Utils\DateTime $dayIterator = new App\Core\Utils\DateTime()}
+    <table class="warehouseman-table" id="warehouseman-day-table">
+        <thead>
+            <tr>
+                <th colspan="{$control->pdfMode ? 2 : 3}">
+                    <button n:if="!$control->pdfMode" type="button" onclick="setShowAll(0)">Zobrazit vybrané</button>
+                </th>
+                {php $dayIterator->setDate($control->selectedYear, $control->selectedMonth, 1)}
+                {for $i = 1; $i <= $control->daysCount; $i++}
+                    <th n:class="selected-day, !$dayIterator->isWorkingDay() ? weekend" onclick="setState('selectedDay', {$i})">{$i}.</th>
+                    {php $dayIterator->modify('+1 day')}
+                {/for}
+                <th rowspan="2">průměr den{if $control->selectedDay} {$control->selectedDay}.{$control->selectedMonth}.{/if}</th>
+                <th rowspan="2">položek celkem</th>
+                <th rowspan="2">průměr celkem</th>
+            </tr>
+            <tr>
+                <th colspan="{$control->pdfMode ? 2 : 3}">
+                    <button n:if="!$control->pdfMode" type="button" onclick="setShowAll(1)">Zobrazit vše</button>
+                </th>
+                {php $dayIterator->setDate($control->selectedYear, $control->selectedMonth, 1)}
+                {for $i = 1; $i <= $control->daysCount; $i++}
+                    <th n:class="text-red, !$dayIterator->isWorkingDay() ? weekend">
+                        {$workingHours[$i] ?? ''}
+                    </th>
+                    {php $dayIterator->modify('+1 day')}
+                {/for}
+            </tr>
+        </thead>
+
+        <tbody>
+            {var int $monthCount = 0, int $selectedDayCount = 0}
+            <tr n:foreach="$monthData as $id => $person" n:class="!$control->showAll && !isset($control->shownRows[$id]) ? hide">
+                {php $selectedDayCount += $person->days[$control->selectedDay]->items ?? 0}
+                <td n:if="!$control->pdfMode">
+                    <input type="checkbox" value="{$id}" onclick="setSelected({$id}, this.checked)"{ifset $control->selectedRows[$id]} checked{/ifset}>
+                </td>
+                <td class="no-border-right web-id">{$person->webId}</td>
+                <td class="no-border-left no-wrap">
+                    {$person->name}
+                    <div n:if="!$control->pdfMode && !$person->deleted && $user->isAllowed(':Stock:Warehouseman:delete')" class="pull-right">
+                        <a class="confirmDialog" href="{plink :Stock:Warehouseman:delete id => $id, source => 'table'}">
+                            <img src="/image/smazat1.png" alt="Smazat" title="Deaktivovat skladníka" width="12" height="12">
+                        </a>
+                    </div>
+                </td>
+                {php $dayIterator->setDate($control->selectedYear, $control->selectedMonth, 1)}
+                {for $i = 1; $i <= $control->daysCount; $i++}
+                    <td n:class="text-center, !$dayIterator->isWorkingDay() ? weekend">
+                        {$person->days[$i]->items ?? ''}
+                    </td>
+                    {php $monthCount += $person->days[$i]->items ?? 0}
+                    {php $dayIterator->modify('+1 day')}
+                {/for}
+                <td class="data-sum">{$person->days[$control->selectedDay]->average ?? ''}</td>
+                <td class="data-sum">{$person->items ?: ''}</td>
+                <td class="data-sum">{if $person->length}{($person->itemAverage / $person->length) |number:2,',',''}{/if}</td>
+            </tr>
+        </tbody>
+
+        <tfoot>
+            <tr>
+                <td n:if="!$control->pdfMode"><input type="checkbox" onclick="setSelected('all', this.checked)"{if $control->selectAll} checked{/if}></td>
+                <td colspan="2"><span n:if="!$control->pdfMode">označit vše</span></td>
+                <td colspan="{$control->daysCount - 6}"></td>
+                <td colspan="6">celkem položek den | měsíc</td>
+                <td class="data-sum">{$selectedDayCount ?: ''}</td>
+                <td class="data-sum">{$monthCount}</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+{/define}
+
+{define monthsTable}
+    <table class="warehouseman-table" id="warehouseman-month-table">
+        <thead>
+            <tr>
+                <th colspan="{$control->pdfMode ? 2 : 3}">
+                    <span n:if="!$control->pdfMode">
+                        <button type="button" onclick="setShowAll(0)">Zobrazit vybrané</button>
+                        <span style="width: 20px; display: inline-block;"></span>
+                        <button type="button" onclick="setShowAll(1)">Zobrazit vše</button>
+                    </span>
+                </th>
+                <th n:foreach="App\Core\Utils\DateTime::CZ_MONTHS as $monthName" colspan="2">{$monthName}</th>
+                <th>položek celkem</th>
+                <th>průměr rok</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {var int $yearCount = 0}
+            <tr n:foreach="$yearData as $id => $person" n:class="!$control->showAll && !isset($control->shownRows[$id]) ? hide">
+                {php $yearCount += $person->items}
+                <td n:if="!$control->pdfMode">
+                    <input type="checkbox" value="{$id}" onclick="setSelected({$id}, this.checked)"{ifset $control->selectedRows[$id]} checked{/ifset}>
+                </td>
+                <td class="no-border-right web-id">{$person->webId}</td>
+                <td class="no-border-left no-wrap">
+                    {$person->name}
+                    <div n:if="!$control->pdfMode && !$person->deleted && $user->isAllowed(':Stock:Warehouseman:delete')" class="pull-right">
+                        <a class="confirmDialog" href="{plink :Stock:Warehouseman:delete id => $id, source => 'table'}">
+                            <img src="/image/smazat1.png" alt="Smazat" title="Deaktivovat skladníka" width="12" height="12">
+                        </a>
+                    </div>
+                </td>
+                {for $i = 1; $i <= 12; $i++}
+                    <td class="data-column gray-border-right text-center">{$person->months[$i]->items ?? ''}&nbsp;</td>
+                    <td class="data-column gray-border-left text-center">{if !empty($person->months[$i]->length)}{$person->months[$i]->itemAverage / $person->months[$i]->length |number:2,',',''}{/if}&nbsp;</td>
+                {/for}
+                <td class="data-sum">{$person->items ?: ''}</td>
+                <td class="data-sum">{if $person->length}{$person->itemAverage / $person->length |number:2,',',''}{/if}</td>
+            </tr>
+        </tbody>
+
+        <tfoot>
+            <tr>
+                <td n:if="!$control->pdfMode"><input type="checkbox" onclick="setSelected('all', this.checked)"{if $control->selectAll} checked{/if}></td>
+                <td colspan="2"><span n:if="!$control->pdfMode">označit vše</span></td>
+                <td colspan="{(count(App\Core\Utils\DateTime::CZ_MONTHS) - 1) * 2}"></td>
+                <td colspan="2">celkem</td>
+                <td class="data-sum">{$yearCount}</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+{/define}

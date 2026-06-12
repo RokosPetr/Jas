@@ -66,4 +66,6 @@ public partial class ViPdfPtPlate
     public string? Description { get; set; }
 
     public bool SeriesItem { get; set; }
+
+    public int StandType { get; set; }
 }

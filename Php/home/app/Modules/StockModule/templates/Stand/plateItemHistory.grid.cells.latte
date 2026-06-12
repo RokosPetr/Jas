@@ -1,0 +1,4 @@
+{varType App\Modules\StockModule\Orm\Stands\StandPlateItem $row}
+{define cell-itemTitle}
+     <span n:class="!$row->item->isActive ? text-red">{$row->itemTitle}</span>
+{/define}

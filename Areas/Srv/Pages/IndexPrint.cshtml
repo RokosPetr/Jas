@@ -1,0 +1,219 @@
+@page "{filter?}"
+@model Jas.Areas.Srv.Pages.IndexPrintModel
+@using Jas.Globals.Srv.Enums
+
+@{
+    Layout = null;
+
+    var activeFilter = (ViewContext.RouteData.Values["filter"] as string) ?? string.Empty;
+
+    var title = activeFilter switch
+    {
+        "new-requests"        => "Přehled nových požadavků na údržbu",
+        "inprogress-requests" => "Přehled řešených požadavků na údržbu",
+        "toconfirm-requests"  => "Přehled požadavků na údržbu k odsouhlašení",
+        "resolved-requests"   => "Přehled vyřízených požadavků na údržbu",
+        "returned-requests"   => "Přehled vrácených požadavků na údržbu",
+        "cancelled-requests"  => "Přehled zrušených požadavků na údržbu",
+        _                      => "Přehled požadavků na údržbu"
+    };
+
+    var items = Model.Requests;
+    bool hasAny = items != null && items.Count > 0;
+}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8" />
+    <title>Tisk seznamu - @title</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 13px; color: #333; margin: 20px; }
+        h1 { border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; font-size: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; vertical-align: top; }
+        th { background-color: #f8f9fa; font-weight: bold; }
+        .description-row td { background-color: #fff; padding-bottom: 15px; }
+        .fw-bold { font-weight: bold; }
+        .me-2 { margin-right: 8px; }
+
+        @@media print {
+            .no-print { display: none !important; }
+        }
+
+        .print-btn {
+            padding: 10px 20px; font-size: 14px; background-color: #007bff; color: white;
+            border: none; cursor: pointer; border-radius: 4px; margin-right: 10px;
+        }
+        .close-btn {
+            padding: 10px 20px; font-size: 14px; background-color: #6c757d; color: white;
+            border: none; cursor: pointer; border-radius: 4px;
+        }
+        .btn-group { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="no-print btn-group">
+        <button class="print-btn" onclick="window.print();">Vytisknout seznam</button>
+        <button class="close-btn" onclick="window.close();">Zavřít křížkem</button>
+    </div>
+
+    <h1>@title</h1>
+
+    @if (!hasAny)
+    {
+        <p>Žádné požadavky k zobrazení pro tento filtr.</p>
+    }
+    else
+    {
+        @if (activeFilter == "new-requests")
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Č.p.</th>
+                        <th>Středisko</th>
+                        <th>Kategorie opravy</th>
+                        <th>Vytvořeno</th>
+                        <th>Opravit do</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in items)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Department</td>
+                        <td>@Model.GetFormattedCategoryText(item.RepairCategory, item.RepairCategoryAdmin)</td>
+                        <td>@item.CreatedDate.ToString("dd.MM.yyyy")</td>
+                        <td>@Model.GetFormattedRepairDateText(item.CreatedDate, item.RepairCategory, item.RepairCategoryAdmin)</td>
+                    </tr>
+                    <tr class="description-row">
+                        <td colspan="5">
+                            <span class="fw-bold">Popis závady:</span> @item.IssueDescription
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else if (activeFilter == "toconfirm-requests" || activeFilter == "resolved-requests" || activeFilter == "returned-requests")
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Č.p.</th>
+                        <th>Uživatel</th>
+                        <th>Středisko</th>
+                        <th>Opravit do</th>
+                        <th>Odstraněno</th>
+                        <th>Předpokládané nák.</th>
+                        <th>Skutečné nák.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in items)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.UserName</td>
+                        <td>@item.Department</td>
+                        <td>@Model.GetFormattedRepairDateText(item.CreatedDate, item.RepairCategory, item.RepairCategoryAdmin)</td>
+                        <td>@(item.RemovedDate?.ToString("dd.MM.yyyy") ?? "")</td>
+                        <td>@(item.EstimatedCost?.ToString("N0") ?? "")</td>
+                        <td>@(item.ActualCost?.ToString("N0") ?? "")</td>
+                    </tr>
+                    <tr class="description-row">
+                        <td colspan="7">
+                            <span class="fw-bold">Popis závady:</span> @item.IssueDescription
+                            @if (!string.IsNullOrWhiteSpace(item.RepairDescription))
+                            {
+                                <br /><span class="fw-bold mt-2 d-inline-block">Popis opravy:</span> @item.RepairDescription
+                            }
+                            @if (!string.IsNullOrWhiteSpace(item.ReturnDescription))
+                            {
+                                <br /><span class="fw-bold mt-2 d-inline-block">Důvod vrácení:</span> @item.ReturnDescription
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else if (activeFilter == "inprogress-requests")
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Č.p.</th>
+                        <th>Uživatel</th>
+                        <th>Středisko</th>
+                        <th>Vytvořeno</th>
+                        <th>Opravit do</th>
+                        <th>Plánováno</th>
+                        <th>Předpokládané nák.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in items)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.UserName</td>
+                        <td>@item.Department</td>
+                        <td>@item.CreatedDate.ToString("dd.MM.yyyy")</td>
+                        <td>@Model.GetFormattedRepairDateText(item.CreatedDate, item.RepairCategory, item.RepairCategoryAdmin)</td>
+                        <td>@(item.PlannedRepairDate?.ToString("dd.MM.yyyy") ?? "")</td>
+                        <td>@(item.EstimatedCost?.ToString("N0") ?? "")</td>
+                    </tr>
+                    <tr class="description-row">
+                        <td colspan="7">
+                            <span class="fw-bold">Popis závady:</span> @item.IssueDescription
+                            @if (!string.IsNullOrWhiteSpace(item.RepairDescription))
+                            {
+                                <br /><span class="fw-bold mt-2 d-inline-block">Popis opravy:</span> @item.RepairDescription
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else if (activeFilter == "cancelled-requests")
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Č.p.</th>
+                        <th>Uživatel</th>
+                        <th>Středisko</th>
+                        <th>Zrušeno</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in items)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.UserName</td>
+                        <td>@item.Department</td>
+                        <td>@(item.RemovedDate?.ToString("dd.MM.yyyy") ?? "")</td>
+                    </tr>
+                    <tr class="description-row">
+                        <td colspan="4">
+                            <span class="fw-bold">Popis závady:</span> @item.IssueDescription
+                            @if (!string.IsNullOrWhiteSpace(item.RepairDescription))
+                            {
+                                <br /><span class="fw-bold mt-2 d-inline-block">Popis opravy:</span> @item.RepairDescription
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    }
+
+</body>
+</html>

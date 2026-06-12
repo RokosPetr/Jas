@@ -1,0 +1,93 @@
+{varType \DateTimeInterface $importAt}
+{varType \DateTimeInterface $nextImportAt}
+{block content}
+{if $user->isSuperAdmin()}
+    {control storeSelect}
+{/if}
+
+<div n:if="$user->isAllowed(':Stock:StoreStock:missingObligatorySectors')">
+    <a n:href=":Stock:StoreStock:missingObligatorySectors" class="btn btn-secondary">Povinný sortiment bez sektoru</a>
+    <br>
+</div>
+
+<div class="jas-search-input-wrapper">
+    <input id="stock-item-search-input" class="jas-search-input" required type="text" autocomplete="off" title="Produkt k vyhledání">
+    <span class="floating-label">Produkt, sektor, katalogové číslo...</span>
+</div>
+
+<div n:snippet="searched-sectors">
+    <h5 n:if="!isset($searchError) && isset($importAt)"><i>Aktuálnost dat: {$importAt |date:'d.m.Y H:i'}, další aktualizace v {$nextImportAt |date:'H:i'}</i></h5>
+    <h4 n:ifset="$searchError">{$searchError}</h4>
+    <div n:foreach="$items ?? [] as $regNumber => $sectors">
+        {foreach $sectors as $sector => $stockItem}
+            <div class="jas-grey-gradient"></div>
+            <h2 class="sector-item-header">{$regNumber} - {$stockItem['name']}</h2>
+            <h2 class="sector-item-header">Sektor: {$sector ?: 'nenastaven'}</h2>
+
+            {if $stockItem['variants']}
+                <table class="table datagrid-table jambo_table">
+                    <thead>
+                    <tr>
+                        <th>Varianta</th>
+                        <th>Katalogové číslo</th>
+                        <th>Zásoba</th>
+                        <th>V rezervaci</th>
+                        <th>Nevyvezeno s [X]</th>
+                        <th>Celkem</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr n:foreach="$stockItem['variants'] as $variant">
+                        <td>{$variant['name'] ?: '-'}</td>
+                        <td>{$variant['catalog'] ?: '-'}</td>
+                        <td>{$variant['quantity']} {$stockItem['unit']}</td>
+                        <td>{$variant['reservation']} {$stockItem['unit']}</td>
+                        <td>{$variant['loading']} {$stockItem['unit']}</td>
+                        <td>{$variant['sum']} {$stockItem['unit']}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            {else}
+                <h2 class="sector-item-header">Není skladem</h2>
+            {/if}
+            <br>
+        {/foreach}
+    </div>
+</div>
+
+<script>
+    initSearch();
+
+    function initSearch() {
+        var updatingInProgress = false;
+        var updateSearchTimeout = null;
+        var searchInput = $('#stock-item-search-input');
+
+        searchInput.on('input', function () {
+            var search = searchInput.val();
+
+            if (search.length < 3) {
+                if (updatingInProgress) {
+                    clearTimeout(updateSearchTimeout);
+                    updatingInProgress = false;
+                }
+
+                $('#snippet--searched-sectors').html('<h1></h1>');
+                return;
+            }
+
+            if (updatingInProgress) {
+                clearTimeout(updateSearchTimeout);
+            }
+
+            updatingInProgress = true;
+            updateSearchTimeout = setTimeout(function () {
+                updatingInProgress = false;
+                $.nette.ajax({
+                    url: {link UpdateSearchSectors!},
+                    data: { search }
+                });
+            }, 300);
+        });
+    }
+</script>

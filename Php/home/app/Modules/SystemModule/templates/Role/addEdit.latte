@@ -1,0 +1,80 @@
+{varType array $resourceConfig}
+{varType array $linkResourceMap}
+
+{block content}
+
+{form roleForm class => 'form-horizontal form-label-left'}
+    {var Nette\Forms\Controls\TextInput $nameInput = $form['name']}
+    <div class="form-group required{if $nameInput->hasErrors()} has-error{/if}">
+        {label $nameInput class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+        <div class='col-md-6 col-sm-6 col-xs-12'>
+            {input $nameInput class => 'form-control col-md-7 col-xs-12'}
+            <span n:if="$nameInput->hasErrors()" class="help-block">
+                <i class="glyphicon glyphicon-exclamation-sign"> </i>
+                Role s tímto názvem již existuje!
+            </span>
+        </div>
+    </div>
+
+    <div class="form-group required">
+        {label description class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+        <div class='col-md-6 col-sm-6 col-xs-12'>{input description class => 'form-control col-md-7 col-xs-12'}</div>
+    </div>
+
+    <div id="accordion">
+        {var Nette\Forms\Container $resourceContainer = $form['resources']}
+        {foreach $resourceConfig as $moduleName => $moduleConfig}
+            <h3> {$moduleConfig['title']}</h3>
+            <div>
+                <input type="checkbox" name="{$moduleName}" id="{$moduleName}-checkbox" class="module-checkbox">
+                <label for="{$moduleName}-checkbox">Vše</label>
+
+                <div n:foreach="$moduleConfig['presenters'] as $presenterName => $presenterConfig" style="margin-left: 20px;">
+                    <input type="checkbox" name="{$presenterName}" id="{$presenterName}-checkbox" class="presenter-checkbox">
+                    <label for="{$presenterName}-checkbox">{$presenterConfig['title']}</label>
+
+                    {foreach $presenterConfig['actions'] as $action => $description}
+                        {var string $resourceLink = ":$moduleName:$presenterName:$action"}
+                        {continueIf !isset($linkResourceMap[$resourceLink])}
+                        {var $checkbox = $resourceContainer[$linkResourceMap[$resourceLink]] ?? null}
+                        <div n:if="$checkbox" style="margin-left: 40px;">
+                            {input $checkbox} {label $checkbox /}
+                        </div>
+                    {/foreach}
+                </div>
+            </div>
+        {/foreach}
+    </div>
+
+    <div class="ln_solid"></div>
+    <div class="col-md-offset-3">
+        <div class="form-group">
+            <div class="col-md-6 col-sm-6 col-xs-12">{input $presenter->action class => 'btn btn-secondary'}</div>
+        </div>
+    </div>
+    {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+{/form}
+
+<script>
+    $('#accordion').accordion({
+        active: false,
+        heightStyle: 'content',
+        icons: {
+            header: 'ui-icon-circle-arrow-e',
+            activeHeader: 'ui-icon-circle-arrow-s'
+        },
+        collapsible: true
+    });
+
+    $('input[type="checkbox"].module-checkbox').each(function (index, element) {
+        $(element).click(function () {
+            $('input[data-module="' + $(this).attr('name') + '"]').prop('checked', $(this).prop('checked'));
+        });
+    });
+
+    $('input[type="checkbox"].presenter-checkbox').each(function (index, element) {
+        $(element).click(function () {
+            $('input[data-presenter="' + $(this).attr('name') + '"]').prop('checked', $(this).prop('checked'));
+        });
+    });
+</script>

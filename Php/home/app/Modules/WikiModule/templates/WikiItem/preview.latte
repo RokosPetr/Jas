@@ -1,0 +1,28 @@
+{varType App\Modules\WikiModule\Orm\WikiItems\WikiItem $wikiItem}
+{block content}
+{sideDialog}
+    {var App\Modules\WikiModule\Orm\WikiItems\WikiParam[] $dbParams = $wikiItem->params->toCollection()->findBy(['virtual' => false])->orderBy('order')->fetchAll()}
+    {var App\Modules\WikiModule\Orm\WikiItems\WikiParam[] $virtualParams = $wikiItem->params->toCollection()->findBy(['virtual' => true])->orderBy('order')->fetchAll()}
+    <h1>{$wikiItem->name}</h1>
+    <p>{$wikiItem->remark}</p>
+    <div n:if="$wikiItem->attributes">
+        Vlastnosti: {$wikiItem->attributes |implode:', '}
+    </div>
+    <br>
+    <h4><u>DB atributy</u></h4>
+    <dl>
+        {foreach $dbParams as $dbParam}
+            <dt>{$dbParam->name}</dt>
+            <dd>{$dbParam::TYPES_LABELS[$dbParam->type]} - {$dbParam->remark}</dd>
+        {/foreach}
+    </dl>
+    {if $virtualParams}
+        <h4><u>Virtuální atributy</u></h4>
+        <dl>
+            {foreach $virtualParams as $virtualParam}
+                <dt>{$virtualParam->name}</dt>
+                <dd>{$virtualParam::TYPES_LABELS[$virtualParam->type]} - {$virtualParam->remark}</dd>
+            {/foreach}
+        </dl>
+    {/if}
+{/sideDialog}

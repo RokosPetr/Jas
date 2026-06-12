@@ -1,0 +1,12 @@
+{varType App\Modules\DeliveryModule\Orm\DepotStandRelocations\DepotStandRelocation $row}
+{define cell-depot}
+    {$row->depot->name}
+{/define}
+
+{define cell-stand}
+    <a href="{plink :Stock:Stand:preview id => $row->stand->id}" class="side-dialog" data-sd-history="on">{$row->stand->title}</a>
+{/define}
+
+{define cell-target}
+    {$row->target->name ?? '-'}
+{/define}

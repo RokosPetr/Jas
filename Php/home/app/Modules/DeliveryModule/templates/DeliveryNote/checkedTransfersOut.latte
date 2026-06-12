@@ -1,0 +1,6 @@
+{block content}
+<h2>Výdejní doklady s chybou označené jako zkontrolováno</h2>
+{if $user->isSuperAdmin()}
+    {control storeSelect}
+{/if}
+{control checkedTransfersOut}

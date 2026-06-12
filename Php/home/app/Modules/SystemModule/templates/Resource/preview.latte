@@ -1,0 +1,18 @@
+{varType string $heading}
+{varType array $roles}
+{varType array $roleUsers}
+
+{block content}
+{sideDialog}
+    <h1>{$heading}</h1>
+    <br>
+    <h3>Oprávněné role:</h3>
+    <ul>
+        <li n:foreach="$roles as $roleId => $roleName">
+            {$roleName}
+            <ul n:ifset="$roleUsers[$roleId]">
+                <li n:foreach="$roleUsers[$roleId] as $username">{$username}</li>
+            </ul>
+        </li>
+    </ul>
+{/sideDialog}

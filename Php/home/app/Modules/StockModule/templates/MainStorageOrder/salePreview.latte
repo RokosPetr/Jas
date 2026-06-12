@@ -1,0 +1,20 @@
+{varType App\Modules\StockModule\Orm\StockItems\StockItem $stockItem}
+{block content}
+{sideDialog}
+    <h2>{$stockItem->title}</h2>
+    <table>
+        <tr>
+            <td><b>Zásoba:</b></td>
+            <td>{$stockItem->mainStorageQuantity}</td>
+        </tr>
+        <tr>
+            <td><b>Průměrný měsíční prodej:</b></td>
+            <td>{$salesAverage |number:2}</td>
+        </tr>
+        <tr>
+            <td><b>Jednotka:</b></td>
+            <td>{$stockItem->unit->name}</td>
+        </tr>
+    </table>
+    {control stockItemSales}
+{/sideDialog}

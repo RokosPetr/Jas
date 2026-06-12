@@ -1,0 +1,62 @@
+{block content}
+{if $user->isSuperAdmin()}
+    {control storeSelect}
+{/if}
+<a n:if="$user->isAllowed(':Transport:StoreCar:default')" n:href=":Transport:StoreCar:" class="btn btn-secondary">Dodávky</a>
+<a n:if="$user->isAllowed(':Transport:StoreDriver:default')" n:href=":Transport:StoreDriver:" class="btn btn-secondary">Řidiči</a>
+<a n:if="$user->isAllowed(':Transport:StoreTransport:storeTransports')" n:href="storeTransports" class="btn btn-secondary">Rozvozy</a>
+<a n:if="$user->isAllowed(':Transport:StoreTransport:transportItems')" n:href="transportItems" class="btn btn-secondary">Položky rozvozů</a>
+<a n:if="$user->isAllowed(':Transport:StoreTransport:occupancy')" n:href="occupancy" class="btn btn-secondary">Vytíženost rozvozů</a>
+
+{control storeTransportCalendar}
+
+<div id="transport-form-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" n:snippet="storeTransportForm">
+                <div id="transport-loader-wrapper" class="text-center"><div></div></div>
+                <div id="transport-form-wrapper">
+                    {include 'transportModalForm.latte'}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validateNoteDuplicity() {
+        var noteKeys = [];
+
+        $('.target-item-wrapper').each(function () {
+            var itemWrapper = $(this);
+            var note = itemWrapper.find('input.item-note-input').val();
+            var year = itemWrapper.find('input.item-year-input').val();
+            var store = itemWrapper.find('select.item-store-input').val();
+            var errorMsg = itemWrapper.find('span.note-duplicity-error');
+
+            if (!note || !year || !store) {
+                return;
+            }
+
+            var noteKey = store.concat('-', note, '-', year);
+
+            if (!noteKeys.includes(noteKey)) {
+                noteKeys.push(noteKey);
+                errorMsg.text('');
+            } else {
+                errorMsg.text('Doklad ' + note + ' zadán duplicitně');
+            }
+        });
+    }
+
+    function loadItemData(button) {
+        $(button).parent().find('input.load-item-data-submit').click();
+    }
+
+    function loadCustomerData(button) {
+        $(button).parent().find('input.load-customer-data-submit').click();
+    }
+</script>

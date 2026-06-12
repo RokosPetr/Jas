@@ -1,0 +1,4 @@
+{varType App\Modules\MtzModule\Orm\MtzItems\MtzItem $row}
+{define cell-regNumber}
+    <a n:tag-if="$row->hasPicture && $user->isAllowed(':Mtz:MtzShop:pictureView')" target="_self" class="side-dialog" data-sd-history="on" href="{plink pictureView id => $row->id}">{$row->regNumber}</a>
+{/define}

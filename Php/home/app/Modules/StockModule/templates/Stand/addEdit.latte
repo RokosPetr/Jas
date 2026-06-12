@@ -1,0 +1,13 @@
+{varType App\Modules\SystemModule\Orm\Files\File $standPicture}
+{varType App\Modules\SystemModule\Orm\Files\File $standSecondPicture}
+{block content}
+{import 'picture.latte'}
+{control standForm}
+{ifset $standPicture}
+    {include #picture picture => $standPicture, label => 'Foto 1', repo => 'stands'}
+{/ifset}
+{ifset $standSecondPicture}
+    <br n:ifset="$standPicture">
+    {include #picture picture => $standSecondPicture, label => 'Foto 2', repo => 'stands'}
+{/ifset}
+{include #jsDialog}

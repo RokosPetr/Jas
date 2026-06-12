@@ -1,0 +1,8 @@
+{varType App\Modules\StockModule\Orm\Stands\StandPlateItem $plateItem}
+{block content}
+{sideDialog}
+    <h2>{$plateItem->item->title}</h2>
+    <div n:if="$plateItem->picture">
+        <img src="{$plateItem->picture->src}" alt="{$plateItem->picture->name}" style="object-fit: contain; width: 300px;">
+    </div>
+{/sideDialog}

@@ -1,0 +1,15 @@
+{varType App\Modules\StockModule\Orm\Stands\StandPlate $plate}
+<div>
+    <h1>{$plate->stand->title}</h1>
+    <h2 n:class="$plate->state === $plate::STATE_INACTIVE ? text-red, $plate->state === $plate::STATE_PARTLY_ACTIVE ? text-blue">
+        {$plate->order}.{if $plate->orderType} ({$plate->orderType}){/if} {$plate->description}{if $plate->dimension} - {$plate->dimension}{/if}
+    </h2>
+    <div n:if="$plate->picture">
+        <img src="{$plate->picture->link}" alt="{$plate->picture->name}" width="300">
+    </div>
+    <ol style="padding-left: 30px;">
+        <li n:foreach="$plate->loadItems() as $item" n:class="!$item->isActive ? text-red">
+            <span n:tag-if="$item->photoItem" class="bg-disabled">{$item->item->title}</span>
+        </li>
+    </ol>
+</div>

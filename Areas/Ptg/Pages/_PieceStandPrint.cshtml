@@ -33,5 +33,7 @@
 
     @Html.DisplayFor(m => m.PlateItems, "/Areas/Ptg/Pages/Shared/DisplayTemplates/PieceTag.cshtml", additionalViewData: new { PrintQr = Model.PrintQr, VoPrice = Model.VoPrice })
 
+    @await Html.PartialAsync("/Areas/Ptg/Pages/_ChangeTextsPrint.cshtml", Model)
+
 </body>
 </html>

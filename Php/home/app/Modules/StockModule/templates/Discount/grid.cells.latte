@@ -1,0 +1,20 @@
+{varType App\Modules\StockModule\Orm\Discounts\DiscountGroup $row}
+{define cell-stockItemCount}
+    {if $row->stockItemCount}
+        <a href="{plink stockItems id => $row->id}">{$row->stockItemCount}</a>
+    {else}
+        0
+    {/if}
+{/define}
+
+{define cell-stockGroupCount}
+    {if $row->stockGroupCount}
+        <a href="{plink stockGroups id => $row->id}">{$row->stockGroupCount}</a>
+    {else}
+        0
+    {/if}
+{/define}
+
+{define cell-depotCount}
+    <a href="{plink depots id => $row->id}">{$row->depotCount}</a>
+{/define}

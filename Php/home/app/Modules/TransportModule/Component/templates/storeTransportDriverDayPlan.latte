@@ -1,0 +1,96 @@
+{varType App\Modules\TransportModule\Component\StoreTransportDriverDayPlan $control}
+{varType App\Modules\TransportModule\Orm\Transports\StoreTransport[] $transports}
+<div class="text-center" n:snippet="storeDriverDayPlan">
+    <div class="store-driver-day-plan-table-wrapper">
+        <table class="store-driver-day-plan">
+            <thead>
+                <tr>
+                    <th style="width: 120px;">{date('d.m.Y')}</th>
+                    <th style="width: 130px;">Příjemce / tel.</th>
+                    <th style="width: 130px;">Zákazník</th>
+                    <th style="width: 90px;">Dodací list</th>
+                    <th style="width: 85px;" class="text-center">Doručeno</th>
+                    <th class="text-center">Poznámka</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {var float $lastEndTime = App\Modules\TransportModule\Component\StoreTransportCalendar::START_TIME}
+            {foreach $transports as $transport}
+                <tr n:if="$transport->timeFrom > $lastEndTime" class="bottom-row top-row">
+                    <td>{$lastEndTime |floatToHour} - {$transport->timeFrom |floatToHour}</td>
+                    <td colspan="5"><b>VOLNO</b></td>
+                </tr>
+
+                <tr n:if="$transport->type === App\Modules\TransportModule\Orm\Transports\StoreTransport::TYPE_UNAVAILABILITY" class="bottom-row top-row">
+                    <td>{$transport->timeFrom |floatToHour} - {$transport->timeTill |floatToHour}</td>
+                    <td colspan="4"><b>Omezení: {App\Modules\TransportModule\Orm\Transports\StoreTransport::REASONS_LABELS[$transport->reason]}</b></td>
+                    <td>{$transport->reasonRemark ?? ''}</td>
+                </tr>
+
+                {foreach $transport->targets as $target}
+                    {var bool $hasMultipleItems = $target->items->count() > 1}
+                    {foreach $target->items as $item}
+                        <tr n:class="$iterator->isFirst() ? top-row">
+                            <td>{if $iterator->isFirst()}{$transport->timeFrom |floatToHour} - {$transport->timeTill |floatToHour}{/if}</td>
+                            <td>{if $iterator->isFirst()}{$target->name}{elseif $iterator->counter === 2}{$target->phone}{/if}</td>
+                            <td>{$item->customer ?? '-'}</td>
+                            <td>{$item->deliveryNote}</td>
+                            <td style="padding-left: 30px;">
+                                {if $control->canEditItem($item)}
+                                    <input type="checkbox"{if $item->delivered} checked{/if} onchange="checkTransportItem({$item->id}, + this.checked)">
+                                {else}
+                                    <input type="checkbox"{if $item->delivered} checked{/if} disabled>
+                                {/if}
+                            </td>
+                            <td n:if="$iterator->isFirst()" rowspan="{if $hasMultipleItems}{$target->items->count()}{else}2{/if}">{$target->remark}</td>
+                        </tr>
+                    {/foreach}
+                    <tr n:if="$hasMultipleItems" class="bottom-row">
+                        <td colspan="4"></td>
+                        <td style="padding-left: 30px;">
+                            {var bool $areItemsChecked = $target->items->toCollection()->findBy(['delivered' => false])->count() === 0}
+                            {if $control->canEditTarget($target)}
+                                <input type="checkbox"{if $areItemsChecked} checked{/if} id="all-items-{$target->id}" onchange="checkTransportTarget({$target->id}, + this.checked)">
+                            {else}
+                                <input type="checkbox"{if $areItemsChecked} checked{/if} id="all-items-{$target->id}" disabled>
+                            {/if}
+                            <label for="all-items-{$target->id}">
+                                <span style="position: absolute; top: -14px;">vše</span>
+                            </label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr n:if="!$hasMultipleItems" class="bottom-row">
+                        <td></td>
+                        <td>tel. {$target->phone}</td>
+                        <td colspan="4"></td>
+                    </tr>
+                {/foreach}
+
+                {php $lastEndTime = $transport->timeTill}
+                <tr n:if="$iterator->isLast() && $lastEndTime < App\Modules\TransportModule\Component\StoreTransportCalendar::END_TIME" class="bottom-row top-row">
+                    <td>{$lastEndTime |floatToHour} - {App\Modules\TransportModule\Component\StoreTransportCalendar::END_TIME |floatToHour}</td>
+                    <td colspan="5"><b>VOLNO</b></td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function checkTransportItem(itemId, isChecked) {
+        $.nette.ajax({
+            url: {link checkTransportItem!},
+            data: { itemId, isChecked }
+        });
+    }
+
+    function checkTransportTarget(targetId, isChecked) {
+        $.nette.ajax({
+            url: {link checkTransportTarget!},
+            data: { targetId, isChecked }
+        });
+    }
+</script>

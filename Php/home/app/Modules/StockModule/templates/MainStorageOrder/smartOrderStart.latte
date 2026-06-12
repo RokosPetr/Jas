@@ -1,0 +1,62 @@
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na objednávky" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na objednávky</strong>
+    </a>
+</div>
+{form mainStorageSmartOrderSettingForm class => 'form-horizontal form-label-left'}
+    <div class="form-group">
+        {label monthFrom class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+        <div class='col-md-3 col-sm-3 col-xs-6'>
+            {input monthFrom class => 'form-control col-md-7 col-xs-12 select2-ignore'}
+        </div>
+        <div class='col-md-3 col-sm-3 col-xs-6'>
+            {input yearFrom class => 'form-control col-md-7 col-xs-12 select2-ignore'}
+        </div>
+    </div>
+
+    {var Nette\Forms\Controls\SelectBox $monthFromTo = $form['monthTo']}
+    <div class="form-group required{if $monthFromTo->hasErrors()} has-error{/if}">
+        {label $monthFromTo class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+        <div class='col-md-3 col-sm-3 col-xs-6'>
+            {input $monthFromTo class => 'form-control col-md-7 col-xs-12 select2-ignore'}
+            <span n:if="$monthFromTo->hasErrors()" class="help-block">
+                <i class="glyphicon glyphicon-exclamation-sign"> </i>
+                {$monthFromTo->getError()}
+            </span>
+        </div>
+        <div class='col-md-3 col-sm-3 col-xs-6'>
+            {input yearTo class => 'form-control col-md-7 col-xs-12 select2-ignore'}
+        </div>
+    </div>
+
+    <div class="form-group">
+        {label producer class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+        <div class='col-md-6 col-sm-6 col-xs-12'>
+            {input producer class => 'form-control col-md-7 col-xs-12'}
+        </div>
+    </div>
+
+    <div class="form-group">
+        {label orderSize class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+        <div class='col-md-6 col-sm-6 col-xs-12'>
+            {input orderSize class => 'form-control col-md-7 col-xs-12 select2-ignore'}
+        </div>
+    </div>
+
+    <div class="form-group">
+        {label minStockIndex class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+        <div class='col-md-6 col-sm-6 col-xs-12'>
+            {input minStockIndex class => 'form-control col-md-7 col-xs-12'}
+        </div>
+    </div>
+
+    <div class="ln_solid"></div>
+    <div class="col-md-offset-3">
+        <div class="form-group">
+            <div class="col-md-6 col-sm-6 col-xs-12">{input continue class => 'btn btn-secondary'}</div>
+        </div>
+    </div>
+    {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+{/form}

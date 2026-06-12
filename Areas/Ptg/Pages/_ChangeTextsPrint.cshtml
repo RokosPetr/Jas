@@ -1,0 +1,17 @@
+@model Jas.Areas.Ptg.Pages.StandPrintModel
+
+@if (Model.ChangeTexts.Any() && false)
+{
+    <div style="page-break-before: always; padding: 24px 32px;">
+        <h1>Seznam provedených změn</h1>
+        <ul>
+            @foreach (var changeText in Model.ChangeTexts)
+            {
+                if (!string.IsNullOrWhiteSpace(changeText))
+                {
+                    <li>@changeText</li>
+                }
+            }
+        </ul>
+    </div>
+}

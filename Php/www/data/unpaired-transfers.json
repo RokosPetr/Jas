@@ -1,0 +1,7544 @@
+{
+    "11332": {
+        "store": 9,
+        "number": 91211,
+        "description": "Prodejna Otrokovice",
+        "season": 201106,
+        "movement": 220,
+        "depot": "3",
+        "note": "VM0152"
+    },
+    "11333": {
+        "store": 9,
+        "number": 91212,
+        "description": "Prodejna Otrokovice",
+        "season": 201106,
+        "movement": 220,
+        "depot": "3",
+        "note": "VM0151"
+    },
+    "12934": {
+        "store": 9,
+        "number": 91396,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201107,
+        "movement": 220,
+        "depot": "5",
+        "note": "VM0178"
+    },
+    "19878": {
+        "store": 9,
+        "number": 92054,
+        "description": "Prodejna Sumperk",
+        "season": 201110,
+        "movement": 220,
+        "depot": "1",
+        "note": "VM249\/11"
+    },
+    "24069": {
+        "store": 9,
+        "number": 92483,
+        "description": "Prodejna Olomouc",
+        "season": 201112,
+        "movement": 220,
+        "depot": "2",
+        "note": "2868"
+    },
+    "45876": {
+        "store": 9,
+        "number": 92266,
+        "description": "Prodejna Olomouc",
+        "season": 201210,
+        "movement": 220,
+        "depot": "2",
+        "note": "5299"
+    },
+    "48237": {
+        "store": 9,
+        "number": 92681,
+        "description": "Prodejna Ostrava",
+        "season": 201211,
+        "movement": 220,
+        "depot": "4",
+        "note": "4481"
+    },
+    "53009": {
+        "store": 9,
+        "number": 90236,
+        "description": "Prodejna Teplice",
+        "season": 201302,
+        "movement": 220,
+        "depot": "6",
+        "note": "6022"
+    },
+    "83927": {
+        "store": 9,
+        "number": 91126,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201405,
+        "movement": 220,
+        "depot": "5",
+        "note": "2576"
+    },
+    "106294": {
+        "store": 9,
+        "number": 90870,
+        "description": "Prodejna Vala\u0161sk\u00e9 Mezi\u0159\u00ed\u010d\u00ed",
+        "season": 201504,
+        "movement": 220,
+        "depot": "7",
+        "note": "598"
+    },
+    "123398": {
+        "store": 9,
+        "number": 90062,
+        "description": "Prodejna Vala\u0161sk\u00e9 Mezi\u0159\u00ed\u010d\u00ed",
+        "season": 201601,
+        "movement": 220,
+        "depot": "7",
+        "note": "7363"
+    },
+    "123948": {
+        "store": 9,
+        "number": 90173,
+        "description": "Prodejna Sumperk",
+        "season": 201601,
+        "movement": 220,
+        "depot": "1",
+        "note": "1408"
+    },
+    "150077": {
+        "store": 9,
+        "number": 90267,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 201701,
+        "movement": 220,
+        "depot": "8",
+        "note": "8026"
+    },
+    "166676": {
+        "store": 9,
+        "number": 93186,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 201709,
+        "movement": 220,
+        "depot": "8",
+        "note": "881"
+    },
+    "167693": {
+        "store": 9,
+        "number": 93028,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 201709,
+        "movement": 220,
+        "depot": "8",
+        "note": "8884"
+    },
+    "180800": {
+        "store": 9,
+        "number": 91098,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 201804,
+        "movement": 220,
+        "depot": "8",
+        "note": "2228"
+    },
+    "184904": {
+        "store": 9,
+        "number": 91715,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 201806,
+        "movement": 220,
+        "depot": "8",
+        "note": "VM092\/18"
+    },
+    "197800": {
+        "store": 9,
+        "number": 93770,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 201812,
+        "movement": 220,
+        "depot": "8",
+        "note": "8105"
+    },
+    "224199": {
+        "store": 9,
+        "number": 90111,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 202001,
+        "movement": 220,
+        "depot": "8",
+        "note": "8431"
+    },
+    "224200": {
+        "store": 9,
+        "number": 90113,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 202001,
+        "movement": 220,
+        "depot": "8",
+        "note": "8430"
+    },
+    "224201": {
+        "store": 9,
+        "number": 90114,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 202001,
+        "movement": 220,
+        "depot": "8",
+        "note": "8429"
+    },
+    "224202": {
+        "store": 9,
+        "number": 90115,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 202001,
+        "movement": 220,
+        "depot": "8",
+        "note": "8437"
+    },
+    "224277": {
+        "store": 9,
+        "number": 90130,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202001,
+        "movement": 220,
+        "depot": "5",
+        "note": "5584"
+    },
+    "224286": {
+        "store": 9,
+        "number": 90112,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 202001,
+        "movement": 220,
+        "depot": "8",
+        "note": "8432"
+    },
+    "234416": {
+        "store": 9,
+        "number": 92101,
+        "description": "Prodejna Teplice",
+        "season": 202005,
+        "movement": 220,
+        "depot": "6",
+        "note": "6412"
+    },
+    "242709": {
+        "store": 9,
+        "number": 93693,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202009,
+        "movement": 221,
+        "depot": "10",
+        "note": "RH009\/20"
+    },
+    "255480": {
+        "store": 9,
+        "number": 91055,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202104,
+        "movement": 221,
+        "depot": "10",
+        "note": "RH032\/21"
+    },
+    "366566": {
+        "store": 2,
+        "number": 2036,
+        "description": "Prodejna Otrokovice",
+        "season": 201101,
+        "movement": 220,
+        "depot": "3",
+        "note": "3014"
+    },
+    "366687": {
+        "store": 2,
+        "number": 2042,
+        "description": "Velkoobchod Ostrava",
+        "season": 201101,
+        "movement": 221,
+        "depot": "9",
+        "note": "30129"
+    },
+    "366796": {
+        "store": 2,
+        "number": 2057,
+        "description": "Prodejna Otrokovice",
+        "season": 201102,
+        "movement": 220,
+        "depot": "3",
+        "note": "3025"
+    },
+    "367685": {
+        "store": 2,
+        "number": 2147,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201103,
+        "movement": 220,
+        "depot": "5",
+        "note": null
+    },
+    "374793": {
+        "store": 2,
+        "number": 2744,
+        "description": "Velkoobchod Ostrava",
+        "season": 201110,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "376109": {
+        "store": 2,
+        "number": 2848,
+        "description": "Velkoobchod Ostrava",
+        "season": 201112,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "377575": {
+        "store": 2,
+        "number": 2100,
+        "description": "Velkoobchod Ostrava",
+        "season": 201202,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "377798": {
+        "store": 2,
+        "number": 2118,
+        "description": "Velkoobchod Ostrava",
+        "season": 201202,
+        "movement": 221,
+        "depot": "9",
+        "note": "60435"
+    },
+    "379275": {
+        "store": 2,
+        "number": 2236,
+        "description": "Velkoobchod Ostrava",
+        "season": 201204,
+        "movement": 221,
+        "depot": "9",
+        "note": "80886"
+    },
+    "380213": {
+        "store": 2,
+        "number": 2316,
+        "description": "Velkoobchod Ostrava",
+        "season": 201205,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "382251": {
+        "store": 2,
+        "number": 2505,
+        "description": "Velkoobchod Ostrava",
+        "season": 201208,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "383445": {
+        "store": 2,
+        "number": 2602,
+        "description": "Velkoobchod Ostrava",
+        "season": 201209,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "384564": {
+        "store": 2,
+        "number": 2690,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201210,
+        "movement": 220,
+        "depot": "5",
+        "note": null
+    },
+    "385633": {
+        "store": 2,
+        "number": 2787,
+        "description": "Velkoobchod Ostrava",
+        "season": 201211,
+        "movement": 221,
+        "depot": "9",
+        "note": "62692"
+    },
+    "385775": {
+        "store": 2,
+        "number": 2799,
+        "description": "Prodejna Otrokovice",
+        "season": 201212,
+        "movement": 220,
+        "depot": "3",
+        "note": "0000"
+    },
+    "386282": {
+        "store": 2,
+        "number": 2007,
+        "description": "Prodejna Otrokovice",
+        "season": 201301,
+        "movement": 220,
+        "depot": "3",
+        "note": "3001"
+    },
+    "386548": {
+        "store": 2,
+        "number": 2035,
+        "description": "Velkoobchod Ostrava",
+        "season": 201301,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "386704": {
+        "store": 2,
+        "number": 2056,
+        "description": "Velkoobchod Ostrava",
+        "season": 201301,
+        "movement": 221,
+        "depot": "9",
+        "note": "13008"
+    },
+    "386861": {
+        "store": 2,
+        "number": 2062,
+        "description": "Velkoobchod Ostrava",
+        "season": 201302,
+        "movement": 221,
+        "depot": "9",
+        "note": "33007"
+    },
+    "387239": {
+        "store": 2,
+        "number": 2107,
+        "description": "Velkoobchod Ostrava",
+        "season": 201302,
+        "movement": 221,
+        "depot": "9",
+        "note": "1111111"
+    },
+    "387784": {
+        "store": 2,
+        "number": 2150,
+        "description": "Velkoobchod Ostrava",
+        "season": 201303,
+        "movement": 221,
+        "depot": "9",
+        "note": "2150"
+    },
+    "388330": {
+        "store": 2,
+        "number": 2207,
+        "description": "Velkoobchod Ostrava",
+        "season": 201304,
+        "movement": 221,
+        "depot": "9",
+        "note": "00000001"
+    },
+    "388618": {
+        "store": 2,
+        "number": 2250,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201304,
+        "movement": 220,
+        "depot": "5",
+        "note": null
+    },
+    "388718": {
+        "store": 2,
+        "number": 2257,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201304,
+        "movement": 220,
+        "depot": "5",
+        "note": null
+    },
+    "388761": {
+        "store": 2,
+        "number": 2263,
+        "description": "Velkoobchod Ostrava",
+        "season": 201304,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "391888": {
+        "store": 2,
+        "number": 2519,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201308,
+        "movement": 220,
+        "depot": "5",
+        "note": "53765376"
+    },
+    "391926": {
+        "store": 2,
+        "number": 2523,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201308,
+        "movement": 220,
+        "depot": "5",
+        "note": null
+    },
+    "392261": {
+        "store": 2,
+        "number": 2550,
+        "description": "Velkoobchod Ostrava",
+        "season": 201308,
+        "movement": 221,
+        "depot": "9",
+        "note": "33094"
+    },
+    "393180": {
+        "store": 2,
+        "number": 2614,
+        "description": "Velkoobchod Ostrava",
+        "season": 201309,
+        "movement": 221,
+        "depot": "9",
+        "note": "63102"
+    },
+    "393786": {
+        "store": 2,
+        "number": 2675,
+        "description": "Prodejna Otrokovice",
+        "season": 201310,
+        "movement": 220,
+        "depot": "3",
+        "note": null
+    },
+    "394093": {
+        "store": 2,
+        "number": 2690,
+        "description": "Velkoobchod Ostrava",
+        "season": 201310,
+        "movement": 221,
+        "depot": "9",
+        "note": "63116"
+    },
+    "394444": {
+        "store": 2,
+        "number": 2732,
+        "description": "Prodejna Otrokovice",
+        "season": 201311,
+        "movement": 220,
+        "depot": "3",
+        "note": null
+    },
+    "394603": {
+        "store": 2,
+        "number": 2749,
+        "description": "Velkoobchod Ostrava",
+        "season": 201311,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "394678": {
+        "store": 2,
+        "number": 2754,
+        "description": "Velkoobchod Ostrava",
+        "season": 201311,
+        "movement": 221,
+        "depot": "9",
+        "note": "1"
+    },
+    "395107": {
+        "store": 2,
+        "number": 2798,
+        "description": "Prodejna \u0160umperk",
+        "season": 201312,
+        "movement": 220,
+        "depot": "1",
+        "note": null
+    },
+    "395548": {
+        "store": 2,
+        "number": 2003,
+        "description": "Prodejna \u0160umperk",
+        "season": 201401,
+        "movement": 220,
+        "depot": "1",
+        "note": null
+    },
+    "396270": {
+        "store": 2,
+        "number": 2086,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201402,
+        "movement": 220,
+        "depot": "5",
+        "note": null
+    },
+    "397150": {
+        "store": 2,
+        "number": 2173,
+        "description": "Velkoobchod Ostrava",
+        "season": 201403,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "397326": {
+        "store": 2,
+        "number": 2189,
+        "description": "Velkoobchod Ostrava",
+        "season": 201403,
+        "movement": 221,
+        "depot": "9",
+        "note": "r7901625"
+    },
+    "397505": {
+        "store": 2,
+        "number": 2199,
+        "description": "Velkoobchod Ostrava",
+        "season": 201403,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "397847": {
+        "store": 2,
+        "number": 2243,
+        "description": "Velkoobchod Ostrava",
+        "season": 201404,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "399223": {
+        "store": 2,
+        "number": 2383,
+        "description": "Velkoobchod Ostrava",
+        "season": 201405,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "399983": {
+        "store": 2,
+        "number": 2442,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201406,
+        "movement": 220,
+        "depot": "5",
+        "note": null
+    },
+    "400450": {
+        "store": 2,
+        "number": 2478,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201407,
+        "movement": 220,
+        "depot": "5",
+        "note": null
+    },
+    "403953": {
+        "store": 2,
+        "number": 2809,
+        "description": "Velkoobchod Ostrava",
+        "season": 201411,
+        "movement": 221,
+        "depot": "9",
+        "note": "24096"
+    },
+    "405061": {
+        "store": 2,
+        "number": 2011,
+        "description": "Prodejna Otrokovice",
+        "season": 201501,
+        "movement": 220,
+        "depot": "3",
+        "note": "3001"
+    },
+    "405147": {
+        "store": 2,
+        "number": 2027,
+        "description": "Velkoobchod Ostrava",
+        "season": 201501,
+        "movement": 221,
+        "depot": "9",
+        "note": "75002"
+    },
+    "405710": {
+        "store": 2,
+        "number": 2079,
+        "description": "Velkoobchod Ostrava",
+        "season": 201502,
+        "movement": 221,
+        "depot": "9",
+        "note": "15009"
+    },
+    "408712": {
+        "store": 2,
+        "number": 2370,
+        "description": "Prodejna Otrokovice",
+        "season": 201506,
+        "movement": 220,
+        "depot": "3",
+        "note": "13322"
+    },
+    "409616": {
+        "store": 2,
+        "number": 2458,
+        "description": "Velkoobchod Ostrava",
+        "season": 201507,
+        "movement": 221,
+        "depot": "9",
+        "note": "791534"
+    },
+    "410780": {
+        "store": 2,
+        "number": 2572,
+        "description": "Velkoobchod Ostrava",
+        "season": 201508,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "412206": {
+        "store": 2,
+        "number": 2683,
+        "description": "Velkoobchod Ostrava",
+        "season": 201510,
+        "movement": 221,
+        "depot": "9",
+        "note": "75081"
+    },
+    "412434": {
+        "store": 2,
+        "number": 2706,
+        "description": "Velkoobchod Ostrava",
+        "season": 201510,
+        "movement": 221,
+        "depot": "9",
+        "note": "92368923638"
+    },
+    "414505": {
+        "store": 2,
+        "number": 2894,
+        "description": "Velkoobchod Ostrava",
+        "season": 201512,
+        "movement": 221,
+        "depot": "9",
+        "note": "75087"
+    },
+    "414740": {
+        "store": 2,
+        "number": 2019,
+        "description": "Prodejna \u0160umperk",
+        "season": 201601,
+        "movement": 220,
+        "depot": "1",
+        "note": "10004"
+    },
+    "415539": {
+        "store": 2,
+        "number": 2101,
+        "description": "Velkoobchod Ostrava",
+        "season": 201602,
+        "movement": 221,
+        "depot": "9",
+        "note": "16015"
+    },
+    "415632": {
+        "store": 2,
+        "number": 2057,
+        "description": "Velkoobchod Ostrava",
+        "season": 201602,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "415659": {
+        "store": 2,
+        "number": 2115,
+        "description": "Velkoobchod Ostrava",
+        "season": 201602,
+        "movement": 221,
+        "depot": "9",
+        "note": "16017"
+    },
+    "416695": {
+        "store": 2,
+        "number": 2200,
+        "description": "Velkoobchod Ostrava",
+        "season": 201603,
+        "movement": 221,
+        "depot": "9",
+        "note": "90772"
+    },
+    "418291": {
+        "store": 2,
+        "number": 2339,
+        "description": "Velkoobchod Ostrava",
+        "season": 201605,
+        "movement": 221,
+        "depot": "9",
+        "note": "76031"
+    },
+    "418886": {
+        "store": 2,
+        "number": 2367,
+        "description": "Velkoobchod Ostrava",
+        "season": 201606,
+        "movement": 221,
+        "depot": "9",
+        "note": "10001"
+    },
+    "419208": {
+        "store": 2,
+        "number": 2422,
+        "description": "Velkoobchod Ostrava",
+        "season": 201606,
+        "movement": 221,
+        "depot": "9",
+        "note": "76041"
+    },
+    "424277": {
+        "store": 2,
+        "number": 2009,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201701,
+        "movement": 220,
+        "depot": "5",
+        "note": null
+    },
+    "424518": {
+        "store": 2,
+        "number": 2032,
+        "description": "Velkoobchod Ostrava",
+        "season": 201701,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "425401": {
+        "store": 2,
+        "number": 2124,
+        "description": "Velkoobchod Ostrava",
+        "season": 201702,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "428479": {
+        "store": 2,
+        "number": 2416,
+        "description": "Velkoobchod Ostrava",
+        "season": 201706,
+        "movement": 221,
+        "depot": "9",
+        "note": "6001006"
+    },
+    "429052": {
+        "store": 2,
+        "number": 2456,
+        "description": "Velkoobchod Ostrava",
+        "season": 201707,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "429712": {
+        "store": 2,
+        "number": 2520,
+        "description": "Velkoobchod Ostrava",
+        "season": 201708,
+        "movement": 221,
+        "depot": "9",
+        "note": "77013"
+    },
+    "429987": {
+        "store": 2,
+        "number": 2551,
+        "description": "Velkoobchod Ostrava",
+        "season": 201708,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "430709": {
+        "store": 2,
+        "number": 2618,
+        "description": "Velkoobchod Ostrava",
+        "season": 201709,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "431193": {
+        "store": 2,
+        "number": 2660,
+        "description": "Velkoobchod Ostrava",
+        "season": 201710,
+        "movement": 221,
+        "depot": "9",
+        "note": "4594"
+    },
+    "431457": {
+        "store": 2,
+        "number": 2683,
+        "description": "Prodejna \u0160umperk",
+        "season": 201710,
+        "movement": 220,
+        "depot": "1",
+        "note": null
+    },
+    "432419": {
+        "store": 2,
+        "number": 2775,
+        "description": "Velkoobchod Ostrava",
+        "season": 201711,
+        "movement": 221,
+        "depot": "9",
+        "note": "9*3898"
+    },
+    "434679": {
+        "store": 2,
+        "number": 2109,
+        "description": "Velkoobchod Ostrava",
+        "season": 201802,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "434696": {
+        "store": 2,
+        "number": 2126,
+        "description": "Velkoobchod Ostrava",
+        "season": 201802,
+        "movement": 221,
+        "depot": "9",
+        "note": "9,579"
+    },
+    "435371": {
+        "store": 2,
+        "number": 2187,
+        "description": "Velkoobchod Ostrava",
+        "season": 201803,
+        "movement": 221,
+        "depot": "9",
+        "note": "93882"
+    },
+    "435906": {
+        "store": 2,
+        "number": 2243,
+        "description": "Velkoobchod Ostrava",
+        "season": 201804,
+        "movement": 221,
+        "depot": "9",
+        "note": "28031"
+    },
+    "436471": {
+        "store": 2,
+        "number": 2298,
+        "description": "Prodejna \u0160umperk",
+        "season": 201805,
+        "movement": 220,
+        "depot": "1",
+        "note": "1184"
+    },
+    "439912": {
+        "store": 2,
+        "number": 2627,
+        "description": "Prodejna Otrokovice",
+        "season": 201810,
+        "movement": 220,
+        "depot": "3",
+        "note": "7266"
+    },
+    "441661": {
+        "store": 2,
+        "number": 2774,
+        "description": "Prodejna Otrokovice",
+        "season": 201812,
+        "movement": 220,
+        "depot": "3",
+        "note": "7266"
+    },
+    "442115": {
+        "store": 2,
+        "number": 2021,
+        "description": "Prodejna \u0160umperk",
+        "season": 201901,
+        "movement": 220,
+        "depot": "1",
+        "note": "1004"
+    },
+    "444031": {
+        "store": 2,
+        "number": 2172,
+        "description": "Velkoobchod Ostrava",
+        "season": 201904,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "444835": {
+        "store": 2,
+        "number": 2253,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 201905,
+        "movement": 220,
+        "depot": "8",
+        "note": null
+    },
+    "445090": {
+        "store": 2,
+        "number": 2290,
+        "description": "Velkoobchod Ostrava",
+        "season": 201905,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "446069": {
+        "store": 2,
+        "number": 2377,
+        "description": "Prodejna \u0160umperk",
+        "season": 201907,
+        "movement": 220,
+        "depot": "1",
+        "note": "11243"
+    },
+    "447233": {
+        "store": 2,
+        "number": 2487,
+        "description": "Velkoobchod Ostrava",
+        "season": 201908,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "447460": {
+        "store": 2,
+        "number": 2502,
+        "description": "Velkoobchod Ostrava",
+        "season": 201909,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "447771": {
+        "store": 2,
+        "number": 2520,
+        "description": "Velkoobchod Ostrava",
+        "season": 201909,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "449973": {
+        "store": 2,
+        "number": 2758,
+        "description": "Velkoobchod Ostrava",
+        "season": 201912,
+        "movement": 221,
+        "depot": "9",
+        "note": "79071"
+    },
+    "450190": {
+        "store": 2,
+        "number": 2003,
+        "description": "Velkoobchod Ostrava",
+        "season": 202001,
+        "movement": 221,
+        "depot": "9",
+        "note": "90001"
+    },
+    "450877": {
+        "store": 2,
+        "number": 2082,
+        "description": "Velkoobchod Ostrava",
+        "season": 202002,
+        "movement": 221,
+        "depot": "9",
+        "note": "60473"
+    },
+    "451529": {
+        "store": 2,
+        "number": 2155,
+        "description": "Velkoobchod Ostrava",
+        "season": 202003,
+        "movement": 221,
+        "depot": "9",
+        "note": "909366"
+    },
+    "453368": {
+        "store": 2,
+        "number": 2344,
+        "description": "Velkoobchod Ostrava",
+        "season": 202006,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "454719": {
+        "store": 2,
+        "number": 2525,
+        "description": "Velkoobchod Ostrava",
+        "season": 202008,
+        "movement": 221,
+        "depot": "9",
+        "note": "93327"
+    },
+    "455337": {
+        "store": 2,
+        "number": 2592,
+        "description": "Velkoobchod Ostrava",
+        "season": 202009,
+        "movement": 221,
+        "depot": "9",
+        "note": "34057"
+    },
+    "457057": {
+        "store": 2,
+        "number": 2790,
+        "description": "Velkoobchod Ostrava",
+        "season": 202012,
+        "movement": 221,
+        "depot": "9",
+        "note": "943660"
+    },
+    "457642": {
+        "store": 2,
+        "number": 2011,
+        "description": "Velkoobchod Ostrava",
+        "season": 202101,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "457674": {
+        "store": 2,
+        "number": 2017,
+        "description": "Velkoobchod Ostrava",
+        "season": 202101,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "459711": {
+        "store": 2,
+        "number": 2261,
+        "description": "Velkoobchod Ostrava",
+        "season": 202105,
+        "movement": 221,
+        "depot": "9",
+        "note": "912417"
+    },
+    "463232": {
+        "store": 1,
+        "number": 1002,
+        "description": "Stavba SU",
+        "season": 201101,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "463393": {
+        "store": 1,
+        "number": 1013,
+        "description": "Stavba SU",
+        "season": 201101,
+        "movement": 220,
+        "depot": "88",
+        "note": "1489"
+    },
+    "463394": {
+        "store": 1,
+        "number": 1014,
+        "description": "Stavba SU",
+        "season": 201101,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "463455": {
+        "store": 1,
+        "number": 1015,
+        "description": "Stavba SU",
+        "season": 201101,
+        "movement": 220,
+        "depot": "88",
+        "note": "01"
+    },
+    "463787": {
+        "store": 1,
+        "number": 1052,
+        "description": "Stavba SU",
+        "season": 201102,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "464254": {
+        "store": 1,
+        "number": 1085,
+        "description": "Stavba SU",
+        "season": 201103,
+        "movement": 220,
+        "depot": "88",
+        "note": "Inventura"
+    },
+    "467192": {
+        "store": 1,
+        "number": 1240,
+        "description": "Prodejna Olomouc",
+        "season": 201107,
+        "movement": 220,
+        "depot": "2",
+        "note": null
+    },
+    "467304": {
+        "store": 1,
+        "number": 1247,
+        "description": "Stavba SU",
+        "season": 201107,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "468059": {
+        "store": 1,
+        "number": 1287,
+        "description": "Stavba SU",
+        "season": 201108,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "468643": {
+        "store": 1,
+        "number": 1320,
+        "description": "Stavba SU",
+        "season": 201109,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "470271": {
+        "store": 1,
+        "number": 1386,
+        "description": "Stavba SU",
+        "season": 201112,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "470552": {
+        "store": 1,
+        "number": 1407,
+        "description": "Stavba SU",
+        "season": 201112,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "470778": {
+        "store": 1,
+        "number": 1005,
+        "description": "Velkoobchod Ostrava",
+        "season": 201201,
+        "movement": 221,
+        "depot": "9",
+        "note": "900001"
+    },
+    "471138": {
+        "store": 1,
+        "number": 1002,
+        "description": "Prodejna Otrokovice",
+        "season": 201201,
+        "movement": 220,
+        "depot": "3",
+        "note": "3003"
+    },
+    "471589": {
+        "store": 1,
+        "number": 1072,
+        "description": "Stavba SU",
+        "season": 201202,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "471846": {
+        "store": 1,
+        "number": 1088,
+        "description": "Stavba SU",
+        "season": 201203,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "472846": {
+        "store": 1,
+        "number": 1142,
+        "description": "Stavba SU",
+        "season": 201205,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "473070": {
+        "store": 1,
+        "number": 1150,
+        "description": "Stavba SU",
+        "season": 201205,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "473620": {
+        "store": 1,
+        "number": 1182,
+        "description": "Velkoobchod Ostrava",
+        "season": 201206,
+        "movement": 221,
+        "depot": "9",
+        "note": "91181"
+    },
+    "475328": {
+        "store": 1,
+        "number": 1276,
+        "description": "Stavba SU",
+        "season": 201208,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "475819": {
+        "store": 1,
+        "number": 1306,
+        "description": "Stavba SU",
+        "season": 201209,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "475967": {
+        "store": 1,
+        "number": 1313,
+        "description": "Velkoobchod Ostrava",
+        "season": 201209,
+        "movement": 221,
+        "depot": "9",
+        "note": "9260"
+    },
+    "477134": {
+        "store": 1,
+        "number": 1377,
+        "description": "Stavba SU",
+        "season": 201211,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "478483": {
+        "store": 1,
+        "number": 1039,
+        "description": "Stavba SU",
+        "season": 201302,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "478485": {
+        "store": 1,
+        "number": 1040,
+        "description": "Stavba SU",
+        "season": 201302,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "478604": {
+        "store": 1,
+        "number": 1049,
+        "description": "Stavba SU",
+        "season": 201302,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "478720": {
+        "store": 1,
+        "number": 1055,
+        "description": "Stavba SU",
+        "season": 201303,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "479105": {
+        "store": 1,
+        "number": 1070,
+        "description": "Velkoobchod Ostrava",
+        "season": 201303,
+        "movement": 221,
+        "depot": "9",
+        "note": "90541"
+    },
+    "480274": {
+        "store": 1,
+        "number": 1163,
+        "description": "Prodejna Olomouc",
+        "season": 201305,
+        "movement": 220,
+        "depot": "2",
+        "note": null
+    },
+    "480401": {
+        "store": 1,
+        "number": 1165,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201305,
+        "movement": 220,
+        "depot": "5",
+        "note": null
+    },
+    "482316": {
+        "store": 1,
+        "number": 1272,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201308,
+        "movement": 220,
+        "depot": "5",
+        "note": "01"
+    },
+    "484010": {
+        "store": 1,
+        "number": 1390,
+        "description": "Velkoobchod Ostrava",
+        "season": 201311,
+        "movement": 221,
+        "depot": "9",
+        "note": "2760"
+    },
+    "484042": {
+        "store": 1,
+        "number": 1391,
+        "description": "Prodejna Olomouc",
+        "season": 201311,
+        "movement": 220,
+        "depot": "2",
+        "note": null
+    },
+    "484248": {
+        "store": 1,
+        "number": 1406,
+        "description": "Prodejna Olomouc",
+        "season": 201312,
+        "movement": 220,
+        "depot": "2",
+        "note": null
+    },
+    "484386": {
+        "store": 1,
+        "number": 1424,
+        "description": "Stavba SU",
+        "season": 201312,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "484635": {
+        "store": 1,
+        "number": 1008,
+        "description": "Velkoobchod Ostrava",
+        "season": 201401,
+        "movement": 221,
+        "depot": "9",
+        "note": "9009"
+    },
+    "485288": {
+        "store": 1,
+        "number": 1059,
+        "description": "Velkoobchod Ostrava",
+        "season": 201402,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "486382": {
+        "store": 1,
+        "number": 1141,
+        "description": "Prodejna Ostrava",
+        "season": 201405,
+        "movement": 220,
+        "depot": "4",
+        "note": null
+    },
+    "486383": {
+        "store": 1,
+        "number": 1142,
+        "description": "Stavba SU",
+        "season": 201405,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "486433": {
+        "store": 1,
+        "number": 1148,
+        "description": "Stavba SU",
+        "season": 201405,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "486644": {
+        "store": 1,
+        "number": 1160,
+        "description": "Stavba SU",
+        "season": 201405,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "486823": {
+        "store": 1,
+        "number": 1163,
+        "description": "Prodejna Olomouc",
+        "season": 201405,
+        "movement": 220,
+        "depot": "2",
+        "note": null
+    },
+    "487248": {
+        "store": 1,
+        "number": 1191,
+        "description": "Velkoobchod Ostrava",
+        "season": 201406,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "488450": {
+        "store": 1,
+        "number": 1259,
+        "description": "Stavba SU",
+        "season": 201408,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "488452": {
+        "store": 1,
+        "number": 1260,
+        "description": "Stavba SU",
+        "season": 201408,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "489226": {
+        "store": 1,
+        "number": 1308,
+        "description": "Prodejna Olomouc",
+        "season": 201409,
+        "movement": 220,
+        "depot": "2",
+        "note": "2564"
+    },
+    "489602": {
+        "store": 1,
+        "number": 1336,
+        "description": "Stavba SU",
+        "season": 201410,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "490031": {
+        "store": 1,
+        "number": 1356,
+        "description": "Prodejna Olomouc",
+        "season": 201411,
+        "movement": 220,
+        "depot": "2",
+        "note": null
+    },
+    "491022": {
+        "store": 1,
+        "number": 1003,
+        "description": "Stavba SU",
+        "season": 201501,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "493275": {
+        "store": 1,
+        "number": 1131,
+        "description": "Velkoobchod Ostrava",
+        "season": 201505,
+        "movement": 221,
+        "depot": "9",
+        "note": "91155"
+    },
+    "494491": {
+        "store": 1,
+        "number": 1226,
+        "description": "Prodejna Olomouc",
+        "season": 201507,
+        "movement": 220,
+        "depot": "2",
+        "note": null
+    },
+    "494609": {
+        "store": 1,
+        "number": 1233,
+        "description": "Stavba SU",
+        "season": 201507,
+        "movement": 220,
+        "depot": "88",
+        "note": null
+    },
+    "496986": {
+        "store": 1,
+        "number": 1352,
+        "description": "Prodejna Olomouc",
+        "season": 201511,
+        "movement": 220,
+        "depot": "2",
+        "note": "2821"
+    },
+    "497287": {
+        "store": 1,
+        "number": 1369,
+        "description": "Velkoobchod Ostrava",
+        "season": 201512,
+        "movement": 221,
+        "depot": "9",
+        "note": "92960"
+    },
+    "498447": {
+        "store": 1,
+        "number": 1055,
+        "description": "Velkoobchod Ostrava",
+        "season": 201602,
+        "movement": 221,
+        "depot": "9",
+        "note": "90530"
+    },
+    "499089": {
+        "store": 1,
+        "number": 1095,
+        "description": "Velkoobchod Ostrava",
+        "season": 201603,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "503210": {
+        "store": 1,
+        "number": 1352,
+        "description": "Velkoobchod Ostrava",
+        "season": 201610,
+        "movement": 221,
+        "depot": "9",
+        "note": "12889"
+    },
+    "504386": {
+        "store": 1,
+        "number": 1422,
+        "description": "Velkoobchod Ostrava",
+        "season": 201612,
+        "movement": 221,
+        "depot": "9",
+        "note": "43540"
+    },
+    "508010": {
+        "store": 1,
+        "number": 1220,
+        "description": "Velkoobchod Ostrava",
+        "season": 201706,
+        "movement": 221,
+        "depot": "9",
+        "note": "92074"
+    },
+    "510873": {
+        "store": 1,
+        "number": 1395,
+        "description": "Prodejna Olomouc",
+        "season": 201711,
+        "movement": 220,
+        "depot": "2",
+        "note": null
+    },
+    "511569": {
+        "store": 1,
+        "number": 1001,
+        "description": "Prodejna Olomouc",
+        "season": 201801,
+        "movement": 220,
+        "depot": "2",
+        "note": null
+    },
+    "511613": {
+        "store": 1,
+        "number": 1003,
+        "description": "Velkoobchod Ostrava",
+        "season": 201801,
+        "movement": 221,
+        "depot": "9",
+        "note": "900001"
+    },
+    "512004": {
+        "store": 1,
+        "number": 1032,
+        "description": "Velkoobchod Ostrava",
+        "season": 201801,
+        "movement": 221,
+        "depot": "9",
+        "note": "94096"
+    },
+    "513737": {
+        "store": 1,
+        "number": 1177,
+        "description": "Velkoobchod Ostrava",
+        "season": 201804,
+        "movement": 221,
+        "depot": "9",
+        "note": "38032"
+    },
+    "518560": {
+        "store": 1,
+        "number": 1003,
+        "description": "Velkoobchod Ostrava",
+        "season": 201901,
+        "movement": 221,
+        "depot": "9",
+        "note": "90001"
+    },
+    "520861": {
+        "store": 1,
+        "number": 1173,
+        "description": "Velkoobchod Ostrava",
+        "season": 201905,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "524673": {
+        "store": 1,
+        "number": 1434,
+        "description": "Velkoobchod Ostrava",
+        "season": 201912,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "528266": {
+        "store": 1,
+        "number": 1244,
+        "description": "Velkoobchod Ostrava",
+        "season": 202007,
+        "movement": 221,
+        "depot": "9",
+        "note": "92781"
+    },
+    "528409": {
+        "store": 1,
+        "number": 1243,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202007,
+        "movement": 221,
+        "depot": "10",
+        "note": "60082"
+    },
+    "529078": {
+        "store": 1,
+        "number": 1285,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202008,
+        "movement": 221,
+        "depot": "10",
+        "note": "60219"
+    },
+    "530912": {
+        "store": 1,
+        "number": 1450,
+        "description": "Velkoobchod Ostrava",
+        "season": 202011,
+        "movement": 221,
+        "depot": "9",
+        "note": "94283"
+    },
+    "531296": {
+        "store": 1,
+        "number": 1449,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202012,
+        "movement": 221,
+        "depot": "10",
+        "note": "60659"
+    },
+    "533812": {
+        "store": 1,
+        "number": 1208,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202105,
+        "movement": 221,
+        "depot": "10",
+        "note": "60856"
+    },
+    "536768": {
+        "store": 3,
+        "number": 3031,
+        "description": "Velkoobchod Ostrava",
+        "season": 201102,
+        "movement": 221,
+        "depot": "9",
+        "note": "10172"
+    },
+    "538706": {
+        "store": 3,
+        "number": 3188,
+        "description": "Prodejna Olomouc",
+        "season": 201105,
+        "movement": 220,
+        "depot": "2",
+        "note": "12246"
+    },
+    "538809": {
+        "store": 3,
+        "number": 3197,
+        "description": "Velkoobchod Ostrava",
+        "season": 201105,
+        "movement": 221,
+        "depot": "9",
+        "note": "190776"
+    },
+    "540832": {
+        "store": 3,
+        "number": 3342,
+        "description": "Velkoobchod Ostrava",
+        "season": 201108,
+        "movement": 221,
+        "depot": "9",
+        "note": "391776"
+    },
+    "543503": {
+        "store": 3,
+        "number": 3009,
+        "description": "Prodejna Olomouc",
+        "season": 201201,
+        "movement": 220,
+        "depot": "2",
+        "note": "2001"
+    },
+    "548937": {
+        "store": 3,
+        "number": 3342,
+        "description": "Velkoobchod Ostrava",
+        "season": 201210,
+        "movement": 221,
+        "depot": "9",
+        "note": "92182"
+    },
+    "554650": {
+        "store": 3,
+        "number": 3285,
+        "description": "Velkoobchod Ostrava",
+        "season": 201308,
+        "movement": 221,
+        "depot": "9",
+        "note": "91979"
+    },
+    "555956": {
+        "store": 3,
+        "number": 3370,
+        "description": "Prodejna Olomouc",
+        "season": 201311,
+        "movement": 220,
+        "depot": "2",
+        "note": "2074"
+    },
+    "558906": {
+        "store": 3,
+        "number": 3138,
+        "description": "Velkoobchod Ostrava",
+        "season": 201404,
+        "movement": 221,
+        "depot": "9",
+        "note": "9867"
+    },
+    "569385": {
+        "store": 3,
+        "number": 3368,
+        "description": "Velkoobchod Ostrava",
+        "season": 201511,
+        "movement": 221,
+        "depot": "9",
+        "note": "55"
+    },
+    "571013": {
+        "store": 3,
+        "number": 3062,
+        "description": "Prodejna Olomouc",
+        "season": 201603,
+        "movement": 220,
+        "depot": "2",
+        "note": "21290"
+    },
+    "574112": {
+        "store": 3,
+        "number": 3288,
+        "description": "Prodejna Olomouc",
+        "season": 201608,
+        "movement": 220,
+        "depot": "2",
+        "note": "2354"
+    },
+    "577177": {
+        "store": 3,
+        "number": 3054,
+        "description": "Velkoobchod Ostrava",
+        "season": 201702,
+        "movement": 221,
+        "depot": "9",
+        "note": "10544"
+    },
+    "592811": {
+        "store": 3,
+        "number": 3389,
+        "description": "Velkoobchod Ostrava",
+        "season": 201910,
+        "movement": 221,
+        "depot": "9",
+        "note": "91147"
+    },
+    "598514": {
+        "store": 3,
+        "number": 3470,
+        "description": "Velkoobchod Ostrava",
+        "season": 202011,
+        "movement": 221,
+        "depot": "9",
+        "note": "94209"
+    },
+    "605880": {
+        "store": 4,
+        "number": 4217,
+        "description": "Velkoobchod Ostrava",
+        "season": 201104,
+        "movement": 221,
+        "depot": "9",
+        "note": "x"
+    },
+    "605997": {
+        "store": 4,
+        "number": 4216,
+        "description": "Velkoobchod Ostrava",
+        "season": 201104,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxx"
+    },
+    "607391": {
+        "store": 4,
+        "number": 4298,
+        "description": "Velkoobchod Ostrava",
+        "season": 201105,
+        "movement": 221,
+        "depot": "9",
+        "note": "91075"
+    },
+    "607561": {
+        "store": 4,
+        "number": 4364,
+        "description": "Velkoobchod Ostrava",
+        "season": 201106,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxxx"
+    },
+    "607598": {
+        "store": 4,
+        "number": 4370,
+        "description": "Velkoobchod Ostrava",
+        "season": 201106,
+        "movement": 221,
+        "depot": "9",
+        "note": "91269"
+    },
+    "609313": {
+        "store": 4,
+        "number": 4471,
+        "description": "Velkoobchod Ostrava",
+        "season": 201108,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxxx"
+    },
+    "609424": {
+        "store": 4,
+        "number": 4490,
+        "description": "Velkoobchod Ostrava",
+        "season": 201108,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxx"
+    },
+    "611624": {
+        "store": 4,
+        "number": 4646,
+        "description": "Velkoobchod Ostrava",
+        "season": 201110,
+        "movement": 221,
+        "depot": "9",
+        "note": "92081"
+    },
+    "614642": {
+        "store": 4,
+        "number": 4085,
+        "description": "Velkoobchod Ostrava",
+        "season": 201202,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxx"
+    },
+    "617807": {
+        "store": 4,
+        "number": 4311,
+        "description": "Velkoobchod Ostrava",
+        "season": 201206,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxxx"
+    },
+    "623088": {
+        "store": 4,
+        "number": 4586,
+        "description": "Velkoobchod Ostrava",
+        "season": 201211,
+        "movement": 221,
+        "depot": "9",
+        "note": "924"
+    },
+    "624247": {
+        "store": 4,
+        "number": 4038,
+        "description": "Velkoobchod Ostrava",
+        "season": 201301,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxx"
+    },
+    "625184": {
+        "store": 4,
+        "number": 4095,
+        "description": "Velkoobchod Ostrava",
+        "season": 201303,
+        "movement": 221,
+        "depot": "9",
+        "note": "33014"
+    },
+    "626175": {
+        "store": 4,
+        "number": 4157,
+        "description": "Velkoobchod Ostrava",
+        "season": 201304,
+        "movement": 221,
+        "depot": "9",
+        "note": "13046"
+    },
+    "626767": {
+        "store": 4,
+        "number": 4186,
+        "description": "Velkoobchod Ostrava",
+        "season": 201304,
+        "movement": 221,
+        "depot": "9",
+        "note": "13043"
+    },
+    "626768": {
+        "store": 4,
+        "number": 4187,
+        "description": "Velkoobchod Ostrava",
+        "season": 201304,
+        "movement": 221,
+        "depot": "9",
+        "note": "13044"
+    },
+    "629521": {
+        "store": 4,
+        "number": 4368,
+        "description": "Velkoobchod Ostrava",
+        "season": 201308,
+        "movement": 221,
+        "depot": "9",
+        "note": "19650"
+    },
+    "630195": {
+        "store": 4,
+        "number": 4422,
+        "description": "Velkoobchod Ostrava",
+        "season": 201308,
+        "movement": 221,
+        "depot": "9",
+        "note": "XXX"
+    },
+    "630215": {
+        "store": 4,
+        "number": 4391,
+        "description": "Velkoobchod Ostrava",
+        "season": 201308,
+        "movement": 221,
+        "depot": "9",
+        "note": "63088"
+    },
+    "630492": {
+        "store": 4,
+        "number": 4427,
+        "description": "Velkoobchod Ostrava",
+        "season": 201309,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxx"
+    },
+    "636657": {
+        "store": 4,
+        "number": 4248,
+        "description": "Velkoobchod Ostrava",
+        "season": 201405,
+        "movement": 221,
+        "depot": "9",
+        "note": "74038"
+    },
+    "669666": {
+        "store": 4,
+        "number": 4564,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 201709,
+        "movement": 220,
+        "depot": "5",
+        "note": "5647"
+    },
+    "670164": {
+        "store": 4,
+        "number": 4597,
+        "description": "Velkoobchod Ostrava",
+        "season": 201709,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxxx"
+    },
+    "672447": {
+        "store": 4,
+        "number": 4007,
+        "description": "",
+        "season": 201701,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "673557": {
+        "store": 4,
+        "number": 4099,
+        "description": "Velkoobchod Ostrava",
+        "season": 201802,
+        "movement": 221,
+        "depot": "9",
+        "note": "90475"
+    },
+    "673560": {
+        "store": 4,
+        "number": 4101,
+        "description": "Velkoobchod Ostrava",
+        "season": 201802,
+        "movement": 221,
+        "depot": "9",
+        "note": "90476"
+    },
+    "677508": {
+        "store": 4,
+        "number": 4452,
+        "description": "Velkoobchod Ostrava",
+        "season": 201807,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxx"
+    },
+    "678786": {
+        "store": 4,
+        "number": 4576,
+        "description": "Velkoobchod Ostrava",
+        "season": 201809,
+        "movement": 221,
+        "depot": "9",
+        "note": "92841"
+    },
+    "685745": {
+        "store": 4,
+        "number": 4373,
+        "description": "Velkoobchod Ostrava",
+        "season": 201906,
+        "movement": 221,
+        "depot": "9",
+        "note": "xx"
+    },
+    "688964": {
+        "store": 4,
+        "number": 4748,
+        "description": "Velkoobchod Ostrava",
+        "season": 201911,
+        "movement": 221,
+        "depot": "9",
+        "note": "94313"
+    },
+    "689892": {
+        "store": 4,
+        "number": 4884,
+        "description": "Velkoobchod Ostrava",
+        "season": 201912,
+        "movement": 221,
+        "depot": "9",
+        "note": "xx"
+    },
+    "692945": {
+        "store": 4,
+        "number": 4339,
+        "description": "Velkoobchod Ostrava",
+        "season": 202005,
+        "movement": 221,
+        "depot": "9",
+        "note": "91967"
+    },
+    "693282": {
+        "store": 4,
+        "number": 4365,
+        "description": "Velkoobchod Ostrava",
+        "season": 202005,
+        "movement": 221,
+        "depot": "9",
+        "note": "Xxxx"
+    },
+    "693382": {
+        "store": 4,
+        "number": 4376,
+        "description": "Prodejna Olomouc",
+        "season": 202005,
+        "movement": 220,
+        "depot": "2",
+        "note": "2605"
+    },
+    "693385": {
+        "store": 4,
+        "number": 4390,
+        "description": "Velkoobchod Ostrava",
+        "season": 202005,
+        "movement": 221,
+        "depot": "9",
+        "note": "xXx"
+    },
+    "693387": {
+        "store": 4,
+        "number": 4335,
+        "description": "Velkoobchod Ostrava",
+        "season": 202005,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxx"
+    },
+    "693388": {
+        "store": 4,
+        "number": 4358,
+        "description": "Velkoobchod Ostrava",
+        "season": 202005,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxx"
+    },
+    "701130": {
+        "store": 4,
+        "number": 4331,
+        "description": "Velkoobchod Ostrava",
+        "season": 202104,
+        "movement": 221,
+        "depot": "9",
+        "note": "xxx"
+    },
+    "706839": {
+        "store": 5,
+        "number": 5134,
+        "description": "Prodejna Olomouc",
+        "season": 201104,
+        "movement": 220,
+        "depot": "2",
+        "note": "3133"
+    },
+    "707016": {
+        "store": 5,
+        "number": 5144,
+        "description": "Velkoobchod Ostrava",
+        "season": 201104,
+        "movement": 221,
+        "depot": "9",
+        "note": "11028"
+    },
+    "707429": {
+        "store": 5,
+        "number": 5214,
+        "description": "Prodejna Ostrava",
+        "season": 201105,
+        "movement": 220,
+        "depot": "4",
+        "note": "91012"
+    },
+    "711152": {
+        "store": 5,
+        "number": 5009,
+        "description": "Velkoobchod Ostrava",
+        "season": 201201,
+        "movement": 221,
+        "depot": "9",
+        "note": "92548"
+    },
+    "713039": {
+        "store": 5,
+        "number": 5188,
+        "description": "Prodejna Ostrava",
+        "season": 201205,
+        "movement": 220,
+        "depot": "4",
+        "note": "90950"
+    },
+    "722548": {
+        "store": 5,
+        "number": 5520,
+        "description": "Prodejna Olomouc",
+        "season": 201310,
+        "movement": 220,
+        "depot": "2",
+        "note": "2968"
+    },
+    "723626": {
+        "store": 5,
+        "number": 5005,
+        "description": "Prodejna Otrokovice",
+        "season": 201401,
+        "movement": 220,
+        "depot": "3",
+        "note": "3001"
+    },
+    "728952": {
+        "store": 5,
+        "number": 5440,
+        "description": "Velkoobchod Ostrava",
+        "season": 201408,
+        "movement": 221,
+        "depot": "9",
+        "note": "74070"
+    },
+    "740446": {
+        "store": 5,
+        "number": 5020,
+        "description": "Prodejna Otrokovice",
+        "season": 201601,
+        "movement": 220,
+        "depot": "3",
+        "note": "3002"
+    },
+    "747516": {
+        "store": 5,
+        "number": 5524,
+        "description": "Prodejna Olomouc",
+        "season": 201610,
+        "movement": 220,
+        "depot": "2",
+        "note": "9713"
+    },
+    "753367": {
+        "store": 5,
+        "number": 5347,
+        "description": "Prodejna Ostrava",
+        "season": 201707,
+        "movement": 220,
+        "depot": "4",
+        "note": "92282"
+    },
+    "754483": {
+        "store": 5,
+        "number": 5431,
+        "description": "Velkoobchod Ostrava",
+        "season": 201708,
+        "movement": 221,
+        "depot": "9",
+        "note": "92998"
+    },
+    "757513": {
+        "store": 5,
+        "number": 5667,
+        "description": "Velkoobchod Ostrava",
+        "season": 201712,
+        "movement": 221,
+        "depot": "9",
+        "note": "94342"
+    },
+    "758026": {
+        "store": 5,
+        "number": 5011,
+        "description": "Velkoobchod Ostrava",
+        "season": 201801,
+        "movement": 221,
+        "depot": "9",
+        "note": "90168"
+    },
+    "763022": {
+        "store": 5,
+        "number": 5405,
+        "description": "Velkoobchod Ostrava",
+        "season": 201808,
+        "movement": 221,
+        "depot": "9",
+        "note": "92376"
+    },
+    "765526": {
+        "store": 5,
+        "number": 5606,
+        "description": "Velkoobchod Ostrava",
+        "season": 201812,
+        "movement": 221,
+        "depot": "9",
+        "note": "93972"
+    },
+    "766233": {
+        "store": 5,
+        "number": 5040,
+        "description": "Prodejna Otrokovice",
+        "season": 201902,
+        "movement": 220,
+        "depot": "3",
+        "note": "9041"
+    },
+    "770510": {
+        "store": 5,
+        "number": 5347,
+        "description": "Velkoobchod Ostrava",
+        "season": 201908,
+        "movement": 221,
+        "depot": "9",
+        "note": "92971"
+    },
+    "780016": {
+        "store": 5,
+        "number": 5596,
+        "description": "Prodejna Sumperk",
+        "season": 202011,
+        "movement": 220,
+        "depot": "1",
+        "note": "3474"
+    },
+    "787608": {
+        "store": 6,
+        "number": 6058,
+        "description": "Velkoobchod Ostrava",
+        "season": 201103,
+        "movement": 221,
+        "depot": "9",
+        "note": "9065"
+    },
+    "791019": {
+        "store": 6,
+        "number": 6042,
+        "description": "Velkoobchod Ostrava",
+        "season": 201202,
+        "movement": 221,
+        "depot": "9",
+        "note": "122"
+    },
+    "796416": {
+        "store": 6,
+        "number": 6106,
+        "description": "Velkoobchod Ostrava",
+        "season": 201306,
+        "movement": 221,
+        "depot": "9",
+        "note": "4272"
+    },
+    "797880": {
+        "store": 6,
+        "number": 6198,
+        "description": "Velkoobchod Ostrava",
+        "season": 201310,
+        "movement": 221,
+        "depot": "9",
+        "note": "63110"
+    },
+    "801231": {
+        "store": 6,
+        "number": 6126,
+        "description": "Velkoobchod Ostrava",
+        "season": 201407,
+        "movement": 221,
+        "depot": "9",
+        "note": "914410"
+    },
+    "801481": {
+        "store": 6,
+        "number": 6136,
+        "description": "Velkoobchod Ostrava",
+        "season": 201407,
+        "movement": 221,
+        "depot": "9",
+        "note": "x"
+    },
+    "806389": {
+        "store": 6,
+        "number": 6167,
+        "description": "Velkoobchod Ostrava",
+        "season": 201510,
+        "movement": 221,
+        "depot": "9",
+        "note": "25072"
+    },
+    "810040": {
+        "store": 6,
+        "number": 6149,
+        "description": "Velkoobchod Ostrava",
+        "season": 201608,
+        "movement": 221,
+        "depot": "9",
+        "note": "6146-TP zp\u011bt"
+    },
+    "812803": {
+        "store": 6,
+        "number": 6068,
+        "description": "Velkoobchod Ostrava",
+        "season": 201705,
+        "movement": 221,
+        "depot": "9",
+        "note": "x"
+    },
+    "813092": {
+        "store": 6,
+        "number": 6090,
+        "description": "Velkoobchod Ostrava",
+        "season": 201706,
+        "movement": 221,
+        "depot": "9",
+        "note": "97032"
+    },
+    "813097": {
+        "store": 6,
+        "number": 6081,
+        "description": "Velkoobchod Ostrava",
+        "season": 201706,
+        "movement": 221,
+        "depot": "9",
+        "note": "xx"
+    },
+    "813276": {
+        "store": 6,
+        "number": 6100,
+        "description": "Prodejna Hradec Kr\u00e1lov\u00e9",
+        "season": 201706,
+        "movement": 220,
+        "depot": "8",
+        "note": "09123"
+    },
+    "813340": {
+        "store": 6,
+        "number": 6106,
+        "description": "Velkoobchod Ostrava",
+        "season": 201707,
+        "movement": 221,
+        "depot": "9",
+        "note": "921669"
+    },
+    "815383": {
+        "store": 6,
+        "number": 6197,
+        "description": "Velkoobchod Ostrava",
+        "season": 201712,
+        "movement": 221,
+        "depot": "9",
+        "note": "94297"
+    },
+    "818409": {
+        "store": 6,
+        "number": 6185,
+        "description": "Velkoobchod Ostrava",
+        "season": 201810,
+        "movement": 221,
+        "depot": "9",
+        "note": "18081"
+    },
+    "818741": {
+        "store": 6,
+        "number": 6206,
+        "description": "Velkoobchod Ostrava",
+        "season": 201811,
+        "movement": 221,
+        "depot": "9",
+        "note": "38091"
+    },
+    "819324": {
+        "store": 6,
+        "number": 6023,
+        "description": "Velkoobchod Ostrava",
+        "season": 201901,
+        "movement": 221,
+        "depot": "9",
+        "note": "91855"
+    },
+    "819326": {
+        "store": 6,
+        "number": 6024,
+        "description": "Velkoobchod Ostrava",
+        "season": 201901,
+        "movement": 221,
+        "depot": "9",
+        "note": "91832"
+    },
+    "819327": {
+        "store": 6,
+        "number": 6025,
+        "description": "Velkoobchod Ostrava",
+        "season": 201901,
+        "movement": 221,
+        "depot": "9",
+        "note": "91792"
+    },
+    "819328": {
+        "store": 6,
+        "number": 6026,
+        "description": "Velkoobchod Ostrava",
+        "season": 201901,
+        "movement": 221,
+        "depot": "9",
+        "note": "91713"
+    },
+    "819329": {
+        "store": 6,
+        "number": 6027,
+        "description": "Velkoobchod Ostrava",
+        "season": 201901,
+        "movement": 221,
+        "depot": "9",
+        "note": "90120"
+    },
+    "819336": {
+        "store": 6,
+        "number": 6030,
+        "description": "Velkoobchod Ostrava",
+        "season": 201901,
+        "movement": 221,
+        "depot": "9",
+        "note": "92885"
+    },
+    "819339": {
+        "store": 6,
+        "number": 6031,
+        "description": "Velkoobchod Ostrava",
+        "season": 201901,
+        "movement": 221,
+        "depot": "9",
+        "note": "92014"
+    },
+    "819414": {
+        "store": 6,
+        "number": 6039,
+        "description": "Velkoobchod Ostrava",
+        "season": 201901,
+        "movement": 221,
+        "depot": "9",
+        "note": "9029"
+    },
+    "819983": {
+        "store": 6,
+        "number": 6082,
+        "description": "Velkoobchod Ostrava",
+        "season": 201903,
+        "movement": 221,
+        "depot": "9",
+        "note": "90744"
+    },
+    "820034": {
+        "store": 6,
+        "number": 6084,
+        "description": "Velkoobchod Ostrava",
+        "season": 201903,
+        "movement": 221,
+        "depot": "9",
+        "note": "69016"
+    },
+    "820560": {
+        "store": 6,
+        "number": 6119,
+        "description": "Velkoobchod Ostrava",
+        "season": 201904,
+        "movement": 221,
+        "depot": "9",
+        "note": "29029"
+    },
+    "820562": {
+        "store": 6,
+        "number": 6120,
+        "description": "Velkoobchod Ostrava",
+        "season": 201904,
+        "movement": 221,
+        "depot": "9",
+        "note": "29030"
+    },
+    "820563": {
+        "store": 6,
+        "number": 6121,
+        "description": "Velkoobchod Ostrava",
+        "season": 201904,
+        "movement": 221,
+        "depot": "9",
+        "note": "29031"
+    },
+    "820564": {
+        "store": 6,
+        "number": 6122,
+        "description": "Velkoobchod Ostrava",
+        "season": 201904,
+        "movement": 221,
+        "depot": "9",
+        "note": "6045"
+    },
+    "820659": {
+        "store": 6,
+        "number": 6132,
+        "description": "Velkoobchod Ostrava",
+        "season": 201905,
+        "movement": 221,
+        "depot": "9",
+        "note": "49021"
+    },
+    "820787": {
+        "store": 6,
+        "number": 6141,
+        "description": "Velkoobchod Ostrava",
+        "season": 201905,
+        "movement": 221,
+        "depot": "9",
+        "note": "69034"
+    },
+    "820813": {
+        "store": 6,
+        "number": 6144,
+        "description": "Velkoobchod Ostrava",
+        "season": 201905,
+        "movement": 221,
+        "depot": "9",
+        "note": "29036"
+    },
+    "820894": {
+        "store": 6,
+        "number": 6150,
+        "description": "Velkoobchod Ostrava",
+        "season": 201905,
+        "movement": 221,
+        "depot": "9",
+        "note": "31818"
+    },
+    "820956": {
+        "store": 6,
+        "number": 6153,
+        "description": "Velkoobchod Ostrava",
+        "season": 201905,
+        "movement": 221,
+        "depot": "9",
+        "note": "39024"
+    },
+    "821190": {
+        "store": 6,
+        "number": 6172,
+        "description": "Velkoobchod Ostrava",
+        "season": 201906,
+        "movement": 221,
+        "depot": "9",
+        "note": "49023"
+    },
+    "821856": {
+        "store": 6,
+        "number": 6231,
+        "description": "Velkoobchod Ostrava",
+        "season": 201908,
+        "movement": 221,
+        "depot": "9",
+        "note": "92837"
+    },
+    "824467": {
+        "store": 6,
+        "number": 6079,
+        "description": "Velkoobchod Ostrava",
+        "season": 202003,
+        "movement": 221,
+        "depot": "9",
+        "note": "900923"
+    },
+    "832548": {
+        "store": 7,
+        "number": 7063,
+        "description": "Velkoobchod Ostrava",
+        "season": 201207,
+        "movement": 221,
+        "depot": "9",
+        "note": "32055"
+    },
+    "832741": {
+        "store": 7,
+        "number": 7080,
+        "description": "Velkoobchod Ostrava",
+        "season": 201207,
+        "movement": 221,
+        "depot": "9",
+        "note": "22077"
+    },
+    "832796": {
+        "store": 7,
+        "number": 7081,
+        "description": "Velkoobchod Ostrava",
+        "season": 201207,
+        "movement": 221,
+        "depot": "9",
+        "note": "42054"
+    },
+    "837723": {
+        "store": 7,
+        "number": 7221,
+        "description": "Velkoobchod Ostrava",
+        "season": 201308,
+        "movement": 221,
+        "depot": "9",
+        "note": "2000252"
+    },
+    "840084": {
+        "store": 7,
+        "number": 7035,
+        "description": "Velkoobchod Ostrava",
+        "season": 201402,
+        "movement": 221,
+        "depot": "9",
+        "note": "44018"
+    },
+    "840793": {
+        "store": 7,
+        "number": 7091,
+        "description": "Prodejna Olomouc",
+        "season": 201404,
+        "movement": 220,
+        "depot": "2",
+        "note": "90683"
+    },
+    "840897": {
+        "store": 7,
+        "number": 7102,
+        "description": "Velkoobchod Ostrava",
+        "season": 201404,
+        "movement": 221,
+        "depot": "9",
+        "note": "91774"
+    },
+    "841925": {
+        "store": 7,
+        "number": 7172,
+        "description": "Velkoobchod Ostrava",
+        "season": 201407,
+        "movement": 221,
+        "depot": "9",
+        "note": "913359"
+    },
+    "854207": {
+        "store": 7,
+        "number": 7358,
+        "description": "Prodejna Otrokovice",
+        "season": 201611,
+        "movement": 220,
+        "depot": "3",
+        "note": "5539"
+    },
+    "855924": {
+        "store": 7,
+        "number": 7081,
+        "description": "Velkoobchod Ostrava",
+        "season": 201703,
+        "movement": 221,
+        "depot": "9",
+        "note": "37016"
+    },
+    "860047": {
+        "store": 7,
+        "number": 7396,
+        "description": "Velkoobchod Ostrava",
+        "season": 201712,
+        "movement": 221,
+        "depot": "9",
+        "note": "dl.27090"
+    },
+    "860251": {
+        "store": 7,
+        "number": 7417,
+        "description": "Velkoobchod Ostrava",
+        "season": 201712,
+        "movement": 221,
+        "depot": "9",
+        "note": "dl.47112"
+    },
+    "860453": {
+        "store": 7,
+        "number": 7013,
+        "description": "Velkoobchod Ostrava",
+        "season": 201801,
+        "movement": 221,
+        "depot": "9",
+        "note": "900911"
+    },
+    "868956": {
+        "store": 7,
+        "number": 7284,
+        "description": "Velkoobchod Ostrava",
+        "season": 201909,
+        "movement": 221,
+        "depot": "9",
+        "note": "69081"
+    },
+    "869577": {
+        "store": 7,
+        "number": 7336,
+        "description": "Velkoobchod Ostrava",
+        "season": 201911,
+        "movement": 221,
+        "depot": "9",
+        "note": "94244"
+    },
+    "875741": {
+        "store": 7,
+        "number": 7069,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202103,
+        "movement": 221,
+        "depot": "10",
+        "note": "90222"
+    },
+    "880018": {
+        "store": 8,
+        "number": 8088,
+        "description": "Velkoobchod Ostrava",
+        "season": 201602,
+        "movement": 221,
+        "depot": "9",
+        "note": "4095"
+    },
+    "883993": {
+        "store": 8,
+        "number": 8813,
+        "description": "Velkoobchod Ostrava",
+        "season": 201610,
+        "movement": 221,
+        "depot": "9",
+        "note": "8766"
+    },
+    "884224": {
+        "store": 8,
+        "number": 8861,
+        "description": "Velkoobchod Ostrava",
+        "season": 201611,
+        "movement": 221,
+        "depot": "9",
+        "note": "56100"
+    },
+    "885691": {
+        "store": 8,
+        "number": 8198,
+        "description": "Velkoobchod Ostrava",
+        "season": 201703,
+        "movement": 221,
+        "depot": "9",
+        "note": "90797"
+    },
+    "892380": {
+        "store": 8,
+        "number": 8427,
+        "description": "Velkoobchod Ostrava",
+        "season": 201807,
+        "movement": 221,
+        "depot": "9",
+        "note": "9250"
+    },
+    "894953": {
+        "store": 8,
+        "number": 8050,
+        "description": "Velkoobchod Ostrava",
+        "season": 201901,
+        "movement": 221,
+        "depot": "9",
+        "note": "8045"
+    },
+    "895021": {
+        "store": 8,
+        "number": 8097,
+        "description": "Velkoobchod Ostrava",
+        "season": 201902,
+        "movement": 221,
+        "depot": "9",
+        "note": "8080"
+    },
+    "896838": {
+        "store": 8,
+        "number": 8427,
+        "description": "Velkoobchod Ostrava",
+        "season": 201905,
+        "movement": 221,
+        "depot": "9",
+        "note": "914429"
+    },
+    "902519": {
+        "store": 8,
+        "number": 8732,
+        "description": "Velkoobchod Ostrava",
+        "season": 202008,
+        "movement": 221,
+        "depot": "9",
+        "note": "\u00a893108"
+    },
+    "903194": {
+        "store": 8,
+        "number": 8842,
+        "description": "Velkoobchod Ostrava",
+        "season": 202010,
+        "movement": 221,
+        "depot": "9",
+        "note": "60397"
+    },
+    "905485": {
+        "store": 8,
+        "number": 8166,
+        "description": "Velkoobchod Ostrava",
+        "season": 202105,
+        "movement": 221,
+        "depot": "9",
+        "note": "7148"
+    },
+    "29688591": {
+        "store": 2,
+        "number": 2392,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202106,
+        "movement": 221,
+        "depot": "10",
+        "note": "6074360746"
+    },
+    "29695367": {
+        "store": 4,
+        "number": 4520,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202106,
+        "movement": 221,
+        "depot": "10",
+        "note": "90713"
+    },
+    "29699087": {
+        "store": 5,
+        "number": 5298,
+        "description": "Velkoobchod Ostrava",
+        "season": 202106,
+        "movement": 221,
+        "depot": "9",
+        "note": "60670"
+    },
+    "29701353": {
+        "store": 6,
+        "number": 6165,
+        "description": "Velkoobchod Ostrava",
+        "season": 202106,
+        "movement": 221,
+        "depot": "9",
+        "note": "60661"
+    },
+    "29712432": {
+        "store": 7,
+        "number": 7183,
+        "description": "Velkoobchod Ostrava",
+        "season": 202106,
+        "movement": 221,
+        "depot": "9",
+        "note": "60604"
+    },
+    "29712521": {
+        "store": 7,
+        "number": 7192,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202106,
+        "movement": 221,
+        "depot": "10",
+        "note": "6060"
+    },
+    "29713010": {
+        "store": 7,
+        "number": 7220,
+        "description": "Velkoobchod Ostrava",
+        "season": 202106,
+        "movement": 221,
+        "depot": "9",
+        "note": "918799"
+    },
+    "83342086": {
+        "store": 6,
+        "number": 6189,
+        "description": "Velkoobchod Ostrava",
+        "season": 202107,
+        "movement": 221,
+        "depot": "9",
+        "note": "9200"
+    },
+    "83350948": {
+        "store": 1,
+        "number": 1301,
+        "description": "Velkoobchod Ostrava",
+        "season": 202107,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "83705066": {
+        "store": 7,
+        "number": 7228,
+        "description": "Velkoobchod Ostrava",
+        "season": 202107,
+        "movement": 221,
+        "depot": "9",
+        "note": "91856"
+    },
+    "83705392": {
+        "store": 7,
+        "number": 7256,
+        "description": "Velkoobchod Ostrava",
+        "season": 202107,
+        "movement": 221,
+        "depot": "9",
+        "note": "32054"
+    },
+    "250452881": {
+        "store": 6,
+        "number": 6271,
+        "description": "Velkoobchod Ostrava",
+        "season": 202109,
+        "movement": 221,
+        "depot": "9",
+        "note": "927000"
+    },
+    "250456221": {
+        "store": 7,
+        "number": 7307,
+        "description": "Velkoobchod Ostrava",
+        "season": 202109,
+        "movement": 221,
+        "depot": "9",
+        "note": "61068"
+    },
+    "250574981": {
+        "store": 8,
+        "number": 8333,
+        "description": "Velkoobchod Ostrava",
+        "season": 202109,
+        "movement": 221,
+        "depot": "9",
+        "note": "71076"
+    },
+    "250601009": {
+        "store": 1,
+        "number": 1258,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202109,
+        "movement": 221,
+        "depot": "10",
+        "note": "61102"
+    },
+    "250895046": {
+        "store": 2,
+        "number": 2576,
+        "description": "Velkoobchod Ostrava",
+        "season": 202109,
+        "movement": 221,
+        "depot": "9",
+        "note": "92644"
+    },
+    "251423061": {
+        "store": 5,
+        "number": 5496,
+        "description": "Velkoobchod Ostrava",
+        "season": 202109,
+        "movement": 221,
+        "depot": "9",
+        "note": "61043"
+    },
+    "251423581": {
+        "store": 5,
+        "number": 5551,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202109,
+        "movement": 221,
+        "depot": "10",
+        "note": "92809"
+    },
+    "348894787": {
+        "store": 1,
+        "number": 1420,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202110,
+        "movement": 221,
+        "depot": "10",
+        "note": "91199"
+    },
+    "350304578": {
+        "store": 2,
+        "number": 2637,
+        "description": "Velkoobchod Ostrava",
+        "season": 202110,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "350304848": {
+        "store": 2,
+        "number": 2682,
+        "description": "Velkoobchod Ostrava",
+        "season": 202110,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "460909273": {
+        "store": 8,
+        "number": 8424,
+        "description": "Velkoobchod Ostrava",
+        "season": 202111,
+        "movement": 221,
+        "depot": "9",
+        "note": "93466"
+    },
+    "461025501": {
+        "store": 6,
+        "number": 6330,
+        "description": "Velkoobchod Ostrava",
+        "season": 202111,
+        "movement": 221,
+        "depot": "9",
+        "note": "61330"
+    },
+    "461067638": {
+        "store": 2,
+        "number": 2730,
+        "description": "Velkoobchod Ostrava",
+        "season": 202111,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "461067661": {
+        "store": 2,
+        "number": 2736,
+        "description": "Velkoobchod Ostrava",
+        "season": 202111,
+        "movement": 221,
+        "depot": "9",
+        "note": "63420"
+    },
+    "584939597": {
+        "store": 7,
+        "number": 7463,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202112,
+        "movement": 221,
+        "depot": "10",
+        "note": "51512"
+    },
+    "587359317": {
+        "store": 8,
+        "number": 8449,
+        "description": "Velkoobchod Ostrava",
+        "season": 202112,
+        "movement": 221,
+        "depot": "9",
+        "note": "21087"
+    },
+    "592044532": {
+        "store": 5,
+        "number": 5046,
+        "description": "Velkoobchod Ostrava",
+        "season": 202201,
+        "movement": 221,
+        "depot": "9",
+        "note": "60100"
+    },
+    "592060776": {
+        "store": 2,
+        "number": 2048,
+        "description": "Velkoobchod Ostrava",
+        "season": 202201,
+        "movement": 221,
+        "depot": "9",
+        "note": "60096"
+    },
+    "606109546": {
+        "store": 1,
+        "number": 1079,
+        "description": "Velkoobchod Ostrava",
+        "season": 202202,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "606476087": {
+        "store": 10,
+        "number": 60306,
+        "description": "Velkoobchod Ostrava",
+        "season": 202202,
+        "movement": 221,
+        "depot": "9",
+        "note": "90616"
+    },
+    "633291093": {
+        "store": 7,
+        "number": 7177,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202203,
+        "movement": 221,
+        "depot": "10",
+        "note": "90487"
+    },
+    "717114762": {
+        "store": 1,
+        "number": 1204,
+        "description": "Velkoobchod Ostrava",
+        "season": 202205,
+        "movement": 221,
+        "depot": "9",
+        "note": "91373"
+    },
+    "717130588": {
+        "store": 7,
+        "number": 7250,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202205,
+        "movement": 221,
+        "depot": "10",
+        "note": "90667"
+    },
+    "717605101": {
+        "store": 8,
+        "number": 8215,
+        "description": "Prodejna Ostrava",
+        "season": 202205,
+        "movement": 220,
+        "depot": "4",
+        "note": "60704"
+    },
+    "774403676": {
+        "store": 7,
+        "number": 7289,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202206,
+        "movement": 221,
+        "depot": "10",
+        "note": "606797"
+    },
+    "774428387": {
+        "store": 3,
+        "number": 3294,
+        "description": "Velkoobchod Ostrava",
+        "season": 202206,
+        "movement": 221,
+        "depot": "9",
+        "note": "97870"
+    },
+    "1095007814": {
+        "store": 2,
+        "number": 2808,
+        "description": "Velkoobchod Ostrava",
+        "season": 202210,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "1198183118": {
+        "store": 1,
+        "number": 1485,
+        "description": "Velkoobchod Ostrava",
+        "season": 202211,
+        "movement": 221,
+        "depot": "9",
+        "note": "61613"
+    },
+    "1198183441": {
+        "store": 1,
+        "number": 1497,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202211,
+        "movement": 220,
+        "depot": "5",
+        "note": "5690"
+    },
+    "1198194315": {
+        "store": 3,
+        "number": 3531,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202211,
+        "movement": 220,
+        "depot": "5",
+        "note": "5710"
+    },
+    "1198200861": {
+        "store": 4,
+        "number": 4955,
+        "description": "Velkoobchod Ostrava",
+        "season": 202211,
+        "movement": 221,
+        "depot": "9",
+        "note": "94388"
+    },
+    "1198215936": {
+        "store": 7,
+        "number": 7531,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202211,
+        "movement": 220,
+        "depot": "5",
+        "note": "5669"
+    },
+    "1198530698": {
+        "store": 5,
+        "number": 5609,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202210,
+        "movement": 221,
+        "depot": "10",
+        "note": "91470"
+    },
+    "1200251767": {
+        "store": 10,
+        "number": 61729,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202211,
+        "movement": 220,
+        "depot": "5",
+        "note": "5693"
+    },
+    "1200251768": {
+        "store": 10,
+        "number": 61730,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202211,
+        "movement": 220,
+        "depot": "5",
+        "note": "5699"
+    },
+    "1200375526": {
+        "store": 9,
+        "number": 93433,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202211,
+        "movement": 220,
+        "depot": "5",
+        "note": "5656"
+    },
+    "1200375833": {
+        "store": 9,
+        "number": 93482,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202211,
+        "movement": 220,
+        "depot": "5",
+        "note": "5686"
+    },
+    "1200376169": {
+        "store": 9,
+        "number": 93546,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202211,
+        "movement": 220,
+        "depot": "5",
+        "note": "5692"
+    },
+    "1312156582": {
+        "store": 10,
+        "number": 61819,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202212,
+        "movement": 220,
+        "depot": "5",
+        "note": "5660"
+    },
+    "1312185284": {
+        "store": 9,
+        "number": 93664,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202212,
+        "movement": 220,
+        "depot": "5",
+        "note": "5702"
+    },
+    "1312185285": {
+        "store": 9,
+        "number": 93665,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202212,
+        "movement": 220,
+        "depot": "5",
+        "note": "5701"
+    },
+    "1312185289": {
+        "store": 9,
+        "number": 93666,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202212,
+        "movement": 220,
+        "depot": "5",
+        "note": "5695"
+    },
+    "1312191125": {
+        "store": 8,
+        "number": 8530,
+        "description": "Velkoobchod Ostrava",
+        "season": 202212,
+        "movement": 221,
+        "depot": "9",
+        "note": "92597"
+    },
+    "1316104671": {
+        "store": 1,
+        "number": 1003,
+        "description": "Velkoobchod Ostrava",
+        "season": 202301,
+        "movement": 221,
+        "depot": "9",
+        "note": "90001"
+    },
+    "1316105618": {
+        "store": 3,
+        "number": 3006,
+        "description": "Velkoobchod Ostrava",
+        "season": 202301,
+        "movement": 221,
+        "depot": "9",
+        "note": "90002"
+    },
+    "1316107066": {
+        "store": 6,
+        "number": 6002,
+        "description": "Velkoobchod Ostrava",
+        "season": 202301,
+        "movement": 221,
+        "depot": "9",
+        "note": "9004"
+    },
+    "1316273987": {
+        "store": 9,
+        "number": 90066,
+        "description": "Prodejna Teplice",
+        "season": 202301,
+        "movement": 220,
+        "depot": "6",
+        "note": "6001"
+    },
+    "1351659432": {
+        "store": 10,
+        "number": 60502,
+        "description": "Prodejna Vala\u0161sk\u00e9 Mezi\u0159\u00ed\u010d\u00ed",
+        "season": 202303,
+        "movement": 220,
+        "depot": "7",
+        "note": "4212"
+    },
+    "1378723152": {
+        "store": 6,
+        "number": 6097,
+        "description": "Velkoobchod Ostrava",
+        "season": 202304,
+        "movement": 221,
+        "depot": "9",
+        "note": "90879"
+    },
+    "1379170602": {
+        "store": 7,
+        "number": 7136,
+        "description": "Velkoobchod Ostrava",
+        "season": 202304,
+        "movement": 221,
+        "depot": "9",
+        "note": "73011"
+    },
+    "1380946172": {
+        "store": 9,
+        "number": 91074,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202304,
+        "movement": 221,
+        "depot": "10",
+        "note": "91054"
+    },
+    "1417960369": {
+        "store": 2,
+        "number": 2390,
+        "description": "Velkoobchod Ostrava",
+        "season": 202305,
+        "movement": 221,
+        "depot": "9",
+        "note": null
+    },
+    "1418559156": {
+        "store": 8,
+        "number": 8170,
+        "description": "Velkoobchod Ostrava",
+        "season": 202305,
+        "movement": 221,
+        "depot": "9",
+        "note": "23013"
+    },
+    "1518410658": {
+        "store": 4,
+        "number": 4487,
+        "description": "Velkoobchod Ostrava",
+        "season": 202307,
+        "movement": 221,
+        "depot": "9",
+        "note": "92215"
+    },
+    "1518490282": {
+        "store": 7,
+        "number": 7238,
+        "description": "Prodejna Prost\u011bjov",
+        "season": 202307,
+        "movement": 220,
+        "depot": "5",
+        "note": "5443"
+    },
+    "1518490310": {
+        "store": 7,
+        "number": 7247,
+        "description": "Velkoobchod Hlu\u010d\u00edn",
+        "season": 202307,
+        "movement": 221,
+        "depot": "10",
+        "note": "60942"
+    },
+    "1583201995": {
+        "store": 6,
+        "number": 6226,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/33"
+    },
+    "1583201996": {
+        "store": 6,
+        "number": 6227,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/26"
+    },
+    "1583202013": {
+        "store": 6,
+        "number": 6232,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207202339"
+    },
+    "1583204181": {
+        "store": 7,
+        "number": 7291,
+        "description": "Logistick\u00e9 centrum I",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "92384"
+    },
+    "1583204275": {
+        "store": 7,
+        "number": 7304,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/25"
+    },
+    "1583204573": {
+        "store": 7,
+        "number": 7301,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/22"
+    },
+    "1583204610": {
+        "store": 7,
+        "number": 7299,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/13"
+    },
+    "1583204682": {
+        "store": 7,
+        "number": 7319,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/51"
+    },
+    "1583231977": {
+        "store": 3,
+        "number": 3339,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/8"
+    },
+    "1583232012": {
+        "store": 3,
+        "number": 3344,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/45"
+    },
+    "1583232020": {
+        "store": 3,
+        "number": 3351,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/24"
+    },
+    "1583232022": {
+        "store": 3,
+        "number": 3353,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/32"
+    },
+    "1583276993": {
+        "store": 4,
+        "number": 4574,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/3"
+    },
+    "1583277245": {
+        "store": 4,
+        "number": 4625,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/31"
+    },
+    "1583277264": {
+        "store": 4,
+        "number": 4591,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/4"
+    },
+    "1583277265": {
+        "store": 4,
+        "number": 4622,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/23"
+    },
+    "1583277266": {
+        "store": 4,
+        "number": 4592,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/5"
+    },
+    "1583277267": {
+        "store": 4,
+        "number": 4593,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/6"
+    },
+    "1583277268": {
+        "store": 4,
+        "number": 4606,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/14"
+    },
+    "1583277274": {
+        "store": 4,
+        "number": 4607,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/19"
+    },
+    "1583277275": {
+        "store": 4,
+        "number": 4613,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/17"
+    },
+    "1583277406": {
+        "store": 4,
+        "number": 4644,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/44"
+    },
+    "1583277424": {
+        "store": 4,
+        "number": 4655,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/55"
+    },
+    "1583307320": {
+        "store": 1,
+        "number": 1320,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/36"
+    },
+    "1583307407": {
+        "store": 1,
+        "number": 1328,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/41"
+    },
+    "1583307424": {
+        "store": 1,
+        "number": 1317,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/28"
+    },
+    "1583307425": {
+        "store": 1,
+        "number": 1306,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/10"
+    },
+    "1583307440": {
+        "store": 1,
+        "number": 1335,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/48"
+    },
+    "1583307441": {
+        "store": 1,
+        "number": 1336,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/54"
+    },
+    "1583363612": {
+        "store": 5,
+        "number": 5410,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/1"
+    },
+    "1583363637": {
+        "store": 5,
+        "number": 5420,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/9"
+    },
+    "1583363698": {
+        "store": 5,
+        "number": 5429,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/15"
+    },
+    "1583363752": {
+        "store": 5,
+        "number": 5435,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/27"
+    },
+    "1583363843": {
+        "store": 5,
+        "number": 5436,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/34"
+    },
+    "1583363896": {
+        "store": 5,
+        "number": 5447,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/40"
+    },
+    "1583363939": {
+        "store": 5,
+        "number": 5446,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/47"
+    },
+    "1583363952": {
+        "store": 5,
+        "number": 5453,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/52"
+    },
+    "1583577394": {
+        "store": 8,
+        "number": 8317,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/38"
+    },
+    "1583577400": {
+        "store": 8,
+        "number": 8319,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/30"
+    },
+    "1583577402": {
+        "store": 8,
+        "number": 8314,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/18"
+    },
+    "1583577403": {
+        "store": 8,
+        "number": 8285,
+        "description": "Logistick\u00e9 centrum I",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/2"
+    },
+    "1583577406": {
+        "store": 8,
+        "number": 8302,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/12"
+    },
+    "1583577436": {
+        "store": 8,
+        "number": 8323,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/43"
+    },
+    "1584422548": {
+        "store": 2,
+        "number": 2582,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/37"
+    },
+    "1584422636": {
+        "store": 2,
+        "number": 2562,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/11"
+    },
+    "1584422637": {
+        "store": 2,
+        "number": 2570,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/21"
+    },
+    "1584422638": {
+        "store": 2,
+        "number": 2572,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/20"
+    },
+    "1584422639": {
+        "store": 2,
+        "number": 2579,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/29"
+    },
+    "1584422655": {
+        "store": 2,
+        "number": 2589,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/42"
+    },
+    "1584422727": {
+        "store": 2,
+        "number": 2591,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/49"
+    },
+    "1584422730": {
+        "store": 2,
+        "number": 2600,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/56"
+    },
+    "1584576235": {
+        "store": 9,
+        "number": 92463,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/7"
+    },
+    "1584576698": {
+        "store": 9,
+        "number": 92497,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/16"
+    },
+    "1584576786": {
+        "store": 9,
+        "number": 92568,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/35"
+    },
+    "1584576861": {
+        "store": 9,
+        "number": 92630,
+        "description": "Logistick\u00e9 centrum II Hlu\u010d\u00edn",
+        "season": 202308,
+        "movement": 221,
+        "depot": "10",
+        "note": "10 230096"
+    },
+    "1584576913": {
+        "store": 9,
+        "number": 92641,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202308,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/53"
+    },
+    "1652687210": {
+        "store": 6,
+        "number": 6258,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207202395"
+    },
+    "1652687211": {
+        "store": 6,
+        "number": 6248,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207202375"
+    },
+    "1652687212": {
+        "store": 6,
+        "number": 6253,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207202382"
+    },
+    "1652687213": {
+        "store": 6,
+        "number": 6255,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207202392"
+    },
+    "1652687214": {
+        "store": 6,
+        "number": 6241,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207202361"
+    },
+    "1652687216": {
+        "store": 6,
+        "number": 6244,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207202371"
+    },
+    "1652687270": {
+        "store": 6,
+        "number": 6261,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023112"
+    },
+    "1652687272": {
+        "store": 6,
+        "number": 6265,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023118"
+    },
+    "1652696722": {
+        "store": 1,
+        "number": 1347,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/78"
+    },
+    "1652696728": {
+        "store": 1,
+        "number": 1352,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/68"
+    },
+    "1652696782": {
+        "store": 1,
+        "number": 1356,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/86"
+    },
+    "1652696878": {
+        "store": 1,
+        "number": 1350,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/63"
+    },
+    "1652696879": {
+        "store": 1,
+        "number": 1364,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/101"
+    },
+    "1652696886": {
+        "store": 1,
+        "number": 1370,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/109"
+    },
+    "1652696939": {
+        "store": 1,
+        "number": 1374,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/121"
+    },
+    "1652697014": {
+        "store": 1,
+        "number": 1386,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/139"
+    },
+    "1652701076": {
+        "store": 2,
+        "number": 2620,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/64"
+    },
+    "1652701087": {
+        "store": 2,
+        "number": 2621,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/69"
+    },
+    "1652701104": {
+        "store": 2,
+        "number": 2624,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/79"
+    },
+    "1652701176": {
+        "store": 2,
+        "number": 2638,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/87"
+    },
+    "1652701253": {
+        "store": 2,
+        "number": 2649,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/102"
+    },
+    "1652701266": {
+        "store": 2,
+        "number": 2652,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/104"
+    },
+    "1652701287": {
+        "store": 2,
+        "number": 2654,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/110"
+    },
+    "1652701357": {
+        "store": 2,
+        "number": 2665,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/122"
+    },
+    "1652701423": {
+        "store": 2,
+        "number": 2670,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/127"
+    },
+    "1652701424": {
+        "store": 2,
+        "number": 2671,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/132"
+    },
+    "1652705635": {
+        "store": 5,
+        "number": 5465,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/62"
+    },
+    "1652705673": {
+        "store": 5,
+        "number": 5470,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/76"
+    },
+    "1652705819": {
+        "store": 5,
+        "number": 5474,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/85"
+    },
+    "1652705857": {
+        "store": 5,
+        "number": 5487,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/100"
+    },
+    "1652705862": {
+        "store": 5,
+        "number": 5490,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/103"
+    },
+    "1652706046": {
+        "store": 5,
+        "number": 5493,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/107"
+    },
+    "1652706070": {
+        "store": 5,
+        "number": 5495,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/120"
+    },
+    "1652706116": {
+        "store": 5,
+        "number": 5500,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/130"
+    },
+    "1652706117": {
+        "store": 5,
+        "number": 5501,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/125"
+    },
+    "1652706142": {
+        "store": 5,
+        "number": 5503,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/137"
+    },
+    "1652711710": {
+        "store": 7,
+        "number": 7315,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/46"
+    },
+    "1652711739": {
+        "store": 7,
+        "number": 7331,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/74"
+    },
+    "1652711760": {
+        "store": 7,
+        "number": 7324,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/60"
+    },
+    "1652711796": {
+        "store": 7,
+        "number": 7340,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/90"
+    },
+    "1652711877": {
+        "store": 7,
+        "number": 7347,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/99"
+    },
+    "1652711927": {
+        "store": 7,
+        "number": 7352,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/115"
+    },
+    "1652711945": {
+        "store": 7,
+        "number": 7354,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/129"
+    },
+    "1653104295": {
+        "store": 8,
+        "number": 8350,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/72"
+    },
+    "1653104296": {
+        "store": 8,
+        "number": 8351,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/65"
+    },
+    "1653104297": {
+        "store": 8,
+        "number": 8352,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/80"
+    },
+    "1653104750": {
+        "store": 8,
+        "number": 8365,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/83"
+    },
+    "1653104783": {
+        "store": 8,
+        "number": 8373,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/93"
+    },
+    "1653104786": {
+        "store": 8,
+        "number": 8372,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/96"
+    },
+    "1653104809": {
+        "store": 8,
+        "number": 8378,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/113"
+    },
+    "1653104826": {
+        "store": 8,
+        "number": 8384,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/119"
+    },
+    "1653104918": {
+        "store": 8,
+        "number": 8391,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/135"
+    },
+    "1653104922": {
+        "store": 8,
+        "number": 8392,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/134"
+    },
+    "1653586810": {
+        "store": 3,
+        "number": 3361,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/50"
+    },
+    "1653587296": {
+        "store": 3,
+        "number": 3363,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/59"
+    },
+    "1653587298": {
+        "store": 3,
+        "number": 3364,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/66"
+    },
+    "1653587332": {
+        "store": 3,
+        "number": 3367,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/73"
+    },
+    "1653587347": {
+        "store": 3,
+        "number": 3368,
+        "description": "Velkoobchod Ostrava",
+        "season": 202309,
+        "movement": 221,
+        "depot": "9",
+        "note": "61733"
+    },
+    "1653587348": {
+        "store": 3,
+        "number": 3369,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/89"
+    },
+    "1653587397": {
+        "store": 3,
+        "number": 3378,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/98"
+    },
+    "1653587398": {
+        "store": 3,
+        "number": 3379,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/105"
+    },
+    "1653587452": {
+        "store": 3,
+        "number": 3388,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/114"
+    },
+    "1653587472": {
+        "store": 3,
+        "number": 3391,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/124"
+    },
+    "1653587513": {
+        "store": 3,
+        "number": 3394,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/128"
+    },
+    "1653591538": {
+        "store": 4,
+        "number": 4660,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/57"
+    },
+    "1653591619": {
+        "store": 4,
+        "number": 4669,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/70"
+    },
+    "1653591643": {
+        "store": 4,
+        "number": 4674,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/81"
+    },
+    "1653591677": {
+        "store": 4,
+        "number": 4681,
+        "description": "Logistick\u00e9 centrum II Hlu\u010d\u00edn",
+        "season": 202309,
+        "movement": 221,
+        "depot": "10",
+        "note": "91171"
+    },
+    "1653591720": {
+        "store": 4,
+        "number": 4685,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/88"
+    },
+    "1653591754": {
+        "store": 4,
+        "number": 4694,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/91"
+    },
+    "1653591801": {
+        "store": 4,
+        "number": 4709,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/94"
+    },
+    "1653591865": {
+        "store": 4,
+        "number": 4714,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/106"
+    },
+    "1653592068": {
+        "store": 4,
+        "number": 4731,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/123"
+    },
+    "1653592122": {
+        "store": 4,
+        "number": 4723,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/117"
+    },
+    "1653592135": {
+        "store": 4,
+        "number": 4742,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/133"
+    },
+    "1654709921": {
+        "store": 9,
+        "number": 92703,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/58"
+    },
+    "1654710041": {
+        "store": 9,
+        "number": 92738,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "2007\/2023\/77"
+    },
+    "1654710042": {
+        "store": 9,
+        "number": 92739,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/67"
+    },
+    "1654710232": {
+        "store": 9,
+        "number": 92782,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/84"
+    },
+    "1654710430": {
+        "store": 9,
+        "number": 92828,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/97"
+    },
+    "1654710519": {
+        "store": 9,
+        "number": 92863,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/108"
+    },
+    "1654710520": {
+        "store": 9,
+        "number": 92864,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/111"
+    },
+    "1654710633": {
+        "store": 9,
+        "number": 92888,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/116"
+    },
+    "1654710753": {
+        "store": 9,
+        "number": 92924,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/126"
+    },
+    "1654710814": {
+        "store": 9,
+        "number": 92938,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202309,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/131"
+    },
+    "1731192560": {
+        "store": 6,
+        "number": 6267,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023141"
+    },
+    "1731192563": {
+        "store": 6,
+        "number": 6275,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023167"
+    },
+    "1731192614": {
+        "store": 6,
+        "number": 6277,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023184"
+    },
+    "1731192653": {
+        "store": 6,
+        "number": 6279,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023197"
+    },
+    "1731192654": {
+        "store": 6,
+        "number": 6282,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023214"
+    },
+    "1731192780": {
+        "store": 6,
+        "number": 6288,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023240"
+    },
+    "1731192782": {
+        "store": 6,
+        "number": 6284,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023226"
+    },
+    "1731192783": {
+        "store": 6,
+        "number": 6270,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023154"
+    },
+    "1731192791": {
+        "store": 6,
+        "number": 6289,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023256"
+    },
+    "1731219312": {
+        "store": 1,
+        "number": 1390,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/143"
+    },
+    "1731219324": {
+        "store": 1,
+        "number": 1392,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/150"
+    },
+    "1731219358": {
+        "store": 1,
+        "number": 1397,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/162"
+    },
+    "1731219387": {
+        "store": 1,
+        "number": 1398,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/165"
+    },
+    "1731219419": {
+        "store": 1,
+        "number": 1403,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/180"
+    },
+    "1731219828": {
+        "store": 1,
+        "number": 1409,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/195"
+    },
+    "1731219849": {
+        "store": 1,
+        "number": 1411,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/209"
+    },
+    "1731219884": {
+        "store": 1,
+        "number": 1418,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/216"
+    },
+    "1731219947": {
+        "store": 1,
+        "number": 1422,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/229"
+    },
+    "1731219987": {
+        "store": 1,
+        "number": 1427,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/247"
+    },
+    "1731220029": {
+        "store": 1,
+        "number": 1431,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/253"
+    },
+    "1731224063": {
+        "store": 2,
+        "number": 2675,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/140"
+    },
+    "1731224094": {
+        "store": 2,
+        "number": 2681,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/144"
+    },
+    "1731224566": {
+        "store": 2,
+        "number": 2683,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/151"
+    },
+    "1731224578": {
+        "store": 2,
+        "number": 2684,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/158"
+    },
+    "1731224618": {
+        "store": 2,
+        "number": 2699,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/166"
+    },
+    "1731224642": {
+        "store": 2,
+        "number": 2703,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/177"
+    },
+    "1731224660": {
+        "store": 2,
+        "number": 2706,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/182"
+    },
+    "1731224665": {
+        "store": 2,
+        "number": 2708,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/187"
+    },
+    "1731224673": {
+        "store": 2,
+        "number": 2711,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/191"
+    },
+    "1731224699": {
+        "store": 2,
+        "number": 2716,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/196"
+    },
+    "1731224727": {
+        "store": 2,
+        "number": 2721,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/210"
+    },
+    "1731224775": {
+        "store": 2,
+        "number": 2726,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/217"
+    },
+    "1731224823": {
+        "store": 2,
+        "number": 2730,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/224"
+    },
+    "1731224846": {
+        "store": 2,
+        "number": 2733,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/230"
+    },
+    "1731224865": {
+        "store": 2,
+        "number": 2736,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/239"
+    },
+    "1731224893": {
+        "store": 2,
+        "number": 2685,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/235"
+    },
+    "1731224894": {
+        "store": 2,
+        "number": 2686,
+        "description": "Velkoobchod Ostrava",
+        "season": 202310,
+        "movement": 221,
+        "depot": "9",
+        "note": "93183"
+    },
+    "1731224895": {
+        "store": 2,
+        "number": 2696,
+        "description": "Velkoobchod Ostrava",
+        "season": 202310,
+        "movement": 221,
+        "depot": "9",
+        "note": "93185"
+    },
+    "1731224896": {
+        "store": 2,
+        "number": 2715,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/236"
+    },
+    "1731224918": {
+        "store": 2,
+        "number": 2740,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/248"
+    },
+    "1731224937": {
+        "store": 2,
+        "number": 2741,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/250"
+    },
+    "1731224982": {
+        "store": 2,
+        "number": 2744,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/264"
+    },
+    "1731228082": {
+        "store": 3,
+        "number": 3400,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/146"
+    },
+    "1731228117": {
+        "store": 3,
+        "number": 3404,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/156"
+    },
+    "1731228125": {
+        "store": 3,
+        "number": 3407,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/160"
+    },
+    "1731228131": {
+        "store": 3,
+        "number": 3408,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/169"
+    },
+    "1731228148": {
+        "store": 3,
+        "number": 3411,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/173"
+    },
+    "1731228162": {
+        "store": 3,
+        "number": 3412,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/183"
+    },
+    "1731228190": {
+        "store": 3,
+        "number": 3414,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/199"
+    },
+    "1731228194": {
+        "store": 3,
+        "number": 3415,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/204"
+    },
+    "1731228209": {
+        "store": 3,
+        "number": 3416,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/205"
+    },
+    "1731228217": {
+        "store": 3,
+        "number": 3418,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/212"
+    },
+    "1731228249": {
+        "store": 3,
+        "number": 3421,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207,2023\/221"
+    },
+    "1731228274": {
+        "store": 3,
+        "number": 3423,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/231"
+    },
+    "1731228294": {
+        "store": 3,
+        "number": 3425,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/244"
+    },
+    "1731228315": {
+        "store": 3,
+        "number": 3429,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/251"
+    },
+    "1731228316": {
+        "store": 3,
+        "number": 3430,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/254"
+    },
+    "1731228565": {
+        "store": 3,
+        "number": 3433,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/260"
+    },
+    "1731233099": {
+        "store": 4,
+        "number": 4751,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/136"
+    },
+    "1731233110": {
+        "store": 4,
+        "number": 4753,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/145"
+    },
+    "1731233119": {
+        "store": 4,
+        "number": 4754,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/148"
+    },
+    "1731233171": {
+        "store": 4,
+        "number": 4764,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/159"
+    },
+    "1731233198": {
+        "store": 4,
+        "number": 4773,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/170"
+    },
+    "1731233226": {
+        "store": 4,
+        "number": 4777,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/172"
+    },
+    "1731233229": {
+        "store": 4,
+        "number": 4778,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/175"
+    },
+    "1731233271": {
+        "store": 4,
+        "number": 4780,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/181"
+    },
+    "1731233309": {
+        "store": 4,
+        "number": 4789,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/188"
+    },
+    "1731233313": {
+        "store": 4,
+        "number": 4788,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/193"
+    },
+    "1731233361": {
+        "store": 4,
+        "number": 4792,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/200"
+    },
+    "1731233384": {
+        "store": 4,
+        "number": 4797,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/203"
+    },
+    "1731233391": {
+        "store": 4,
+        "number": 4799,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/207"
+    },
+    "1731233610": {
+        "store": 4,
+        "number": 4803,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/219"
+    },
+    "1731233680": {
+        "store": 4,
+        "number": 4814,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/227"
+    },
+    "1731233706": {
+        "store": 4,
+        "number": 4808,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/225"
+    },
+    "1731233753": {
+        "store": 4,
+        "number": 4824,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/237"
+    },
+    "1731233755": {
+        "store": 4,
+        "number": 4825,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/233"
+    },
+    "1731233775": {
+        "store": 4,
+        "number": 4827,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/242"
+    },
+    "1731233822": {
+        "store": 4,
+        "number": 4832,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/255"
+    },
+    "1731233859": {
+        "store": 4,
+        "number": 4834,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/259"
+    },
+    "1731334752": {
+        "store": 5,
+        "number": 5512,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/142"
+    },
+    "1731334761": {
+        "store": 5,
+        "number": 5513,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/153"
+    },
+    "1731334772": {
+        "store": 5,
+        "number": 5515,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/149"
+    },
+    "1731334778": {
+        "store": 5,
+        "number": 5517,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/157"
+    },
+    "1731334867": {
+        "store": 5,
+        "number": 5526,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/164"
+    },
+    "1731334903": {
+        "store": 5,
+        "number": 5531,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/179"
+    },
+    "1731334963": {
+        "store": 5,
+        "number": 5535,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/190"
+    },
+    "1731334978": {
+        "store": 5,
+        "number": 5536,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/186"
+    },
+    "1731334979": {
+        "store": 5,
+        "number": 5540,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/194"
+    },
+    "1731335031": {
+        "store": 5,
+        "number": 5543,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/208"
+    },
+    "1731335055": {
+        "store": 5,
+        "number": 5545,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/213"
+    },
+    "1731335221": {
+        "store": 5,
+        "number": 5549,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/223"
+    },
+    "1731335238": {
+        "store": 5,
+        "number": 5550,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/228"
+    },
+    "1731335285": {
+        "store": 5,
+        "number": 5553,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/238"
+    },
+    "1731335332": {
+        "store": 5,
+        "number": 5558,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/249"
+    },
+    "1731335336": {
+        "store": 5,
+        "number": 5559,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/246"
+    },
+    "1731335362": {
+        "store": 5,
+        "number": 5528,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/176"
+    },
+    "1731335367": {
+        "store": 5,
+        "number": 5562,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/258"
+    },
+    "1731335383": {
+        "store": 5,
+        "number": 5564,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/263"
+    },
+    "1731335384": {
+        "store": 5,
+        "number": 5565,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/262"
+    },
+    "1731344553": {
+        "store": 8,
+        "number": 8399,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/163"
+    },
+    "1731344557": {
+        "store": 8,
+        "number": 8397,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/155"
+    },
+    "1731344571": {
+        "store": 8,
+        "number": 8402,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/168"
+    },
+    "1731344597": {
+        "store": 8,
+        "number": 8409,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/185"
+    },
+    "1731344647": {
+        "store": 8,
+        "number": 8410,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/198"
+    },
+    "1731344651": {
+        "store": 8,
+        "number": 8401,
+        "description": "Velkoobchod Ostrava",
+        "season": 202310,
+        "movement": 221,
+        "depot": "9",
+        "note": "93113"
+    },
+    "1731344674": {
+        "store": 8,
+        "number": 8416,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/211"
+    },
+    "1731344696": {
+        "store": 8,
+        "number": 8418,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/220"
+    },
+    "1731344764": {
+        "store": 8,
+        "number": 8421,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/241"
+    },
+    "1731344776": {
+        "store": 8,
+        "number": 8422,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/257"
+    },
+    "1732781684": {
+        "store": 7,
+        "number": 7360,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/147"
+    },
+    "1732781685": {
+        "store": 7,
+        "number": 7363,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/161"
+    },
+    "1732781718": {
+        "store": 7,
+        "number": 7368,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/174"
+    },
+    "1732781750": {
+        "store": 7,
+        "number": 7371,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/189"
+    },
+    "1732781774": {
+        "store": 7,
+        "number": 7376,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/202"
+    },
+    "1732781789": {
+        "store": 7,
+        "number": 7377,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/206"
+    },
+    "1732781833": {
+        "store": 7,
+        "number": 7378,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/215"
+    },
+    "1732781856": {
+        "store": 7,
+        "number": 7379,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/222"
+    },
+    "1732781868": {
+        "store": 7,
+        "number": 7381,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/232"
+    },
+    "1732781899": {
+        "store": 7,
+        "number": 7384,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/243"
+    },
+    "1732781916": {
+        "store": 7,
+        "number": 7385,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/245"
+    },
+    "1732781922": {
+        "store": 7,
+        "number": 7388,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/252"
+    },
+    "1732781943": {
+        "store": 7,
+        "number": 7389,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/261"
+    },
+    "1733244641": {
+        "store": 9,
+        "number": 93000,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/138"
+    },
+    "1733244679": {
+        "store": 9,
+        "number": 93011,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/152"
+    },
+    "1733244752": {
+        "store": 9,
+        "number": 93055,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/171"
+    },
+    "1733244850": {
+        "store": 9,
+        "number": 93109,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/192"
+    },
+    "1733244872": {
+        "store": 9,
+        "number": 93111,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/201"
+    },
+    "1733244905": {
+        "store": 9,
+        "number": 93128,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2023\/218"
+    },
+    "1733245026": {
+        "store": 9,
+        "number": 93196,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2023\/234"
+    },
+    "1733245133": {
+        "store": 9,
+        "number": 93203,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202310,
+        "movement": 221,
+        "depot": "11",
+        "note": "2023\/178"
+    },
+    "1812236261": {
+        "store": 6,
+        "number": 6293,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/266"
+    },
+    "1812236262": {
+        "store": 6,
+        "number": 6294,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/277"
+    },
+    "1812236760": {
+        "store": 6,
+        "number": 6307,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/351"
+    },
+    "1812236771": {
+        "store": 6,
+        "number": 6298,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/296"
+    },
+    "1812236772": {
+        "store": 6,
+        "number": 6300,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/308"
+    },
+    "1812236773": {
+        "store": 6,
+        "number": 6302,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/321"
+    },
+    "1812236774": {
+        "store": 6,
+        "number": 6303,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/327"
+    },
+    "1812236775": {
+        "store": 6,
+        "number": 6306,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/344"
+    },
+    "1812236776": {
+        "store": 6,
+        "number": 6301,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/336"
+    },
+    "1812236791": {
+        "store": 6,
+        "number": 6308,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/366"
+    },
+    "1812236837": {
+        "store": 6,
+        "number": 6311,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/362"
+    },
+    "1812239864": {
+        "store": 7,
+        "number": 7392,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/271"
+    },
+    "1812239887": {
+        "store": 7,
+        "number": 7394,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/282"
+    },
+    "1812239913": {
+        "store": 7,
+        "number": 7398,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/291"
+    },
+    "1812239940": {
+        "store": 7,
+        "number": 7400,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/303"
+    },
+    "1812239983": {
+        "store": 7,
+        "number": 7402,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/312"
+    },
+    "1812240007": {
+        "store": 7,
+        "number": 7404,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/315"
+    },
+    "1812240024": {
+        "store": 7,
+        "number": 7405,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/323"
+    },
+    "1812240052": {
+        "store": 7,
+        "number": 7408,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/337"
+    },
+    "1812240068": {
+        "store": 7,
+        "number": 7409,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/349"
+    },
+    "1812240075": {
+        "store": 7,
+        "number": 7410,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/353"
+    },
+    "1812240364": {
+        "store": 7,
+        "number": 7413,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/370"
+    },
+    "1812270158": {
+        "store": 2,
+        "number": 2756,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/275"
+    },
+    "1812270608": {
+        "store": 2,
+        "number": 2750,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/276"
+    },
+    "1812270612": {
+        "store": 2,
+        "number": 2757,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/280"
+    },
+    "1812270619": {
+        "store": 2,
+        "number": 2751,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/270"
+    },
+    "1812270633": {
+        "store": 2,
+        "number": 2762,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/288"
+    },
+    "1812270646": {
+        "store": 2,
+        "number": 2765,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/295"
+    },
+    "1812270686": {
+        "store": 2,
+        "number": 2771,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/305"
+    },
+    "1812270736": {
+        "store": 2,
+        "number": 2772,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/314"
+    },
+    "1812270742": {
+        "store": 2,
+        "number": 2779,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/318"
+    },
+    "1812270780": {
+        "store": 2,
+        "number": 2778,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/326"
+    },
+    "1812270782": {
+        "store": 2,
+        "number": 2784,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/330"
+    },
+    "1812270784": {
+        "store": 2,
+        "number": 2785,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/333"
+    },
+    "1812270829": {
+        "store": 2,
+        "number": 2795,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/342"
+    },
+    "1812270835": {
+        "store": 2,
+        "number": 2796,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/357"
+    },
+    "1812270860": {
+        "store": 2,
+        "number": 2799,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/361"
+    },
+    "1812270882": {
+        "store": 2,
+        "number": 2803,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/374"
+    },
+    "1812270939": {
+        "store": 2,
+        "number": 2806,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/379"
+    },
+    "1812279844": {
+        "store": 5,
+        "number": 5570,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/273"
+    },
+    "1812279877": {
+        "store": 5,
+        "number": 5573,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/286"
+    },
+    "1812279889": {
+        "store": 5,
+        "number": 5568,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/269"
+    },
+    "1812279890": {
+        "store": 5,
+        "number": 5571,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/279"
+    },
+    "1812279908": {
+        "store": 5,
+        "number": 5574,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/292"
+    },
+    "1812279964": {
+        "store": 5,
+        "number": 5575,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/304"
+    },
+    "1812280036": {
+        "store": 5,
+        "number": 5582,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/316"
+    },
+    "1812280072": {
+        "store": 5,
+        "number": 5587,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/331"
+    },
+    "1812280090": {
+        "store": 5,
+        "number": 5589,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/325"
+    },
+    "1812280328": {
+        "store": 5,
+        "number": 5595,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/354"
+    },
+    "1812280358": {
+        "store": 5,
+        "number": 5596,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/360"
+    },
+    "1812280372": {
+        "store": 5,
+        "number": 5597,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/368"
+    },
+    "1812280402": {
+        "store": 5,
+        "number": 5598,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/350"
+    },
+    "1812280417": {
+        "store": 5,
+        "number": 5592,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/388"
+    },
+    "1812280423": {
+        "store": 5,
+        "number": 5599,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/367"
+    },
+    "1812280428": {
+        "store": 5,
+        "number": 5600,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/348"
+    },
+    "1812280436": {
+        "store": 5,
+        "number": 5603,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/385"
+    },
+    "1812308539": {
+        "store": 3,
+        "number": 3434,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/268"
+    },
+    "1812308547": {
+        "store": 3,
+        "number": 3436,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/281"
+    },
+    "1812308556": {
+        "store": 3,
+        "number": 3437,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/285"
+    },
+    "1812308569": {
+        "store": 3,
+        "number": 3439,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/290"
+    },
+    "1812308588": {
+        "store": 3,
+        "number": 3440,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/302"
+    },
+    "1812308608": {
+        "store": 3,
+        "number": 3443,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/311"
+    },
+    "1812308631": {
+        "store": 3,
+        "number": 3445,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/313"
+    },
+    "1812308652": {
+        "store": 3,
+        "number": 3450,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/329"
+    },
+    "1812308695": {
+        "store": 3,
+        "number": 3455,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/352"
+    },
+    "1812308698": {
+        "store": 3,
+        "number": 3453,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/341"
+    },
+    "1812308715": {
+        "store": 3,
+        "number": 3457,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/369"
+    },
+    "1812308720": {
+        "store": 3,
+        "number": 3458,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/372"
+    },
+    "1812308721": {
+        "store": 3,
+        "number": 3459,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/375"
+    },
+    "1812308740": {
+        "store": 3,
+        "number": 3460,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/346"
+    },
+    "1812308757": {
+        "store": 3,
+        "number": 3462,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/383"
+    },
+    "1812308762": {
+        "store": 3,
+        "number": 3463,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/364"
+    },
+    "1812313825": {
+        "store": 4,
+        "number": 4839,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/272"
+    },
+    "1812313880": {
+        "store": 4,
+        "number": 4844,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/283"
+    },
+    "1812313909": {
+        "store": 4,
+        "number": 4848,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/289"
+    },
+    "1812313918": {
+        "store": 4,
+        "number": 4850,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/294"
+    },
+    "1812313947": {
+        "store": 4,
+        "number": 4853,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/298"
+    },
+    "1812313988": {
+        "store": 4,
+        "number": 4858,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/300"
+    },
+    "1812314006": {
+        "store": 4,
+        "number": 4863,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/306"
+    },
+    "1812314324": {
+        "store": 4,
+        "number": 4866,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/310"
+    },
+    "1812314374": {
+        "store": 4,
+        "number": 4871,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/319"
+    },
+    "1812314400": {
+        "store": 4,
+        "number": 4875,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/324"
+    },
+    "1812314445": {
+        "store": 4,
+        "number": 4880,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/328"
+    },
+    "1812314500": {
+        "store": 4,
+        "number": 4887,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/334"
+    },
+    "1812314501": {
+        "store": 4,
+        "number": 4888,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/339"
+    },
+    "1812314502": {
+        "store": 4,
+        "number": 4889,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/340"
+    },
+    "1812314503": {
+        "store": 4,
+        "number": 4890,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/345"
+    },
+    "1812314515": {
+        "store": 4,
+        "number": 4891,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/356"
+    },
+    "1812314570": {
+        "store": 4,
+        "number": 4898,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/359"
+    },
+    "1812314577": {
+        "store": 4,
+        "number": 4899,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/365"
+    },
+    "1812314579": {
+        "store": 4,
+        "number": 4900,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/338"
+    },
+    "1812314605": {
+        "store": 4,
+        "number": 4902,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/371"
+    },
+    "1812314637": {
+        "store": 4,
+        "number": 4904,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/377"
+    },
+    "1812314643": {
+        "store": 4,
+        "number": 4905,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/378"
+    },
+    "1812314674": {
+        "store": 4,
+        "number": 4906,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/384"
+    },
+    "1812314705": {
+        "store": 4,
+        "number": 4912,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/389"
+    },
+    "1812314709": {
+        "store": 4,
+        "number": 4857,
+        "description": "Logistick\u00e9 centrum II Hlu\u010d\u00edn",
+        "season": 202311,
+        "movement": 221,
+        "depot": "10",
+        "note": "614689"
+    },
+    "1812378926": {
+        "store": 1,
+        "number": 1434,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/274"
+    },
+    "1812378976": {
+        "store": 1,
+        "number": 1439,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/287"
+    },
+    "1812378986": {
+        "store": 1,
+        "number": 1441,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/293"
+    },
+    "1812379009": {
+        "store": 1,
+        "number": 1443,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/301"
+    },
+    "1812379090": {
+        "store": 1,
+        "number": 1452,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/317"
+    },
+    "1812379129": {
+        "store": 1,
+        "number": 1432,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/332"
+    },
+    "1812379443": {
+        "store": 1,
+        "number": 1457,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/355"
+    },
+    "1812379506": {
+        "store": 1,
+        "number": 1462,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/373"
+    },
+    "1812379532": {
+        "store": 1,
+        "number": 1463,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/380"
+    },
+    "1812379551": {
+        "store": 1,
+        "number": 1464,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "20223\/386"
+    },
+    "1812490037": {
+        "store": 8,
+        "number": 8429,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/267"
+    },
+    "1812490038": {
+        "store": 8,
+        "number": 8430,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/265"
+    },
+    "1812490527": {
+        "store": 8,
+        "number": 8432,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/278"
+    },
+    "1812490530": {
+        "store": 8,
+        "number": 8431,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/284"
+    },
+    "1812490565": {
+        "store": 8,
+        "number": 8436,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/299"
+    },
+    "1812490566": {
+        "store": 8,
+        "number": 8437,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/297"
+    },
+    "1812490582": {
+        "store": 8,
+        "number": 8439,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/309"
+    },
+    "1812490607": {
+        "store": 8,
+        "number": 8441,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/320"
+    },
+    "1812490625": {
+        "store": 8,
+        "number": 8442,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/322"
+    },
+    "1812490681": {
+        "store": 8,
+        "number": 8444,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/335"
+    },
+    "1812490694": {
+        "store": 8,
+        "number": 8446,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/343"
+    },
+    "1812490696": {
+        "store": 8,
+        "number": 8448,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/347"
+    },
+    "1812490710": {
+        "store": 8,
+        "number": 8449,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/363"
+    },
+    "1812490737": {
+        "store": 8,
+        "number": 8456,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/376"
+    },
+    "1812490804": {
+        "store": 8,
+        "number": 8458,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/390"
+    },
+    "1812490805": {
+        "store": 8,
+        "number": 8459,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/382"
+    },
+    "1814213865": {
+        "store": 9,
+        "number": 93242,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202311,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/307"
+    },
+    "1840367952": {
+        "store": 1,
+        "number": 1466,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "2023\/396"
+    },
+    "1840367984": {
+        "store": 1,
+        "number": 1468,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/412"
+    },
+    "1840373216": {
+        "store": 2,
+        "number": 2807,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202312,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/387"
+    },
+    "1840373261": {
+        "store": 2,
+        "number": 2813,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/400"
+    },
+    "1840373262": {
+        "store": 2,
+        "number": 2814,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/406"
+    },
+    "1840373303": {
+        "store": 2,
+        "number": 2819,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/413"
+    },
+    "1840373319": {
+        "store": 2,
+        "number": 2822,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/414"
+    },
+    "1840373334": {
+        "store": 2,
+        "number": 2825,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/420"
+    },
+    "1840373724": {
+        "store": 2,
+        "number": 2828,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/421"
+    },
+    "1840373742": {
+        "store": 2,
+        "number": 2831,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/428"
+    },
+    "1840377266": {
+        "store": 3,
+        "number": 3466,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/391"
+    },
+    "1840377280": {
+        "store": 3,
+        "number": 3467,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/397"
+    },
+    "1840377296": {
+        "store": 3,
+        "number": 3469,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/407"
+    },
+    "1840377338": {
+        "store": 3,
+        "number": 3474,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/416"
+    },
+    "1840383131": {
+        "store": 4,
+        "number": 4915,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/393"
+    },
+    "1840383181": {
+        "store": 4,
+        "number": 4921,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/399"
+    },
+    "1840383617": {
+        "store": 4,
+        "number": 4925,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/409"
+    },
+    "1840383677": {
+        "store": 4,
+        "number": 4931,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/410"
+    },
+    "1840383703": {
+        "store": 4,
+        "number": 4935,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/419"
+    },
+    "1840383722": {
+        "store": 4,
+        "number": 4932,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/422"
+    },
+    "1840383723": {
+        "store": 4,
+        "number": 4937,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "204\/2023\/423"
+    },
+    "1840389319": {
+        "store": 5,
+        "number": 5606,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/398"
+    },
+    "1840389320": {
+        "store": 5,
+        "number": 5607,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/405"
+    },
+    "1840389373": {
+        "store": 5,
+        "number": 5609,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/411"
+    },
+    "1840389394": {
+        "store": 5,
+        "number": 5611,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/418"
+    },
+    "1840393103": {
+        "store": 6,
+        "number": 6314,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/381"
+    },
+    "1840393104": {
+        "store": 6,
+        "number": 6318,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "2072023403"
+    },
+    "1840396791": {
+        "store": 7,
+        "number": 7415,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/392"
+    },
+    "1840396856": {
+        "store": 7,
+        "number": 7419,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/408"
+    },
+    "1840396875": {
+        "store": 7,
+        "number": 7422,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/417"
+    },
+    "1840396885": {
+        "store": 7,
+        "number": 7424,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "33120"
+    },
+    "1840396886": {
+        "store": 7,
+        "number": 7425,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/425"
+    },
+    "1840399981": {
+        "store": 8,
+        "number": 8445,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202312,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/395"
+    },
+    "1840400014": {
+        "store": 8,
+        "number": 8461,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/404"
+    },
+    "1840400040": {
+        "store": 8,
+        "number": 8452,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": 202312,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/358"
+    },
+    "1840400049": {
+        "store": 8,
+        "number": 8464,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "33118"
+    },
+    "1840400050": {
+        "store": 8,
+        "number": 8465,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "23049"
+    },
+    "1840400052": {
+        "store": 8,
+        "number": 8466,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/415"
+    },
+    "1840413358": {
+        "store": 9,
+        "number": 93289,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/394"
+    },
+    "1840413366": {
+        "store": 9,
+        "number": 93291,
+        "description": "Logistick\u00e9 centrum I Hrabov\u00e1",
+        "season": null,
+        "movement": 221,
+        "depot": "11",
+        "note": "207\/2023\/401"
+    }
+}

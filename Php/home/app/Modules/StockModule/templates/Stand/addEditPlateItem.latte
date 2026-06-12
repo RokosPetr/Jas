@@ -1,0 +1,14 @@
+{varType App\Modules\StockModule\Orm\Stands\StandPlate $plate}
+{varType App\Modules\SystemModule\Orm\Files\File $itemPicture}
+{block content}
+<h2>{$plate->stand->title}</h2>
+<h2 n:if="$plate->stand->hasPlates">{$plate->order}. plato ({$plate->description})</h2>
+{control standPlateItemForm}
+{import 'picture.latte'}
+{ifset $itemPicture}
+    {include #picture picture => $itemPicture, label => 'Foto', repo => 'standPlateItems'}
+{/ifset}
+{include #jsDialog}
+<script>
+    initProductSearch('frm-standPlateItemForm-item');
+</script>

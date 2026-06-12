@@ -47,6 +47,8 @@ public partial class JasPdfDbContext : DbContext
 
     public virtual DbSet<PdfPtStandHistory> PdfPtStandHistories { get; set; }
 
+    public virtual DbSet<PdfPtStandUserHistory> PdfPtStandUserHistories { get; set; }
+
     public virtual DbSet<PdfPtType> PdfPtTypes { get; set; }
 
     public virtual DbSet<PdfQr> PdfQrs { get; set; }
@@ -345,6 +347,9 @@ public partial class JasPdfDbContext : DbContext
             entity.Property(e => e.Antislip)
                 .HasMaxLength(5)
                 .HasColumnName("antislip");
+            entity.Property(e => e.Description)
+                .HasMaxLength(255)
+                .HasColumnName("description");
             entity.Property(e => e.Discarded).HasColumnName("discarded");
             entity.Property(e => e.Discount).HasColumnName("discount");
             entity.Property(e => e.Frost).HasColumnName("frost");
@@ -385,6 +390,10 @@ public partial class JasPdfDbContext : DbContext
                 .HasNoKey()
                 .ToTable("pdf_price_tag_history");
 
+            entity.HasIndex(e => new { e.RegNumber, e.ColumnName, e.ChangeDate }, "IX_pdf_price_tag_history_reg_column_date").IsDescending(false, false, true);
+
+            entity.HasIndex(e => new { e.RegNumber, e.ChangeDate, e.ColumnName }, "IX_pdf_price_tag_history_reg_date_group");
+
             entity.Property(e => e.ChangeDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
@@ -412,7 +421,11 @@ public partial class JasPdfDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_smtp_email");
 
-            entity.ToTable("pdf_pt_email", tb => tb.HasTrigger("trg_AfterInsert_smtp_email"));
+            entity.ToTable("pdf_pt_email", tb =>
+                {
+                    tb.HasTrigger("trg_AfterInsert_smtp_email");
+                    tb.HasTrigger("trg_pdf_pt_email_sent");
+                });
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Bcc)
@@ -500,6 +513,8 @@ public partial class JasPdfDbContext : DbContext
                     tb.HasTrigger("trg_AfterUpdate_pdf_pt_plate");
                 });
 
+            entity.HasIndex(e => new { e.Id, e.IdPtStand }, "IX_pdf_pt_plate_id_stand");
+
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Description)
                 .HasMaxLength(255)
@@ -530,6 +545,8 @@ public partial class JasPdfDbContext : DbContext
                     tb.HasTrigger("trg_AfterInsert_pdf_pt_plate_item");
                     tb.HasTrigger("trg_AfterUpdate_pdf_pt_plate_item");
                 });
+
+            entity.HasIndex(e => new { e.RegNumber, e.IdPtPlate }, "IX_pdf_pt_plate_item_reg_plate");
 
             entity.HasIndex(e => e.Id, "UX_pdf_pt_plate_item_fulltext_key").IsUnique();
 
@@ -562,6 +579,10 @@ public partial class JasPdfDbContext : DbContext
             entity
                 .HasNoKey()
                 .ToTable("pdf_pt_plate_item_history");
+
+            entity.HasIndex(e => new { e.IdPtPlate, e.RegNumber, e.ColumnName, e.ChangeDate }, "IX_pdf_pt_plate_item_history_plate_reg_col_date");
+
+            entity.HasIndex(e => new { e.RegNumber, e.ChangeDate, e.ColumnName }, "IX_pdf_pt_plate_item_history_reg_date_group");
 
             entity.Property(e => e.ChangeDate)
                 .HasColumnType("datetime")
@@ -623,6 +644,14 @@ public partial class JasPdfDbContext : DbContext
                 .HasNoKey()
                 .ToTable("pdf_pt_stand_history");
 
+            entity.HasIndex(e => new { e.IdPtPlateItem, e.ColumnName, e.ChangeDate }, "IX_pdf_pt_stand_history_item_col_date");
+
+            entity.HasIndex(e => new { e.IdPtPlate, e.ColumnName, e.ChangeDate }, "IX_pdf_pt_stand_history_plate_col_date");
+
+            entity.HasIndex(e => new { e.IdPtStand, e.ColumnName, e.ChangeDate }, "IX_pdf_pt_stand_history_stand_col_date");
+
+            entity.HasIndex(e => new { e.IdPtStand, e.ChangeDate, e.IdPtPlate, e.IdPtPlateItem, e.RegNumber, e.ColumnName }, "IX_pdf_pt_stand_history_stand_date_group");
+
             entity.Property(e => e.ChangeDate)
                 .HasColumnType("datetime")
                 .HasColumnName("change_date");
@@ -644,6 +673,25 @@ public partial class JasPdfDbContext : DbContext
             entity.Property(e => e.RegNumber)
                 .HasMaxLength(10)
                 .HasColumnName("reg_number");
+        });
+
+        modelBuilder.Entity<PdfPtStandUserHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_pdf_pt_stand_user");
+
+            entity.ToTable("pdf_pt_stand_user_history");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CheckDate)
+                .HasColumnType("datetime")
+                .HasColumnName("check_date");
+            entity.Property(e => e.EmailDate)
+                .HasColumnType("datetime")
+                .HasColumnName("email_date");
+            entity.Property(e => e.IdPtStand).HasColumnName("id_pt_stand");
+            entity.Property(e => e.IdUser)
+                .HasMaxLength(450)
+                .HasColumnName("id_user");
         });
 
         modelBuilder.Entity<PdfPtType>(entity =>
@@ -1193,6 +1241,7 @@ public partial class JasPdfDbContext : DbContext
                 .HasMaxLength(4000)
                 .HasColumnName("size");
             entity.Property(e => e.SourceType).HasColumnName("source_type");
+            entity.Property(e => e.StandType).HasColumnName("stand_type");
             entity.Property(e => e.Surface)
                 .HasMaxLength(3)
                 .HasColumnName("surface");

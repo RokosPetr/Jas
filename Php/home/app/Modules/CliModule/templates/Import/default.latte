@@ -1,0 +1,45 @@
+{block content}
+<a n:href="movements" class="btn btn-secondary">Pohyby</a>
+<table class="table datagrid-table jambo_table">
+    <thead>
+        <tr class="headings">
+            <th>Název</th>
+            <th>Data aktuální k datu</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Zabezpečené zdroje aplikace</td>
+            <td>-</td>
+            <td><a n:href="resources" class="fa fa-play" title="Spustit import"></a></td>
+        </tr>
+        <tr>
+            <td>Položky skladníků</td>
+            <td>{isset($importDates['Položky skladníků']) ? $importDates['Položky skladníků']->format(App\Core\Utils\DateTime::CZ_DATETIME) : '-'}</td>
+            <td><a n:href="warehousemanItems" class="fa fa-play" title="Spustit import"></a></td>
+        </tr>
+        <tr>
+            <td>Slevy na produktové skupiny</td>
+            <td>{isset($importDates['Slevy na skupiny']) ? $importDates['Slevy na skupiny']->format(App\Core\Utils\DateTime::CZ_DATETIME) : '-'}</td>
+            <td><a n:href="discounts" class="fa fa-play" title="Spustit import"></a></td>
+        </tr>
+        <tr>
+            <td>Slevy na produkty</td>
+            <td>{isset($importDates['Slevy na produkty']) ? $importDates['Slevy na produkty']->format(App\Core\Utils\DateTime::CZ_DATETIME) : '-'}</td>
+            <td><a n:href="discounts items => true" class="fa fa-play" title="Spustit import"></a></td>
+        </tr>
+        <tr n:foreach="$stores as $id => $storeName">
+            {var string $importName = "Skladové položky - $storeName"}
+            <td>{$importName}</td>
+            <td>{isset($importDates[$importName]) ? $importDates[$importName]->format(App\Core\Utils\DateTime::CZ_DATETIME) : '-'}</td>
+            <td><a n:href="stockItems id => $id" class="fa fa-play" title="Spustit import"></a></td>
+        </tr>
+        <tr n:foreach="$stores as $id => $storeName">
+            {var string $importName = "Obchodní partneři - $storeName"}
+            <td>{$importName}</td>
+            <td>{isset($importDates[$importName]) ? $importDates[$importName]->format(App\Core\Utils\DateTime::CZ_DATETIME) : '-'}</td>
+            <td><a n:href="partners id => $id" class="fa fa-play" title="Spustit import"></a></td>
+        </tr>
+    </tbody>
+</table>

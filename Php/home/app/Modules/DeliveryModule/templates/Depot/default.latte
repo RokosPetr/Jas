@@ -1,0 +1,11 @@
+{varType int $selectedDepotCount}
+{block content}
+<div n:snippet="selectedDepots">
+    <div n:if="$selectedDepotCount">
+        Vybraných poboček: {$selectedDepotCount}
+        <a class="ajax" n:href="cancelDepotSelection!" title="Zrušit výběr">
+            <img src="/image/smazat1.png" alt="Smazat" width="15" height="15" style="margin-bottom: 3px;">
+        </a>
+    </div>
+</div>
+{control dealerDepots}

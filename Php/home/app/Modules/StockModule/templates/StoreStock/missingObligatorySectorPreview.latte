@@ -1,0 +1,10 @@
+{varType App\Modules\StockModule\Orm\StockItems\StockItem $stockItem}
+{varType App\Modules\StockModule\Orm\StockItems\StockVariant[] $stockVariants}
+{block content}
+{sideDialog}
+    <h2>{$stockItem->title}</h2>
+    <div>Varianty bez zadaného sektoru:</div>
+    <ul>
+        <li n:foreach="$stockVariants as $stockVariant">{$stockVariant->remark ?? '-'}</li>
+    </ul>
+{/sideDialog}

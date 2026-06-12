@@ -1,0 +1,307 @@
+@page
+@model Jas.Areas.Intranet.Pages.GnRewardsModel
+
+@{
+    ViewData["Title"] = "Seznam Odměn (GnRewards)";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/intranet.min.css" asp-append-version="true" />
+}
+
+<partial name="Shared/_Navbar" />
+
+<div class="container mt-4">
+    <!-- FILTRY (SLICERY) V PŘEVZATÉM EXCEL STYLU-->
+    <div class="mb-4">
+        <div class="d-flex gap-2 mb-3">
+            <!-- Slicer: Prodejna -->
+            <div class="slicer-box bg-white border rounded">
+                <style>
+                    .slicer-item.selected {
+                        background-color: #0d6efd !important;
+                        color: white !important;
+                    }
+                </style>
+                <div class="slicer-header bg-light border-bottom p-1 d-flex justify-content-between align-items-center">
+                    <span class="font-weight-bold" style="font-size:12px;">Prodejna</span>
+                    <button type="button" class="btn btn-sm btn-link p-0 text-danger clear-slicer" data-target="stores" title="Zrušit filtr">&#10005;</button>
+                </div>
+                <div class="slicer-body overflow-auto" style="height: 405px; width:150px; padding:2px;">
+                    @foreach(var store in Model.AllStores)
+                    {
+                        <div class="slicer-item p-1 border rounded mb-1 text-truncate" data-value="@store" data-group="stores" style="font-size:12px; cursor:pointer;" title="@store">
+                            @store
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Slicer: Osoba -->
+            <div class="slicer-box bg-white border rounded">
+                <div class="slicer-header bg-light border-bottom p-1 d-flex justify-content-between align-items-center">
+                    <span class="font-weight-bold" style="font-size:12px;">Osoba</span>
+                    <button type="button" class="btn btn-sm btn-link p-0 text-danger clear-slicer" data-target="persons" title="Zrušit filtr">&#10005;</button>
+                </div>
+                <div class="slicer-body overflow-auto" style="height: 405px; width:150px; padding:2px;">
+                    @foreach(var person in Model.AllPersons)
+                    {
+                        <div class="slicer-item p-1 border rounded mb-1 text-truncate" data-value="@person" data-group="persons" style="font-size:12px; cursor:pointer;" title="@person">
+                            @person
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Slicer: Rok -->
+            <div class="slicer-box bg-white border rounded">
+                <div class="slicer-header bg-light border-bottom p-1 d-flex justify-content-between align-items-center">
+                    <span class="font-weight-bold" style="font-size:12px;">Rok</span>
+                    <button type="button" class="btn btn-sm btn-link p-0 text-danger clear-slicer" data-target="years" title="Zrušit filtr">&#10005;</button>
+                </div>
+                <div class="slicer-body overflow-auto" style="height: 405px; width:100px; padding:2px;">
+                    @foreach(var year in Model.AllYears)
+                    {
+                        <div class="slicer-item p-1 border rounded mb-1 text-center" data-value="@year" data-group="years" style="font-size:12px; cursor:pointer;">
+                            @year
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Slicer: Měsíc -->
+            <div class="slicer-box bg-white border rounded">
+                <div class="slicer-header bg-light border-bottom p-1 d-flex justify-content-between align-items-center">
+                    <span class="font-weight-bold" style="font-size:12px;">Měsíc</span>
+                    <button type="button" class="btn btn-sm btn-link p-0 text-danger clear-slicer" data-target="months" title="Zrušit filtr">&#10005;</button>
+                </div>
+                <div class="slicer-body overflow-auto" style="height: 405px; width:100px; padding:2px;">
+                    @foreach(var month in Model.AllMonths)
+                    {
+                        <div class="slicer-item p-1 border rounded mb-1" data-value="@month" data-group="months" style="font-size:12px; cursor:pointer;">
+                            @month
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIVOT TABULKA CONTANER PRO AJAX -->
+    <div id="pivotContainer" class="w-100 mb-5">
+        <p class="text-muted">Načítám kontingenční tabulku...</p>
+    </div>
+
+    @*
+    <hr />
+    <h2>Výpis jednotlivých záznamů</h2>
+
+    @if (Model.Rewards == null || !Model.Rewards.Any())
+    {
+        <p>Nebyla nalezena žádná data.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-sm w-100">
+                <thead class="table-light">
+                    <tr>
+                        <th>@Html.DisplayNameFor(m => m.Rewards.First().RecordDate)</th>
+                        <th>@Html.DisplayNameFor(m => m.Rewards.First().StoreName)</th>
+                        <th>@Html.DisplayNameFor(m => m.Rewards.First().PersonName)</th>
+                        <th>@Html.DisplayNameFor(m => m.Rewards.First().RoleName)</th>
+                        <th>@Html.DisplayNameFor(m => m.Rewards.First().OrderNumber)</th>
+                        <th>@Html.DisplayNameFor(m => m.Rewards.First().OrderBaseAmount)</th>
+                        <th>@Html.DisplayNameFor(m => m.Rewards.First().BonusBaseAmount)</th>
+                        <th>@Html.DisplayNameFor(m => m.Rewards.First().Rate)</th>
+                        <th>@Html.DisplayNameFor(m => m.Rewards.First().RewardAmount)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Rewards)
+                    {
+                        <tr>
+                            <td>@item.RecordDate.ToString("dd.MM.yyyy")</td>
+                            <td>@item.StoreName</td>
+                            <td>@item.PersonName</td>
+                            <td>@item.RoleName</td>
+                            <td>@item.OrderNumber</td>
+                            <td>@item.OrderBaseAmount.ToString("N2")</td>
+                            <td>@item.BonusBaseAmount.ToString("N2")</td>
+                            <td>@item.Rate.ToString("N2")</td>
+                            <td class="fw-bold text-success">@item.RewardAmount.ToString("N2") Kč</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    *@
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            loadPivotData();
+
+            // Kliknutí na slicer
+            $('.slicer-item').on('click', function() {
+                $(this).toggleClass('selected');
+                loadPivotData();
+            });
+
+            // Zrušení filtru (červený křížek navrhu sliceru)
+            $('.clear-slicer').on('click', function(){
+                var target = $(this).data('target');
+                $('.slicer-item[data-group="'+target+'"]').removeClass('selected');
+                loadPivotData();
+            });
+        });
+
+        // Funkce která sbírá filtry a odesílá AJAX request
+        function loadPivotData() {
+            $('#pivotContainer').html('<p class="text-muted">Načítám kontingenční tabulku...</p>');
+
+            var selectedPersons = [];
+            $('.slicer-item.selected[data-group="persons"]').each(function(){ selectedPersons.push($(this).data('value')); });
+
+            var selectedYears = [];
+            $('.slicer-item.selected[data-group="years"]').each(function(){ selectedYears.push($(this).data('value')); });
+
+            var selectedMonths = [];
+            $('.slicer-item.selected[data-group="months"]').each(function(){ selectedMonths.push($(this).data('value')); });
+
+            var selectedStores = [];
+            $('.slicer-item.selected[data-group="stores"]').each(function(){ selectedStores.push($(this).data('value')); });
+
+            // Sestavení URL adresy
+            var qs = $.param({ selectedPersons: selectedPersons, selectedYears: selectedYears, selectedMonths: selectedMonths, selectedStores: selectedStores }, true);
+
+            $.get('@Url.Page("/GnRewards", "PivotData")' + '&' + qs)
+              .done(function (html) {
+                  $('#pivotContainer').html(html);
+                  // Nebudeme schovávat nic, vše má být rozbalené jako výchozí bod
+
+                  // Aktualizace dostupných možností ve slicerech podle dat, která se vrátí.
+                  // Přestanou být klikatelné a mírně zprůhlední, pokud v datech nejsou.
+                  var updater = $('#pivotSlicersUpdate');
+                  if (updater.length) {
+                      var avStores = updater.attr('data-stores').split('|');
+                      var avPersons = updater.attr('data-persons').split('|');
+                      var avYears = String(updater.attr('data-years')).split('|');
+                      var avMonths = updater.attr('data-months').split('|');
+
+                      updateSlicerLook('stores', avStores);
+                      updateSlicerLook('persons', avPersons);
+                      updateSlicerLook('years', avYears);
+                      updateSlicerLook('months', avMonths);
+                  }
+              })
+              .fail(function (err) {
+                 $('#pivotContainer').html('<p class="text-danger">Chyba při načítání dat kontingenční tabulky.</p>');
+                 console.error(err);
+             });
+        }
+
+        // Funkce pro zešednutí/skrytí nepoužívaných částí sliceru a jejich seřazení
+        function updateSlicerLook(group, validArray) {
+            var container = $('.slicer-item[data-group="' + group + '"]').parent();
+            var items = container.children('.slicer-item').get();
+            
+            // Resetování vzhledu a příprava na třídění
+            // Uložíme i původní index, kdyby položky měly zůstat na svém specifickém pre-sortovaném místě
+            $.each(items, function (i, item) {
+                var val = String($(item).data('value'));
+                var isValid = validArray.includes(val);
+                
+                // Uložíme si data('original-index') pouze poprvé, pokud tam ještě není (aby se zachovalo počáteční pořadí napořád)
+                if (typeof $(item).data('original-index') === 'undefined') {
+                    $(item).data('original-index', i);
+                }
+
+                $(item).data('is-valid', isValid);
+                
+                if (isValid) {
+                    $(item).css('opacity', '1').css('pointer-events', 'auto');
+                } else {
+                    $(item).css('opacity', '0.3').css('pointer-events', 'none');
+                }
+            });
+
+            // Abecední řazení neplatí pro měsíce, roky (kalendář) a nově ani pro Prodejny.
+            if (group !== 'months' && group !== 'years' && group !== 'stores') {
+                items.sort(function (a, b) {
+                    var isValidA = $(a).data('is-valid');
+                    var isValidB = $(b).data('is-valid');
+                    
+                    // True (dostupné) jde před False (nedostupné)
+                    if (isValidA && !isValidB) return -1;
+                    if (!isValidA && isValidB) return 1;
+                    
+                    // U osob řadíme abecedně
+                    if (group === 'persons') {
+                        var valA = String($(a).data('value')).toLowerCase();
+                        var valB = String($(b).data('value')).toLowerCase();
+                        
+                        if (valA < valB) return -1;
+                        if (valA > valB) return 1;
+                        return 0;
+                    }
+                    return 0;
+                });
+                
+                $.each(items, function (i, item) {
+                    container.append(item);
+                });
+            }
+        }
+
+        // Toggling funkce pro kontingenční tabulku
+        function togglePivot(targetSelector, selfElement, isLevel2 = false) {
+            var icon = $(selfElement).find('.toggle-icon');
+            var isExpanded = icon.text().trim() === '-';
+            
+            if (isExpanded) {
+                // Sbalit
+                icon.text('+');
+                $(targetSelector).hide();
+                if (!isLevel2) {
+                   // Když balíme nadřízený prvek, změníme i ikonky vnořených prvků na '+''
+                   $(targetSelector).each(function(){
+                       $(this).find('.toggle-icon').text('+');
+                   });
+                }
+            } else {
+                // Rozbalit - zobrazit pouze přímé děti (ne ty vnořené o úroveň dál, dokud si na ně uživatel neklikne)
+                icon.text('-');
+                $(targetSelector).each(function(){
+                     var cssClass = $(this).attr('class') || '';
+                     
+                     // Zjištujeme jakou úroveň klikáme podle tříd
+                     var isStore = $(selfElement).attr('class').includes('s-') && !$(selfElement).attr('class').includes('-p-');
+                     var isPerson = $(selfElement).attr('class').includes('-p-') && !$(selfElement).attr('class').includes('-y-');
+                     var isYear = $(selfElement).attr('class').includes('-y-');
+
+                     if (isStore) {
+                         // Ukázat jen Osoby, ne roky a ne měsíce
+                         if (cssClass.includes('-p-') && !cssClass.includes('-y-') && !cssClass.includes('level-month')) {
+                             $(this).show();
+                         }
+                     }
+                     else if (isPerson) {
+                         // Ukázat jen Roky, ne měsíce
+                         if (cssClass.includes('-y-') && !cssClass.includes('level-month')) {
+                             $(this).show();
+                         }
+                     }
+                     else if (isYear) {
+                         // Ukázat jen Měsíce
+                         if (cssClass.includes('level-month')) {
+                             $(this).show();
+                         }
+                     }
+                });
+            }
+        }
+    </script>
+}

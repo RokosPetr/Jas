@@ -1,0 +1,23 @@
+{block content}
+{sideDialog}
+    <br>
+    {control addDiscountDepotForm}
+    <script>
+        $(function () {
+            var select = $('#frm-addDiscountDepotForm-depot');
+
+            select.select2({
+                language: 'cs',
+                ajax: {
+                    url: {link loadDepotOption!},
+                    type: 'get',
+                    dataType: 'json',
+                    delay: 300,
+                    data: function (params) { return { search: params.term } },
+                    cache: true,
+                },
+                minimumInputLength: 3
+            });
+        })
+    </script>
+{/sideDialog}

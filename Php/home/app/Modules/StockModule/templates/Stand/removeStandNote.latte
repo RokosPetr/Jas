@@ -1,0 +1,7 @@
+{varType App\Modules\StockModule\Orm\Stands\StandNote $standNote}
+{block content}
+{sideDialog}
+    <h2>{$standNote->depot->name}</h2>
+    <h2>{$standNote->stand->title}</h2>
+    {control removeStandNoteForm}
+{/sideDialog}

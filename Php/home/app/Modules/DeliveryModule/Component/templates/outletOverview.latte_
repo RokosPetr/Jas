@@ -1,0 +1,66 @@
+{varType App\Modules\DeliveryModule\Component\OutletOverview $control}
+{varType array $stores}
+
+<div n:snippet="outletOverview">
+    <div class="overview-control-panel">
+        <div class="pull-right">
+            <button type="button" onclick="location.href = {link excelExport!};">Export</button>
+        </div>
+
+        <div>
+            <span style="width: 65px; display: inline-block;"><label for="selected-year-input">Rok</label></span>
+            <select name="selectedYear" class="select2-ignore" id="selected-year-input" onchange="setYear(this.value)">
+                {for $i = intval(date('Y')); $i >= 2022; $i--}
+                    <option value="{$i}"{if $i === $control->selectedYear} selected{/if}>{$i}</option>
+                {/for}
+            </select>
+        </div>
+    </div>
+
+    <div n:foreach="App\Modules\StockModule\Orm\StockItems\StockVariant::OUTLETS_TYPES as $outletType => $outletLabel" class="text-center" style="background-color: rgba(242, 242, 242, 0.5); padding: 30px 0;">
+        <div class="table-responsive" style="overflow-x: auto;">
+            <table class="takings-overview sales-overview">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th colspan="{count($stores)}">{$outletLabel}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr class="hover-ignore">
+                        <td>Prodejna</td>
+                        <td n:foreach="$stores as $storeLabel" n:class="$iterator->isOdd() ? even : odd"><b>{$storeLabel}</b></td>
+                    </tr>
+
+                    {foreach App\Core\Utils\DateTime::CZ_MONTHS as $month => $monthName}
+                        <tr>
+                            <td>{$monthName |firstUpper}</td>
+                            <td n:foreach="array_keys($stores) as $storeId" n:class="$iterator->isOdd() ? even : odd">
+                                <a n:tag-if="$user->isAdmin()" href="{plink sumCheck store => $storeId, outlet => $outletType, year => $control->selectedYear, month => $month}" target="_blank">
+                                    {$control->loadCellValue($storeId, $outletType, $month) |number:0,',',' '}
+                                </a>
+                            </td>
+                        </tr>
+
+                        {if $month % 3 === 0}
+                            <tr class="sum-row">
+                                <td>Celkem {$month - 2}-{$month}</td>
+                                <td n:foreach="array_keys($stores) as $storeId" n:class="$iterator->isOdd() ? even : odd">{$control->loadSumValue($storeId, $outletType, $month - 2, $month) |number:0,',',' '}</td>
+                            </tr>
+                        {/if}
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setYear(year) {
+        $.nette.ajax({
+            url: {link setYear!},
+            data: { year }
+        });
+    }
+</script>

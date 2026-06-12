@@ -1,0 +1,16 @@
+{varType App\Modules\TransportModule\Orm\Transports\StoreTransportItem $row}
+{define cell-transportTimeFrom}
+    {$row->transportTimeFrom |floatToHour}
+{/define}
+
+{define cell-transportTimeTill}
+    {$row->transportTimeTill |floatToHour}
+{/define}
+
+{define cell-setDeliveredAt}
+    {if $row->setDeliveredAt}
+        {$row->setDeliveredAt |date:'H:i'} ({$row->setDeliveredAt |date:'d.m.Y'})
+    {else}
+        -
+    {/if}
+{/define}

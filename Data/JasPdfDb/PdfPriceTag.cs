@@ -47,5 +47,7 @@ public partial class PdfPriceTag
 
     public short? TypeOrder { get; set; }
 
+    public string? Description { get; set; }
+
     public virtual ICollection<PdfPtPlateItem> PdfPtPlateItems { get; set; } = new List<PdfPtPlateItem>();
 }

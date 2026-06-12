@@ -1,0 +1,9 @@
+{varType App\Modules\BathroomModule\Orm\Bathrooms\Bathroom $bathroom}
+{block content}
+{sideDialog}
+    {import 'bathroomView.latte'}
+    <h1><b>{$bathroom->name}</b></h1>
+    {include #bathroomView bathroom => $bathroom, showPosition => false, lightbox => false}
+    <br>
+    {include #linkPicture bathroom => $bathroom}
+{/sideDialog}

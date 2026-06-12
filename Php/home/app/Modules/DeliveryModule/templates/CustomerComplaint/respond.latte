@@ -1,0 +1,33 @@
+{varType App\Modules\DeliveryModule\Orm\CustomerComplaints\CustomerComplaint $complaint}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na seznam reklamací" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na seznam reklamací</strong>
+    </a>
+</div>
+<div class="col-md-offset-3">
+    <table>
+        <tr>
+            <td><b>Předmět reklamace:</b></td>
+            <td>{$complaint->item->name} ({$complaint->description['amount'] ?? '?'} {$complaint->item->unit->name ?? '-'})</td>
+        </tr>
+        <tr>
+            <td><b>Reklamující: </b></td>
+            <td>{$complaint->name}{if $complaint->company} ({$complaint->company}){/if}</td>
+        </tr>
+        <tr>
+            <td><b>Adresa: </b></td>
+            <td>{$complaint->description['street'] ?? '?'}, {$complaint->description['zipCode'] ?? '?'} {$complaint->description['city'] ?? '?'}</td>
+        </tr>
+        <tr>
+            <td><b>Důvod reklamace: </b></td>
+            <td>{$complaint->description['description'] ?? '?'}</td>
+        </tr>
+        <tr>
+            <td><b>Požadavek reklamujícího: </b></td>
+            <td>{$complaint->description['request'] ?? '?'}</td>
+        </tr>
+    </table>
+</div>
+{control complaintRespondForm}

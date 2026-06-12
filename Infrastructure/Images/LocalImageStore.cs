@@ -134,8 +134,8 @@ public class LocalImageStore : IImageStore
     public string ProductPath(string regNumber)
     {
         var basePath = _options.ProductBasePath?.TrimEnd('/') ?? "/images";
-        //return $"{basePath}/{regNumber}.jpg";
-        return $"{basePath}/{regNumber}/{regNumber}_1.jpg";
+        return $"{basePath}/{regNumber}.jpg";
+        //return $"{basePath}/{regNumber}/{regNumber}_1.jpg";
     }
 
     /// <summary>

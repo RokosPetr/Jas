@@ -1,0 +1,12 @@
+{varType App\Modules\DeliveryModule\Orm\Companies\Depot $depot}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na partnery" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na seznam poboček partnerů</strong>
+    </a>
+</div>
+<h2>{$depot->name}</h2>
+<div n:snippet="contact-grids">
+    {control depotContacts}
+</div>

@@ -1,0 +1,183 @@
+﻿@page "{id:int}"
+@using Jas.Globals.Srv.Enums
+@model Jas.Areas.Srv.Pages.DetailPrintModel
+@{
+    Layout = null; // Záměrně bez layoutu, aby na tiskovce nebylo zbytečné menu atd.
+
+    var statusText = Model.RequestItem.Status switch
+    {
+        (int)Status.New        => "Nová",
+        (int)Status.InProgress => "V procesu",
+        (int)Status.Resolved   => "Vyřízeno",
+        (int)Status.Cancelled  => "Zrušeno",
+        _                      => "Neznámý"
+    };
+
+    var categoryText = Model.RequestItem.RepairCategory switch
+    {
+        (int)RepairCategory.Light   => "Lehká (60 dní)",
+        (int)RepairCategory.Serious => "Vážná (30 dní)",
+        (int)RepairCategory.Urgent  => "Urgentní (5 dní)",
+        _                           => "Neznámá"
+    };
+}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8" />
+    <title>Tisk - Požadavek č. @Model.RequestItem.Id</title>
+    <style>
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                color: #333;
+                margin: 20px;
+            }
+
+            .header {
+                border-bottom: 2px solid #ccc;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+            }
+
+            .detail-row {
+                margin-bottom: 10px;
+            }
+
+            .label {
+                font-weight: bold;
+                display: inline-block;
+                width: 150px;
+            }
+            /* Třída pro věci, které nemají být na papíře vidět */
+            @@media print {
+                .no-print {
+                    display: none !important;
+                }
+            }
+
+            .print-button {
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                cursor: pointer;
+                margin-bottom: 20px;
+                border-radius: 4px;
+            }
+
+                .print-button:hover {
+                    background-color: #0056b3;
+                }
+    </style>
+</head>
+<body>
+
+    <!-- Skryjeme tlačítko při samotném tisku -->
+    <div class="no-print">
+        <button class="print-button" onclick="window.print();">Vytisknout</button>
+        <button class="print-button" onclick="window.close();" style="background-color: #6c757d;">Zavřít</button>
+    </div>
+
+    <div class="header">
+        <h1>Požadavek na údržbu č. @Model.RequestItem.Id</h1>
+    </div>
+
+    <div class="detail-row">
+        <span class="label">Vytvořil:</span>
+        <span>@Model.UserName</span>
+    </div>
+    <div class="detail-row">
+        <span class="label">Středisko:</span>
+        <span>@Model.DepartmentName</span>
+    </div>
+    <div class="detail-row">
+        <span class="label">Stav:</span>
+        <span>@statusText</span>
+    </div>
+    <div class="detail-row">
+        <span class="label">Kategorie opravy:</span>
+        <span>@categoryText</span>
+    </div>
+    <div class="detail-row">
+        <span class="label">Datum vytvoření:</span>
+        <span>@Model.RequestItem.CreatedDate.ToString("dd.MM.yyyy HH:mm")</span>
+    </div>
+    <div class="detail-row">
+        <span class="label">Plánované datum opravy:</span>
+        <span>@(Model.RequestItem.PlannedRepairDate.HasValue ? Model.RequestItem.PlannedRepairDate.Value.ToString("dd.MM.yyyy HH:mm") : "-")</span>
+    </div>
+    <div class="detail-row">
+        <span class="label">Termín dokončení:</span>
+        <span>@(Model.RequestItem.DueDate.HasValue ? Model.RequestItem.DueDate.Value.ToString("dd.MM.yyyy HH:mm") : "-")</span>
+    </div>
+    <div class="detail-row">
+        <span class="label">Datum vyřešení:</span>
+        <span>@(Model.RequestItem.RemovedDate.HasValue ? Model.RequestItem.RemovedDate.Value.ToString("dd.MM.yyyy HH:mm") : "-")</span>
+    </div>
+    <div class="detail-row">
+        <span class="label">Odhadované náklady:</span>
+        <span>@(Model.RequestItem.EstimatedCost?.ToString("N0") ?? "-")</span>
+    </div>
+    <div class="detail-row">
+        <span class="label">Skutečné náklady:</span>
+        <span>@(Model.RequestItem.ActualCost?.ToString("N0") ?? "-")</span>
+    </div>
+    <div class="detail-row">
+        <span class="label">Popis závady:</span>
+        <div style="margin-top: 5px; border: 1px solid #ccc; padding: 10px; min-height: 80px;">
+            @Model.RequestItem.IssueDescription
+        </div>
+    </div>
+    
+    @if (!string.IsNullOrWhiteSpace(Model.RequestItem.RepairDescription))
+    {
+        <div class="detail-row" style="margin-top: 20px;">
+            <span class="label">Popis opravy:</span>
+            <div style="margin-top: 5px; border: 1px solid #ccc; padding: 10px; min-height: 80px;">
+                @Model.RequestItem.RepairDescription
+            </div>
+        </div>
+    }
+
+    @if (Model.RequestItem.SrvMaintenanceRequestNotes != null && Model.RequestItem.SrvMaintenanceRequestNotes.Any())
+    {
+        <div class="header" style="margin-top: 40px; border-bottom: 2px solid #ccc; padding-bottom: 5px;">
+            <h2 style="font-size: 18px; margin: 0;">Historie komentářů a změn</h2>
+        </div>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;">  
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #ccc; padding: 8px; text-align: left; width: 140px;">Datum a čas</th>
+                    <th style="border: 1px solid #ccc; padding: 8px; text-align: left; width: 150px;">Uživatel</th>
+                    <th style="border: 1px solid #ccc; padding: 8px; text-align: left; width: 120px;">Typ</th>
+                    <th style="border: 1px solid #ccc; padding: 8px; text-align: left;">Text</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var note in Model.RequestItem.SrvMaintenanceRequestNotes)
+                {
+                    var userName = string.IsNullOrEmpty(note.IdUser) ? "Systém" : (Model.NoteUserNames.TryGetValue(note.IdUser, out var un) ? un : "Neznámý");
+                    var typeName = note.NoteType switch {
+                        1 => "Popis závady",
+                        2 => "Popis opravy",
+                        3 => "Vrácení",
+                        _ => "Ostatní"
+                    };
+
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px; vertical-align: top;">@note.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td style="border: 1px solid #ccc; padding: 8px; vertical-align: top;">@userName</td>
+                        <td style="border: 1px solid #ccc; padding: 8px; vertical-align: top;">@typeName</td>
+                        <td style="border: 1px solid #ccc; padding: 8px; vertical-align: top; white-space: pre-wrap;">@note.NoteText</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+</body>
+</html>

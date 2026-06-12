@@ -1,0 +1,7 @@
+{varType App\Modules\SystemModule\Orm\Files\File $picture}
+{block content}
+{control mtzItemForm}
+<div n:ifset="$picture" class="text-center">
+    <h4>{$picture->name}</h4>
+    <img src="{$picture->src}" alt="{$picture->name}" style="object-fit: contain; width: 468px;">
+</div>

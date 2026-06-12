@@ -1,0 +1,64 @@
+{varType App\Modules\DeliveryModule\Orm\Companies\Depot $depot}
+{varType App\Modules\StockModule\Orm\Stands\Stand[] $stands}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět stojany" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na stojany partnera</strong>
+    </a>
+</div>
+
+<h3 class="text-center">{$depot->name}</h3>
+
+<div>
+    <label for="item-stand-select">Produkt:</label>
+    <select id="item-stand-select" class="select2-ignore" onchange="findStandsByItem(this.value)">
+        <option value="">Název produktu, registrační číslo, katalogové číslo...</option>
+    </select>
+</div>
+
+<br>
+
+<div n:snippet="item-stand-table">
+    <table n:ifset="$stands" class="table datagrid-table jambo_table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Název</th>
+                <th>Výrobce</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {var int $standCounter = 0}
+            <tr n:foreach="$stands as $stand">
+                <td>{$stand->code}</td>
+                <td>{$stand->name}</td>
+                <td>{$stand->producerName}</td>
+                <td class="row-actions">
+                        <a n:if="$user->isAllowed(':Stock:Stand:preview')" class="side-dialog" n:href=":Stock:Stand:preview id => $stand->id" data-sd-history="on">
+                            <span data-toggle="tooltip" title="Náhled" class="fa fa-search"></span>
+                        </a>
+                </td>
+                {php $standCounter++}
+            </tr>
+            <tr n:if="!$standCounter">
+                <td colspan="4" class="text-center bold">Zadaný produkt se nenalézá na žádném stojanu u partnera</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(function () {
+        initProductSearch('item-stand-select');
+    });
+
+    function findStandsByItem(stockItemId) {
+        $.nette.ajax({
+            url: {link findStandsByItem!},
+            data: { stockItemId }
+        });
+    }
+</script>

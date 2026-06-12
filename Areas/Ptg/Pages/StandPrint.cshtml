@@ -1,4 +1,4 @@
-﻿@page "/ptg/print/{id:int}"
+﻿@page "/ptg/print/{id:int}/{changeDateSegment?}"
 @model Jas.Areas.Ptg.Pages.StandPrintModel
 
 @{
@@ -13,6 +13,22 @@
         @await Html.PartialAsync("_PlateStandPrint", Model)
     }
 
+}
+
+@if (Model.ChangeTexts.Any() && false)
+{
+    <div style="page-break-before: always; padding: 24px 32px;">
+        <h1>Seznam provedených změn</h1>
+        <ul>
+            @foreach (var changeText in Model.ChangeTexts)
+            {
+                if (!string.IsNullOrWhiteSpace(changeText))
+                {
+                    <li>@changeText</li>
+                }
+            }
+        </ul>
+    </div>
 }
 
 

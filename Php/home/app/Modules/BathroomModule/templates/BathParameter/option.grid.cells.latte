@@ -1,0 +1,8 @@
+{varType App\Modules\BathroomModule\Orm\Parameters\BathOption $row}
+
+{define col-color}
+    <td class="grid-col-color" style="text-align: left;  white-space: nowrap; width: 180px;">
+        <span style="width: 50px; background-color: {$row->color |noescape}; display: inline-block;">&nbsp;</span>
+        {$row->color}
+    </td>
+{/define}

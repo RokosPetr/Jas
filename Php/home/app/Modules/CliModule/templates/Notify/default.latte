@@ -1,0 +1,22 @@
+{block content}
+<div>
+    <a n:href=":Cli:Cache:" class="btn btn-secondary">Cache</a>
+</div>
+<table class="table datagrid-table jambo_table">
+    <thead>
+        <tr class="headings">
+            <th>Název</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr n:foreach="$notifies as $action => $title">
+            <td>{$title}</td>
+            <td><a n:href="$action" class="fa fa-play" title="Spustit"></a></td>
+        </tr>
+        <tr n:foreach="$stores as $store">
+            <td>Aktualizace objednávek povinných položek pobočky {$store->name}</td>
+            <td><a n:href="obligatoryItemOrders id => $store->id" class="fa fa-play" title="Spustit"></a></td>
+        </tr>
+    </tbody>
+</table>

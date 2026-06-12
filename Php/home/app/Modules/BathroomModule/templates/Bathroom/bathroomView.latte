@@ -1,0 +1,96 @@
+{varType App\Modules\BathroomModule\Orm\Bathrooms\Bathroom $bathroom}
+{varType bool $showPosition}
+{varType bool $lightbox}
+
+{define bathroomView}
+    {var array $bathPictures = $bathroom->pictures->toCollection()->fetchPairs('position')}
+    {var App\Modules\BathroomModule\Orm\Bathrooms\BathPicture $picture3d = $bathPictures[App\Modules\BathroomModule\Orm\Bathrooms\BathPictureRepository::POSITION_3D] ?? null}
+
+    <div class="bathroom-preview-container" style="position: relative;">
+        {if $picture3d}
+            <span class="bath-3d-picture" style="padding: 0;">
+                <a-scene embedded vr-mode-ui="enabled: false">
+                    <a-entity camera look-controls="reverseMouseDrag: true"></a-entity>
+                    <a-sky src="{$picture3d->picture->thumbnail($picture3d::PICTURE_3D_WIDTH, $picture3d::PICTURE_3D_QUALITY)}" rotation="0 {$bathroom->virtualPictureFocus - 270} 0"></a-sky>
+                </a-scene>
+            </span>
+        {else}
+            <span class="bath-3d-picture" style="background: url('/image/no-image.png')"></span>
+        {/if}
+        <img id="bath-360-degree-icon" src="/image/360-degree-rotate.svg" alt="360-degree-icon">
+    </div>
+    <br>
+    <div class="bathroom-preview-container" id="lightbox-links">
+        {if $lightbox}
+            <a n:for="$position = 1; $position <= App\Modules\BathroomModule\Orm\Bathrooms\BathPictureRepository::MAX_POSITION; $position++"
+                    href="{if isset($bathPictures[$position])}{$bathPictures[$position]->picture->src}{else}/image/no-image.png{/if}"
+                    title="{$bathroom->name}"
+                    class="bath-picture"
+                    style="background: url('{if isset($bathPictures[$position])}{$bathPictures[$position]->picture->thumbnail(1280, 90)}{else}/image/no-image.png{/if}')"
+            >
+                <span n:if="$showPosition" class="bath-picture-position">{$position}.</span>
+            </a>
+        {else}
+            <span n:for="$position = 1; $position <= App\Modules\BathroomModule\Orm\Bathrooms\BathPictureRepository::MAX_POSITION; $position++"
+                class="bath-picture"
+                style="background: url('{if isset($bathPictures[$position])}{$bathPictures[$position]->picture->thumbnail(1280, 90)}{else}/image/no-image.png{/if}')"
+            >
+                <span n:if="$showPosition" class="bath-picture-position">{$position}.</span>
+            </span>
+        {/if}
+    </div>
+{/define}
+
+{define lightbox}
+    <div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls" aria-label="image gallery" aria-modal="true" role="dialog">
+        <div class="slides" aria-live="polite"></div>
+        <h3 class="title"></h3>
+        <a class="prev" aria-controls="blueimp-gallery" aria-label="previous slide" aria-keyshortcuts="ArrowLeft"></a>
+        <a class="next" aria-controls="blueimp-gallery" aria-label="next slide" aria-keyshortcuts="ArrowRight"></a>
+        <a class="close" aria-controls="blueimp-gallery" aria-label="close" aria-keyshortcuts="Escape"></a>
+        <a class="play-pause" aria-controls="blueimp-gallery" aria-label="play slideshow" aria-keyshortcuts="Space" aria-pressed="false" role="button"></a>
+        <ol class="indicator"></ol>
+    </div>
+
+    <script src="/dist/blueimp-gallery.min.js"></script>
+    <script>
+        document.getElementById('lightbox-links').onclick = function (event) {
+            var target = event.target;
+            var link = target.src ? target.parentNode : target;
+            var options = {
+                index: link,
+                event: event,
+                toggleControlsOnEnter: false,
+                toggleControlsOnSlideClick: false,
+                thumbnailIndicators: false,
+            };
+            var links = this.getElementsByTagName('a');
+            blueimp.Gallery(links, options);
+        }
+    </script>
+{/define}
+
+{define linkPicture}
+    {var App\Modules\BathroomModule\Orm\Bathrooms\BathItemLink[] $itemLinks = $bathroom->itemLinks->toCollection()->fetchAll()}
+    <div class="bathroom-link-container">
+        <img src="{if $bathroom->linkPicture}{$bathroom->linkPicture->thumbnail(1280, 90)}{else}/image/no-image.png{/if}" alt="link-picture">
+        <a n:foreach="$itemLinks as $itemLink"
+            href="{$itemLink->link}"
+            target="_blank"
+            class="bath-item-link"
+            data-toggle="tooltip"
+            title="x"
+            data-html="1"
+            data-template="{include #linkItemTooltip tooltip => $itemLink->item->name}"
+            style="top: {$itemLink->positionY |noescape}%; left: {$itemLink->positionX |noescape}%;"
+        ></a>
+    </div>
+{/define}
+
+{define linkItemTooltip}
+    {varType string $tooltip}
+    <div class="tooltip link-item-tooltip">
+        <div class="link-item-tooltip-item">{$tooltip}</div>
+        <div class="link-item-tooltip-remark">kliknutím otevřít detail produktu</div>
+    </div>
+{/define}

@@ -1,0 +1,6 @@
+{varType App\Modules\MtzModule\Orm\MtzItems\MtzItem $mtzItem}
+{block content}
+{sideDialog}
+    <h2>{$mtzItem->title}</h2>
+    <img n:if="$mtzItem->hasPicture" src="{$mtzItem->picture->src}" alt="{$mtzItem->name}" style="object-fit: contain; width: 300px;">
+{/sideDialog}

@@ -1,0 +1,9 @@
+{varType App\Modules\BathroomModule\Orm\Bathrooms\Bathroom $bathroom}
+{block content}
+{import 'bathroomView.latte'}
+<h2>{$bathroom->name}</h2>
+{control bathItemLinks}
+<br>
+<div class="container">
+    {include #linkPicture bathroom => $bathroom}
+</div>

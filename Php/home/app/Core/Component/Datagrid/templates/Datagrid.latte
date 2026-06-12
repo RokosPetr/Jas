@@ -1,0 +1,279 @@
+{varType App\Core\Component\Datagrid\BaseDatagrid $control}
+{varType App\Core\Component\Datagrid\DatagridSetting $gridSetting}
+
+{define table-open-tag}
+<div class="table-responsive">
+    <table n:class="table, datagrid-table, jambo_table, $gridSetting->floatedTable ? floatedTable">
+{/define}
+
+{define table-close-tag}
+    </table>
+</div>
+{/define}
+
+{define row-head-colums}
+    <tr class="headings">
+        <th n:if="$gridSetting->shownCheckboxes" class="sorting_disabled grid-col-check">
+            <input type="checkbox"
+                   name="checkbox"
+                   class="flat checkboxRows"
+                   data-link="{link SelectAllRows! select => !$selectedAllRows}"
+                   {if $selectedAllRows}checked{/if}
+            />
+        </th>
+        {foreach $columns as $column}
+            {var $sort = $column->canSort() ? 'sorting' : ''}
+            {var $newSortState = $column->getNewState() ?: null}
+
+            {if $column->isAsc()}
+                {php $sort = 'sorting_asc'}
+            {elseif $column->isDesc()}
+                {php $sort = 'sorting_desc'}
+            {/if}
+
+            <th class="grid-col-{$column->name} {$sort} column-title"
+                aria-label="Browser: activate to sort column">
+                {var $labelInfo = ''}
+                {var $tooltipText = $column->tooltipText}
+                {if $tooltipText}
+                    {var $tooltipTextTrans = $tooltipText}
+                    {php $labelInfo = "<i data-toggle='tooltip' class='fa fa-info-circle' aria-hidden='true' title='$tooltipTextTrans'></i>"}
+                {/if}
+                {if $column->canSort()}
+                    <a href="{link sort! orderColumn => $newSortState ? $column->name : null, orderType => $newSortState}"
+                       class="ajax">{$column->label} {$labelInfo|noescape}</a>
+                {else}
+                    <span>{$column->label} {$labelInfo|noescape}</span>
+                {/if}
+            </th>
+        {/foreach}
+
+        <th class="sorting_disabled column-title">
+            <span n:if="$gridSetting->showExports" title="{$translates['exportGrid']}">
+                {if $gridSetting->exportHandle}
+                    <a href="{plink $gridSetting->exportHandle}" class="pull-right fa fa-download"></a>
+                {else}
+                    <a href="{link exportDatagrid! type => $gridSetting->exportType}" class="pull-right fa fa-download"></a>
+                {/if}
+            </span>
+            <span n:if="$gridSetting->showSettings" title="Nastavení">
+                <a href="{link showSetting!}" class="ajax pull-right fa fa-gear"></a>
+            </span>
+        </th>
+    </tr>
+{/define}
+
+{define row-class}
+    {((isset($legendData[$rowKey])) ? $legendData[$rowKey]->class : '')}
+{/define}
+
+{define row-inner}
+    {var $primary = $control->getter($row, $rowPrimaryKey)}
+    {if $gridSetting->shownCheckboxes}
+        <td class="grid-col-check">
+            {if is_null($checkboxesData) || isset($checkboxesData[$rowKey])}
+                <div class="bulk-check">
+                    {if !$isRestorable || ($isRestorable && !$row->deleted)}
+                        <input id="{$row->id}"
+                               type="checkbox"
+                               name="checkbox"
+                               class="flat checkboxRows"
+                               data-link="{link SelectRow! rowId => $row->id, select => !isset($selectedRows[$row->id])}"
+                               {ifset $selectedRows[$row->id]}checked {/ifset}
+                        />
+                    {/if}
+                </div>
+            {/if}
+        </td>
+    {/if}
+
+    {foreach $columns as $column}
+        {var $cell = $control->getter($row, $column->name, FALSE)}
+        {if $column->isSetDateFormat() && !empty($cell)}
+            {var $cell = date_format($cell, $column->getDateFormat())}
+        {/if}
+        {if $cell === null || $cell === ''}
+            {var $tdClass = ' empty-value'}
+            {var $cell = '-'}
+        {else}
+            {var $tdClass = ''}
+        {/if}
+
+        {ifset #col-$column->name}
+            {include #"col-{$column->name}" row => $row, cell => $cell, iterator => $iterator}
+        {else}
+            <td class="grid-col-{$column->name}{$tdClass}" style="text-align: {$column->align};">
+                {ifset #cell-$column->name}
+                    {include #"cell-{$column->name}" row => $row, cell => $cell, iterator => $iterator}
+                {else}
+                    {if is_string($cell) && preg_match('/([a-zA-Z0-9_\-\.]*@\\S+\\.\\w+)/', $cell)}
+                        {preg_replace('/([a-zA-Z0-9_\-\.]*@\\S+\\.\\w+)/', '<a href="mailto:$1" class="mailto">$1</a>', $cell)|noescape}
+                    {elseif $column->numberFormat}
+                        {$cell |number:$column->numberFormat[0],$column->numberFormat[1],$column->numberFormat[2]}
+                    {else}
+                        {$cell}
+                    {/if}
+                {/ifset}
+            </td>
+        {/ifset}
+    {/foreach}
+
+    {include "row_actions.latte", row => $row, hasActionsColumn => $hasActionsColumn, primary => $primary}
+{/define}
+
+{define pagination}
+    {include "pagination.latte"}
+{/define}
+
+{define empty-result}
+    {if !isset($form['add'])}
+        <tr>
+            <td colspan="100%">
+                {if count($data) || $showFilterCancel || $form->isSubmitted() !== false || isset($form['add'])}
+                    <p class="bold text-center">{$translates['empty_filter_set']}</p>
+                {else}
+                    <p class="bold text-center">{$translates['empty_set']}</p>
+                {/if}
+            </td>
+        </tr>
+    {/if}
+{/define}
+
+{snippet rows}
+    {if isset($form['filter'])}
+        {form form class => "ajax ays-ignore"}
+            {include #startBlock}
+        {/form}
+    {else}
+        <div class="datagridDiv">
+            {include #startBlock}
+        </div>
+    {/if}
+
+    {define startBlock}
+        {foreach $cellsTemplates as $cellsTemplate}
+            {import $cellsTemplate}
+        {/foreach}
+
+        {var $hasActionsColumn =
+        $this->hasBlock('row-actions') ||
+        $this->hasBlock('global-actions') ||
+        isset($form['filter']) ||
+        (bool) $control->getEditFormFactory()
+        }
+
+        {import 'top_actions.latte'}
+
+        {include #top-actions}
+
+        {include #table-open-tag}
+
+        <thead>
+        {include #row-head-colums}
+        </thead>
+        <tbody>
+        {var $_dynSnippets = new ArrayObject()}
+            {if count($data)}
+            {if $sendOnlyRowParentSnippet}
+                {foreach $data as $rowKey => $row}
+                    {var $primary = $control->getter($row, $rowPrimaryKey)}
+                    <tr id="{$this->global->snippetDriver->getHtmlId("rows-$primary")}" class="row-inner {include row-class rowKey => $rowKey}">
+                        {include #row-inner row => $row, hasActionsColumn => $hasActionsColumn}
+                    </tr>
+                {/foreach}
+            {else}
+                {foreach $data as $rowKey => $row}
+                    {var $primary = $control->getter($row, $rowPrimaryKey)}
+                    <tr n:snippet="rows-$primary" class="row-inner {include row-class rowKey => $rowKey}">
+                        {include #row-inner row => $row, hasActionsColumn => $hasActionsColumn, rowKey => $rowKey}
+                    </tr>
+                {/foreach}
+            {/if}
+        {else}
+            {ifset #empty-result}{include #empty-result}{/ifset}
+        {/if}
+        </tbody>
+        {include #table-close-tag}
+
+        {if isset($paginator) && count($data)}
+            {include #pagination}
+        {/if}
+
+        {if $control->showSetting}
+            {import 'setting.latte'}
+            {include #setting-form selectedColumns => array_keys($columns), columnOption => $columnOption}
+        {/if}
+    {/define}
+
+    <script type="text/javascript">
+        initDatagrid({link search!});
+
+        $("#cancelSearch").click(function() {
+            $.nette.ajax({
+                url: {link searchCancel!},
+            });
+        });
+
+        $('.row-actions a, .confirmDialog').click(function rowActionsClick(e) {
+            let dialogText = $(this).data('dialog-text');
+            let dialogTitleText = $(this).data('dialog-title');
+
+            if (dialogText && dialogTitleText) {
+                e.preventDefault();
+                $('<div></div>').dialog({
+                    resizable: false,
+                    height: 'auto',
+                    width: 400,
+                    modal: true,
+                    closeOnEscape: true,
+                    title: dialogTitleText,
+                    open: function open() {
+                        $(this).html(dialogText);
+                    },
+                    buttons: [{
+                        text: 'Ano',
+                        click: () => {
+                            if ($(this).hasClass('ajax-confirmDialog')) {
+                                $.nette.ajax($(this).attr('href'));
+                                $('button.ui-dialog-titlebar-close').click();
+                            } else {
+                                window.location.href = $(this).attr('href');
+                            }
+                        }
+                    }, {
+                        text: 'Ne',
+                        click: function clickClose() {
+                            $(this).dialog('close');
+                        }
+                    }]
+                });
+                $('.ui-dialog-titlebar-close').html('<span>x</span>');
+            }
+        });
+
+        function initDatagrid(search)
+        {
+            let fulltextSearch = $('#fulltextSearch');
+
+            fulltextSearch.keypress((event) => {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    doneTyping(search);
+                }
+            });
+
+            $('button.search').click(() => {
+                doneTyping(search);
+            });
+
+            $('table input[type="checkbox"].checkboxRows').change(function () {
+                $.nette.ajax($(this).attr('data-link'));
+            });
+        }
+
+        function doneTyping(link)
+        {
+            $.nette.ajax({ url: link, data: { query: $('#fulltextSearch').val() } });
+        }
+    </script>
+{/snippet}

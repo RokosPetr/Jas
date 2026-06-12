@@ -1,0 +1,12 @@
+{varType App\Modules\StockModule\Orm\Discounts\DiscountStockGroup $row}
+{define cell-value}
+    {$row->value |number:2,',',' '} %
+{/define}
+
+{define cell-producer}
+    {$row->producer->title}
+{/define}
+
+{define cell-stockGroup}
+    {$row->stockGroup->title}
+{/define}

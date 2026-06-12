@@ -1,0 +1,52 @@
+{
+	"name": "contributte/menu-control",
+	"type": "library",
+	"description": "Menu control for Nette framework",
+	"keywords": ["nette", "menu", "control", "component", "breadcrumbs"],
+	"homepage": "https://github.com/contributte/menu-control",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "David Kudera",
+			"homepage": "https://kudera.dev"
+		},
+		{
+			"name": "Milan Felix Šulc",
+			"homepage": "https://f3l1x.io"
+		},
+		{
+			"name": "Tomáš Jacík",
+			"homepage": "https://tomasjacik.cz"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/contributte/menu-control/issues"
+	},
+	"require": {
+		"php": ">=7.1",
+		"nette/di": "^3.0",
+		"nette/utils": "^3.0",
+		"nette/application": "^3.0.4",
+		"nette/http": "^3.0"
+	},
+	"require-dev": {
+		"nette/tester": "^2.1",
+		"mockery/mockery": "dev-master",
+		"ninjify/coding-standard": "^0.9.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Contributte\\MenuControl\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\": "tests/Tests/"
+		}
+	},
+	"scripts": {
+		"tests": "vendor/bin/tester -s -p php -c tests/php.ini tests/Tests/",
+		"phpcs": "vendor/bin/phpcs --standard=vendor/ninjify/coding-standard/ruleset-gamee.xml --extensions=php,phpt --tab-width=4 -sp src tests",
+		"phpcsfix": "vendor/bin/phpcbf --standard=vendor/ninjify/coding-standard/ruleset-gamee.xml --extensions=php,phpt --tab-width=4 -sp src tests"
+	}
+}

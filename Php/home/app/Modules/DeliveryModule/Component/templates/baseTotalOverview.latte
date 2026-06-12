@@ -1,0 +1,199 @@
+{varType App\Modules\DeliveryModule\Component\BaseOverview $control}
+<script src="/dist/chart.bundle.js"></script>
+
+{snippet overviewFilter}
+    {control overviewFilter}
+{/snippet}
+
+{snippet overviewTable}
+    {import 'baseOverviewHelper.latte'}
+    <div class="text-center" style="background-color: rgba(242, 242, 242, 0.5); padding: 30px 0;">
+        <div class="table-responsive" style="overflow-x: auto;">
+            <table class="takings-overview sales-overview floatedTable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th n:foreach="$stockGroups as $groupName" colspan="{count($years)}">{$groupName}</th>
+                        <th colspan="{count($years)}">Celkem</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr class="hover-ignore">
+                        <td>Rok</td>
+                        {for $i = 0; $i < count($stockGroups) + 1; $i++}
+                            <td n:foreach="$years as $year" n:class="$i % 2 ? odd : even"><b>{$year}</b></td>
+                        {/for}
+                    </tr>
+
+                    {var array $tableData = [],
+                        array $rowSums = [],
+                        array $stockGroupIds = array_keys($stockGroups),
+                        int $maxCompareMonth = $hasCurrentYear ? (date('n') - 1)  : 12,
+                        int $mostPastYear = end($years),
+                        int $value = 0,
+                        int $compareValue = 0
+                    }
+
+                    {foreach App\Core\Utils\DateTime::CZ_MONTHS as $month => $monthName}
+                        <tr>
+                            <td>{$monthName |firstUpper}</td>
+                            {foreach $stockGroupIds as $index => $stockGroupId}
+                                {foreach $years as $year}
+                                    {php $tableData[$stockGroupId][$mostPastYear][$month] ??= $control->loadCellTotalValue($stockGroupId, $mostPastYear, $month);
+                                        $tableData[$stockGroupId][$year][$month] ??= $control->loadCellTotalValue($stockGroupId, $year, $month);
+                                        $rowSums[$year][$month] ??= 0;
+                                        $rowSums[$year][$month] += $tableData[$stockGroupId][$year][$month]
+                                    }
+                                    {include #dataCell cellClass => $index % 2 ? 'odd' : 'even', value => $tableData[$stockGroupId][$year][$month], compareValue => $tableData[$stockGroupId][$mostPastYear][$month], year => $year, month => $month, mostPastYear => $mostPastYear}
+                                {/foreach}
+                            {/foreach}
+
+                            {foreach $years as $year}
+                                {include #dataCell cellClass => $index % 2 ? 'even' : 'odd', value => $rowSums[$year][$month], compareValue => $rowSums[$mostPastYear][$month], year => $year, month => $month, mostPastYear => $mostPastYear}
+                            {/foreach}
+                        </tr>
+
+                        {if $month % 3 === 0}
+                            <tr class="sum-row">
+                                <td>Celkem {$month - 2}-{$month}</td>
+                                {foreach $stockGroupIds as $index => $stockGroupId}
+                                    {foreach $years as $year}
+                                        {php $value = $control->getPartSumValue($tableData[$stockGroupId][$year], $month, $maxCompareMonth);
+                                            $compareValue = $control->getPartSumValue($tableData[$stockGroupId][$mostPastYear], $month, $maxCompareMonth)
+                                        }
+                                        {include #dataCell cellClass => $index % 2 ? 'odd' : 'even', value => $value, compareValue => $compareValue, year => $year, month => $month - 2, mostPastYear => $mostPastYear}
+                                    {/foreach}
+                                {/foreach}
+
+                                {foreach $years as $year}
+                                    {php $value = $control->getPartSumValue($rowSums[$year], $month, $maxCompareMonth);
+                                        $compareValue = $control->getPartSumValue($rowSums[$mostPastYear], $month, $maxCompareMonth)
+                                    }
+                                    {include #dataCell cellClass => $index % 2 ? 'even' : 'odd', value => $value, compareValue => $compareValue, year => $year, month => $month - 2, mostPastYear => $mostPastYear}
+                                {/foreach}
+                            </tr>
+                        {/if}
+                    {/foreach}
+
+                    <tr n:if="!($hasCurrentYear && intval(date('n')) === 1)">
+                        <td></td>
+                        {for $i = 0; $i < count($stockGroupIds) + 1; $i++}
+                            <td n:for="$j = 0; $j < count($years); $j++" n:class="$i % 2 ? odd : even">&nbsp;</td>
+                        {/for}
+                    </tr>
+
+                    <tr n:if="!($hasCurrentYear && intval(date('n')) === 1)" class="sum-row">
+                        {var array $stockGroupCompareSums = []}
+                        <td>Celkem 1-{$maxCompareMonth}</td>
+                        {foreach $stockGroupIds as $index => $stockGroupId}
+                            {foreach $years as $year}
+                                {php $stockGroupCompareSums[$year][$stockGroupId] ??= 0}
+                                {for $i = 1; $i <= $maxCompareMonth; $i++}
+                                    {php $stockGroupCompareSums[$year][$stockGroupId] += $tableData[$stockGroupId][$year][$i]}
+                                {/for}
+                            {/foreach}
+                            {foreach $years as $year}
+                                {include #dataCell cellClass => $index % 2 ? 'odd' : 'even', value => $stockGroupCompareSums[$year][$stockGroupId], compareValue => $stockGroupCompareSums[$mostPastYear][$stockGroupId], year => $year, month => 1, mostPastYear => $mostPastYear}
+                            {/foreach}
+                        {/foreach}
+
+                        {foreach $years as $year}
+                            {include #dataCell cellClass => $index % 2 ? 'even' : 'odd', value => array_sum($stockGroupCompareSums[$year]), compareValue => array_sum($stockGroupCompareSums[$mostPastYear]), year => $year, month => 1, mostPastYear => $mostPastYear}
+                        {/foreach}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <div class="dealer-overview-main-chart">
+            <canvas id="stock-groups-chart"></canvas>
+        </div>
+    </div>
+
+    <form action="{plink exportOverview}" target="_blank" id="chartForm" method="post" class="hide"></form>
+
+    <script>
+        var charts = [];
+        charts.push(new Chart(
+            document.getElementById('stock-groups-chart'),
+            {
+                type: 'doughnut',
+                plugins: [ChartDataLabels],
+                data: {
+                    labels: {array_values($stockGroups)},
+                    datasets: [
+                        {foreach $years as $year}
+                            {
+                                label: {$year},
+                                data: {array_map(fn(array $stockGroupData) => array_sum($stockGroupData[$year]), $tableData, [])},
+                                backgroundColor: getDataColorSet({count($stockGroups)}),
+                                hoverOffset: 4
+                            },
+                        {/foreach}
+                    ]
+                },
+                options: {
+                    animation: {
+                        animateRotate: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Podíl prodeje dle sortimentu ' + {implode('/', $years)},
+                            font: {
+                                size: 16
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                top: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var totalSum = context.dataset.data.reduce((a,b) => a + b);
+                                    var percentage = Math.round((context.parsed / totalSum) * 1000) / 10;
+                                    return context.dataset.label + ': ' + context.label + ': ' + percentage + ' %';
+                                }
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                font: {
+                                    size: 15
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: 'black',
+                            font: {
+                                weight: 'bold'
+                            },
+                            display: function(context) {
+                                return context.dataIndex === 0;
+                            },
+                            formatter: function(value, context) {
+                                return context.dataset.label;
+                            }
+                        }
+                    }
+                }
+            }
+        ));
+
+        $(function () {
+            $('#overview-to-pdf').click(function () {
+                var form = $('#chartForm');
+                form.empty();
+                charts.forEach(function (chart) {
+                    var input = $('<input type="text" name="charts[]">');
+                    input.val(chart.toBase64Image());
+                    form.append(input);
+                });
+                form.submit();
+            });
+        })
+    </script>
+{/snippet}

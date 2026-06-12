@@ -1,0 +1,9 @@
+{varType App\Modules\SystemModule\Orm\Mails\Mail $mail}
+{block content}
+{sideDialog}
+    <h2>{$mail->subject}</h2>
+    <h3>{$mail->user->name}</h3>
+    <h4>{$mail->sentAt->format('d.m.Y H:i')}</h4>
+    <br>
+    <div>{$mail->body |noescape}</div>
+{/sideDialog}

@@ -1,0 +1,53 @@
+{varType App\Modules\StockModule\Orm\StockItems\StockItem $stockItem}
+{varType App\Modules\StockModule\Orm\StockItems\StockVariant $variant}
+
+{block content}
+<a n:href="default"><img src="/image/zpet.png" height="25" width="25" alt=""> Zpět na skladové zásoby</a>
+<h1>{$stockItem->title}</h1>
+<table>
+    <tr>
+        <td>Výrobce: </td>
+        <td>{$stockItem->producer->name ?? '???'}</td>
+    </tr>
+    <tr n:if="$stockItem->group">
+        <td>Skupina zboží: </td>
+        <td>{$stockItem->group->name}</td>
+    </tr>
+</table>
+<br>
+<div n:foreach="$stores as $id => $storeName">
+    {var App\Modules\CliModule\Orm\Imports\Import $import = $imports["Skladové položky - $storeName"] ?? null}
+    <h2>{$storeName}</h2>
+    <h5 n:if="isset($import) && $import->date"><i>Aktuálnost dat: {$import->date|date:'d.m.Y H:i'}, další aktualizace v {App\Modules\CliModule\Service\WarehouseImporter::getNextStockItemsImport($id, $import->date) |date:'H:i'}</i></h5>
+    <table class="table datagrid-table jambo_table">
+        <thead>
+            <tr class="headings">
+                <th style="width: 200px;">Katalogové číslo</th>
+                <th style="width: 200px;">Varianta</th>
+                <th style="width: 100px;">Množství</th>
+                <th style="width: 50px;">Jednotka</th>
+                <th>Sektor</th>
+            </tr>
+        </thead>
+        <tbody>
+        {if isset($variants[$id])}
+            <tr n:foreach="$variants[$id] as $variant">
+                <td>{$variant->catalog->name ?? '-'}</td>
+                <td>{$variant->remark ?: '-'}</td>
+                <td>{$variant->quantity}</td>
+                <td>{$stockItem->unit->name ?? '-'}</td>
+                <td>{$variant->sector->name ?? '-'}</td>
+            </tr>
+        {else}
+            <tr>
+                <td>{$stockItem->catalogs->toCollection()->fetch()->name ?? '-'}</td>
+                <td>-</td>
+                <td>0</td>
+                <td>{$stockItem->unit->name ?? '-'}</td>
+                <td>-</td>
+            </tr>
+        {/if}
+        </tbody>
+    </table>
+    <br>
+</div>

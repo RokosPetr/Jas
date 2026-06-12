@@ -1,0 +1,87 @@
+{varType App\Modules\StockModule\Orm\ObligatoryItems\ObligatoryItem $obligatoryItem}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na povinný sortiment" n:href="obligatoryStock id => $presenter->getParameter('id')">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na povinný sortiment</strong>
+    </a>
+</div>
+
+{form orderItemsForm}
+    <div class="flash-message flash-message-error" n:if="$form->hasErrors()" n:foreach="$form->getErrors() as $error">{$error}</div>
+    <table class="table datagrid-table jambo_table">
+        <thead>
+            <tr>
+                <th>Reg. číslo</th>
+                <th>Název</th>
+                <th>Kat. číslo</th>
+                <th>Zásoba</th>
+                <th>Minimum</th>
+                <th>Na paletách</th>
+                <th>V baleních</th>
+                <th>Celkem</th>
+                <th>Jednotka</th>
+                <th>Min. objednávka</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr n:foreach="$selectedItemsToOrder as $obligatoryItem" n:class="order-item-row, $obligatoryItem->belowLimit ? legend_orange">
+                <td>{$obligatoryItem->regNumber}</td>
+                <td>{$obligatoryItem->name}</td>
+                <td>{$obligatoryItem->catalog ?? '-'}</td>
+                <td>{$obligatoryItem->storeQuantity}</td>
+                <td>{$obligatoryItem->quantity}</td>
+                <td>{input $form[$obligatoryItem->id]['palette'] class => order-palette-input}</td>
+                <td>{input $form[$obligatoryItem->id]['package'] class => order-package-input}</td>
+                <td class="order-sum" data-min-order="{$obligatoryItem->minOrder}"></td>
+                <td>{$obligatoryItem->unit}</td>
+                <td>{$obligatoryItem->minOrder}</td>
+                <td><a n:href="removeFormItem! id => $obligatoryItem->id" class="ajax btn btn-xs btn-danger remove-item-btn" title="Odstranit">x</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="text-center">
+        {input order class => 'btn btn-secondary'}
+    </div>
+    {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+{/form}
+
+<script>
+    $(function () {
+        $('tr.order-item-row').each(function () {
+            updateOrderSum($(this));
+        });
+
+        $('input.order-palette-input, input.order-package-input').on('input', function () {
+            updateOrderSum($(this).closest('tr.order-item-row'));
+        });
+
+        $('tr a.remove-item-btn').click(function () {
+            $(this).closest('tr').remove();
+        });
+    });
+
+    function updateOrderSum(row) {
+        var paletteValue = parseFloat(row.find('input.order-palette-input').val());
+        var packageValue = parseFloat(row.find('input.order-package-input').val());
+        var sum = 0;
+        var sumCell = row.find('td.order-sum');
+
+        [paletteValue, packageValue].forEach(function (value) {
+            if (!isNaN(value)) {
+                sum += value;
+            }
+        });
+
+        sumCell.text(Math.round(sum * 100) / 100);
+
+        if (sum < sumCell.attr('data-min-order')) {
+            sumCell.addClass('text-danger');
+        } else {
+            sumCell.removeClass('text-danger');
+        }
+    }
+</script>

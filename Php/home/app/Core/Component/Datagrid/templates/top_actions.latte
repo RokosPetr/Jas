@@ -1,0 +1,77 @@
+{varType App\Core\Component\Datagrid\BaseAction[] $topActions}
+{varType App\Core\Component\Datagrid\BaseDatagrid $control}
+
+{define top-actions}
+    <div class="table-top-actions">
+        <div>
+            {foreach $topActions as $topAction}
+                {var string $actionLink = $topAction->currentPresenter ? ":$presenter->name:" . rtrim($topAction->linkAction, '!') : $topAction->link}
+                {if $user->isAllowed($actionLink)}
+                    <a n:class="$topAction->class ?: 'btn btn-secondary', $topAction->dialog ? confirmDialog, $topAction->sideDialogData ? side-dialog"
+                    {if isset($topAction->modalData['targetId'])}
+                        data-toggle="modal"
+                        data-target="#{$topAction->modalData['targetId']}"
+                        data-type="{$topAction->linkAction}"
+                        data-id="1"
+                    {else}
+                        href="{if $topAction->linkAction}{plink $actionLink, (expand) $topAction->actionParams}{else}#{/if}"
+                    {/if}
+
+                    {if $topAction->dialog}
+                        data-dialog-title="{$topAction->dialog['title']}"
+                        data-dialog-text="{$topAction->dialog['text']}"
+                    {/if}
+
+                    {if !empty($topAction->sideDialogData['history'])}
+                        data-sd-history="on"
+                    {/if}
+                    >{$topAction->label}</a>
+                {/if}
+            {/foreach}
+        </div>
+
+        <div n:if="!empty($fulltextColumns)" class="col-sm-3 col-xs-12 top_search form-group">
+            <div class="input-group"{if $showFulltextTooltip} data-toggle="tooltip" data-html="true" title="{$translates['info_button']}: {implode(", ",$fulltextColumns)|noescape}"{/if}>
+                <input id="fulltextSearch" type="text" name="search" placeholder="{$translates['search']}" value="{$query}" class="form-control"/>
+                <span class="input-group-btn">
+                        {if !empty($query)}
+                            <button id="cancelSearch" class="btn btn-default" type="button"><i class="fa fa-close"></i></button>
+                        {else}
+                            <button class="btn btn-default search" type="button"><i class="fa fa-search"></i></button>
+                        {/if}
+                    </span>
+            </div>
+        </div>
+
+        <div n:ifset="$form['filter']" class="filters-div" data-grid-name="{$control->getUniqueId()}">
+            {import "filter.latte"}
+                <div class="filter-buts pull-right">
+                {if isset($form['filter'])}
+                    <div class="btn-group">
+                        <a n:href="showFilter! show => !$control->showFilter" class="btn btn-secondary ajax but-filter {if $showFilterCancel}filter-active filter-focus-pad{/if}">
+                            {$translates['filter']}
+                        </a>
+                        {if $showFilterCancel}
+                            <button type="button" name="filter[cancel]" class="reset btn btn-warning" onclick="this.type='submit'" value="">
+                                <i class="fa fa-close"></i>
+                            </button>
+                        {/if}
+                    </div>
+                {/if}
+            </div>
+                {foreach $flashes as $flash}
+                <div class="callout callout-{$flash->type}">
+                    <p>{$flash->message}</p>
+                </div>
+            {/foreach}
+        </div>
+
+        <div class="clearfix"></div>
+        <div n:class="filter-body, !$control->showFilter ? hide">
+            {if isset($form['filter'])}
+                {include #row-head-filter}
+            {/if}
+        </div>
+    </div>
+    <div class="clearfix"></div>
+{/define}

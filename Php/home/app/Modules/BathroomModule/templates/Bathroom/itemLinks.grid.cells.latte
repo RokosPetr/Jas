@@ -1,0 +1,9 @@
+{varType App\Modules\BathroomModule\Orm\Bathrooms\BathItemLink $row}
+
+{define cell-item}
+    <a n:tag-if="$user->isAllowed(':Bathroom:Bathroom:editItemLink')" href="{plink editItemLink id => $row->id}">{$row->item->title}</a>
+{/define}
+
+{define cell-link}
+    <a href="{$row->link}" target="_blank">{$row->link}</a>
+{/define}

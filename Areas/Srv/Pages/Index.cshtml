@@ -10,7 +10,7 @@
     var title = activeFilter switch
     {
         "new-requests"        => "Přehled nových požadavků na údržbu",
-        "inprogress-requests" => "Přehled rozpracovaných požadavků na údržbu",
+        "inprogress-requests" => "Přehled řešených požadavků na údržbu",
         "toconfirm-requests"  => "Přehled požadavků na údržbu k odsouhlašení",
         "resolved-requests"   => "Přehled vyřízených požadavků na údržbu",
         "returned-requests"   => "Přehled vrácených požadavků na údržbu",
@@ -51,7 +51,17 @@
         </div>
 
         <div class="col-auto">
-            <button type="submit" class="btn btn-primary">Filtrovat</button>
+            <button type="submit" class="btn btn-primary d-print-none">Filtrovat</button>
+            <a asp-page="./IndexPrint" 
+               asp-route-filter="@activeFilter" 
+               asp-route-DepartmentFilterId="@Model.DepartmentFilterId"
+               asp-route-CreatedFrom="@Model.CreatedFrom?.ToString("yyyy-MM-dd")"
+               asp-route-CreatedTo="@Model.CreatedTo?.ToString("yyyy-MM-dd")"
+               target="_blank"
+               class="btn btn-outline-info ms-2 d-print-none" 
+               title="Tisk celého seznamu">
+                <span aria-hidden="true">&#128438;</span> Tisk seznamu
+            </a>
         </div>
     </div>
 </form>
@@ -111,81 +121,30 @@ else
             <tbody>
             @foreach (var item in newRequests)
             {
-
-                    string GetCategoryText(int cat) => cat switch
-                    {
-                        (int)RepairCategory.Light   => "Lehká (60 dní)",
-                        (int)RepairCategory.Serious => "Vážná (30 dní)",
-                        (int)RepairCategory.Urgent  => "Urgentní (5 dní)",
-                        _                           => "Neznámá"
-                    };
-
-                    var userCatText  = GetCategoryText(item.RepairCategory);
-                    var adminCatText = item.RepairCategoryAdmin.HasValue
-                        ? GetCategoryText(item.RepairCategoryAdmin.Value)
-                        : null;
-
-                    bool hasDifferentAdminCat =
-                        item.RepairCategoryAdmin.HasValue &&
-                        item.RepairCategoryAdmin.Value != item.RepairCategory;
-
-                    // aktuální DueDate (podle efektivní kategorie – admin/user)
-                    var currentDueText = item.DueDate.HasValue
-                        ? item.DueDate.Value.ToString("dd.MM.yyyy")
-                        : string.Empty;
-
-                    // termín jen podle uživatelské kategorie (RepairCategory)
-                    string? userDueText = null;
-                    if (item.CreatedDate != default && item.RepairCategory != 0)
-                    {
-                        int GetDaysUser(int cat) => cat switch
-                        {
-                            (int)RepairCategory.Light   => 60,
-                            (int)RepairCategory.Serious => 30,
-                            (int)RepairCategory.Urgent  => 5,
-                            _                           => 0
-                        };
-
-                        var daysUser = GetDaysUser(item.RepairCategory);
-                        if (daysUser > 0)
-                        {
-                            userDueText = item.CreatedDate
-                                .AddDays(daysUser)
-                                .ToString("dd.MM.yyyy");
-                        }
-                    }
-
                 <tr>
                     <td>@item.Id</td>
                     <td>@item.Department</td>
 
                     @* RepairCategory / RepairCategoryAdmin *@
                     <td>
-                        @if (hasDifferentAdminCat)
-                        {
-                            @adminCatText @: (@userCatText)
-                        }
-                        else
-                        {
-                            @userCatText
-                        }
+                        @Model.GetFormattedCategoryText(item.RepairCategory, item.RepairCategoryAdmin)
                     </td>
 
                     <td>@item.CreatedDate.ToString("dd.MM.yyyy")</td>
 
                     @* DueDate + (datum podle původní RepairCategory) *@
                     <td>
-                        @currentDueText
-                        @if (hasDifferentAdminCat && !string.IsNullOrEmpty(userDueText))
-                        {
-                            @: (@userDueText)
-                        }
+                        @Model.GetFormattedRepairDateText(item.CreatedDate, item.RepairCategory, item.RepairCategoryAdmin)
                     </td>
 
                     <td class="text-end">
                         <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Upravit">
                             <span aria-hidden="true">&#9998;</span>
                             <span class="visually-hidden">Upravit</span>
+                        </a>
+                        <a asp-page="./DetailPrint" asp-route-id="@item.Id" class="btn btn-outline-info btn-icon-sm ms-1" target="_blank" title="Tisk">
+                            <span aria-hidden="true">&#128438;</span>
+                            <span class="visually-hidden">Tisk</span>
                         </a>
                     </td>
                 </tr>
@@ -226,9 +185,7 @@ else
                         <td>@item.UserName</td>
                         <td>@item.Department</td>
                         <td>
-                            @(item.DueDate.HasValue
-                                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
-                                            : "")
+                            @Model.GetFormattedRepairDateText(item.CreatedDate, item.RepairCategory, item.RepairCategoryAdmin)
                         </td>
                         <td>
                             @(item.RemovedDate.HasValue
@@ -249,6 +206,10 @@ else
                             <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Detail">
                                 <span aria-hidden="true">&#9998;</span>
                                 <span class="visually-hidden">Detail</span>
+                            </a>
+                            <a asp-page="./DetailPrint" asp-route-id="@item.Id" class="btn btn-outline-info btn-icon-sm ms-1" target="_blank" title="Tisk">
+                                <span aria-hidden="true">&#128438;</span>
+                                <span class="visually-hidden">Tisk</span>
                             </a>
                         </td>
                     </tr>
@@ -299,9 +260,7 @@ else
                     <td>@item.Department</td>
                     <td>@item.CreatedDate.ToString("dd.MM.yyyy")</td>
                     <td>
-                        @(item.DueDate.HasValue
-                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
-                            : "")
+                        @Model.GetFormattedRepairDateText(item.CreatedDate, item.RepairCategory, item.RepairCategoryAdmin)
                     </td>
                     <td>
                         @(item.PlannedRepairDate.HasValue
@@ -317,6 +276,10 @@ else
                         <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Upravit">
                             <span aria-hidden="true">&#9998;</span>
                             <span class="visually-hidden">Upravit</span>
+                        </a>
+                        <a asp-page="./DetailPrint" asp-route-id="@item.Id" class="btn btn-outline-info btn-icon-sm ms-1" target="_blank" title="Tisk">
+                            <span aria-hidden="true">&#128438;</span>
+                            <span class="visually-hidden">Tisk</span>
                         </a>
                     </td>
                 </tr>
@@ -364,9 +327,7 @@ else
                         <td>@item.UserName</td>
                         <td>@item.Department</td>
                         <td>
-                            @(item.DueDate.HasValue
-                                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
-                                            : "")
+                            @Model.GetFormattedRepairDateText(item.CreatedDate, item.RepairCategory, item.RepairCategoryAdmin)
                         </td>
                         <td>
                             @(item.RemovedDate.HasValue
@@ -387,6 +348,10 @@ else
                             <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Upravit">
                                 <span aria-hidden="true">&#9998;</span>
                                 <span class="visually-hidden">Upravit</span>
+                            </a>
+                            <a asp-page="./DetailPrint" asp-route-id="@item.Id" class="btn btn-outline-info btn-icon-sm ms-1" target="_blank" title="Tisk">
+                                <span aria-hidden="true">&#128438;</span>
+                                <span class="visually-hidden">Tisk</span>
                             </a>
                         </td>
                     </tr>
@@ -442,6 +407,10 @@ else
                                 <span aria-hidden="true">&#9998;</span>
                                 <span class="visually-hidden">Upravit</span>
                             </a>
+                            <a asp-page="./DetailPrint" asp-route-id="@item.Id" class="btn btn-outline-info btn-icon-sm ms-1" target="_blank" title="Tisk">
+                                <span aria-hidden="true">&#128438;</span>
+                                <span class="visually-hidden">Tisk</span>
+                            </a>
                         </td>
                     </tr>
                     <tr>
@@ -490,9 +459,7 @@ else
                     <td>@item.UserName</td>
                     <td>@item.Department</td>
                     <td>
-                        @(item.DueDate.HasValue
-                            ? item.DueDate.Value.ToString("dd.MM.yyyy")
-                            : "")
+                        @Model.GetFormattedRepairDateText(item.CreatedDate, item.RepairCategory, item.RepairCategoryAdmin)
                     </td>
                     <td>
                         @(item.RemovedDate.HasValue
@@ -513,6 +480,10 @@ else
                         <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-icon-sm" title="Upravit">
                             <span aria-hidden="true">&#9998;</span>
                             <span class="visually-hidden">Upravit</span>
+                        </a>
+                        <a asp-page="./DetailPrint" asp-route-id="@item.Id" class="btn btn-outline-info btn-icon-sm ms-1" target="_blank" title="Tisk">
+                            <span aria-hidden="true">&#128438;</span>
+                            <span class="visually-hidden">Tisk</span>
                         </a>
                     </td>
                 </tr>

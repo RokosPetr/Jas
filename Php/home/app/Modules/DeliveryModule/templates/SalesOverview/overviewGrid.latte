@@ -1,0 +1,17 @@
+{block content}
+
+{snippet overviewFilter}
+    {control storeOverviewFilter}
+{/snippet}
+
+{snippet overviewTable}
+    {control storeOverviewGrid}
+{/snippet}
+
+<script>
+    $.nette.ext({
+        complete() {
+            $('.floatedTable').floatThead('reflow');
+        }
+    });
+</script>

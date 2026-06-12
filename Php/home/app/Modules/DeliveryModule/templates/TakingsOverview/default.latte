@@ -1,0 +1,9 @@
+{block htmlHead}
+    <script src="/dist/morris.bundle.js"></script>
+{/block}
+
+{block content}
+{if $user->isAllowed(':Stock:CustomGroup:default')}
+    <a href="{plink :Stock:CustomGroup:default}" class="btn btn-secondary">Skupiny zboží</a>
+{/if}
+{control takingsOverview}

@@ -1,0 +1,16 @@
+{varType App\Modules\TransportModule\Orm\Cars\StoreCar $row}
+{define cell-driver}
+    {$row->driver->name ?? '-'}
+{/define}
+
+{define cell-weightCapacity}
+    {$row->weightCapacity |number:0,',',' '} kg
+{/define}
+
+{define cell-stores}
+    {$row->stores->toCollection()->fetchPairs(null, 'name') |implode:', '}
+{/define}
+
+{define cell-homeStore}
+    {$row->homeStore->name ?? '-'}
+{/define}

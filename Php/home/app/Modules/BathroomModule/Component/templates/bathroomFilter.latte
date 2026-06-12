@@ -1,0 +1,196 @@
+{varType App\Modules\BathroomModule\Component\BathroomFilter $control}
+{varType App\Modules\BathroomModule\Orm\Parameters\BathParameter[] $bathParams}
+{varType App\Modules\BathroomModule\Orm\Bathrooms\Bathroom[] $bathrooms}
+{varType Nette\Utils\Paginator $paginator}
+{varType bool $showCancelFilter}
+
+<div n:snippet="bathroom-filter" class="container bath-filter-container">
+    {var App\Modules\BathroomModule\Orm\Parameters\BathOption[] $typeOptions = $bathParams[App\Modules\BathroomModule\Orm\Parameters\BathParameter::TYPE]->options->toCollection()->orderBy('order')->fetchAll()}
+    {var App\Modules\BathroomModule\Orm\Parameters\BathOption[] $colorOptions = $bathParams[App\Modules\BathroomModule\Orm\Parameters\BathParameter::COLOR]->options->toCollection()->orderBy('order')->fetchAll()}
+    {var App\Modules\BathroomModule\Orm\Parameters\BathOption[] $seriesOptions = $bathParams[App\Modules\BathroomModule\Orm\Parameters\BathParameter::SERIES]->options->toCollection()->orderBy('name')->fetchAll()}
+
+    <div class="bathroom-filter">
+        <h2>Virtuální koupelna</h2>
+        <p>
+            Přemýšlíte, jak by měla vypadat Vaše koupelna a hledáte inspiraci? Pak jste tady správně. V sekci <b>Virtuální koupelna</b>
+            si můžete vybrat z nepřeberného množství grafických návrhů koupelen vytvořených naším grafickým oddělením.
+            Jednotlivé návrhy můžete filtrovat podle konkrétní série, velikosti koupelny, barvy, rozměrů, nebo stylu obkladů.
+            V návrzích jsou vždy umístěny odkazy na jednotlivé produkty, které byly ve vizualici použity, které Vás přenesou
+            rovnou na stránku konkrétního zboží v našem e-shopu.
+            <br><br>
+            Našim cílem při tvorbě této jedinečné galerie koupelen bylo poskytnout všem, kteří právě řeší novou koupelnu,
+            či rekonstruují tu stávající inspiraci a pomoc s řešením právě té Vaší vysněné koupelny.
+        </p>
+        <hr>
+        <div class="row">
+            <div n:foreach="$typeOptions as $typeOption" class="col-xs-4"{if $iterator->isFirst()} style="padding-left: 0;"{elseif $iterator->isLast()} style="padding-right: 0;"{/if}>
+                <div n:class="bath-type-option, $control->bathType === $typeOption->id ? selected" data-param="{$typeOption->parameter->id}" data-option="{$typeOption->id}" onclick="setBathType(this);">
+                    <div class="bath-type-picture" style="background-image: url('{if $typeOption->picture}{$typeOption->picture->src}{else}/image/no-image.png{/if}')"></div>
+                </div>
+                <div class="text-center"><b>{$typeOption->name}</b></div>
+                <div class="text-center tool-description"><span>pro výběr klikněte na obrázek</span></div>
+            </div>
+        </div>
+        <hr>
+        <div n:if="$control->bathType" class="filter-params-container">
+            <div class="row">
+                <div class="col-sm-9 col-xs-12">
+                    <div class="row filter-param-row">
+                        <div class="col-xs-12 filter-color-param" style="padding: 8px; min-height: 110px;">
+                            <div><b>Barva</b></div>
+                            <div>
+                                <div n:foreach="$colorOptions as $colorOption" n:class="bath-color-option-wrapper, !$control->isVisible($colorOption->parameter->id, $colorOption->id) ? hide">
+                                    <div n:class="bath-color-option, $control->isSelected($colorOption->parameter->id, $colorOption->id) ? selected" data-param="{$colorOption->parameter->id}" data-option="{$colorOption->id}" onclick="toggleParam(this);">
+                                        <div style="background-image: linear-gradient(to top right, {$colorOption->color |noescape} 30%, {$colorOption->color |noescape}30); width: 100%; height: 100%;"></div>
+                                    </div>
+                                    <div class="text-center tool-description">{$colorOption->name}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row filter-param-row" style="border-top: 1px solid #c7c7c7;">
+                        {foreach $bathParams as $bathParam}
+                            {continueIf in_array($bathParam->id, [App\Modules\BathroomModule\Orm\Parameters\BathParameter::TYPE, App\Modules\BathroomModule\Orm\Parameters\BathParameter::COLOR, App\Modules\BathroomModule\Orm\Parameters\BathParameter::SERIES])}
+                            {include #bathParam bathParam => $bathParam}
+                        {/foreach}
+                    </div>
+                </div>
+
+                <div class="col-sm-3 col-xs-12">
+                    <div class="filter-series-wrapper">
+                        <div class="filter-param-label"><b>Série</b></div>
+                        <div n:foreach="$seriesOptions as $seriesOption" n:class="col-sm-12, col-xs-4, checkbox, !$control->isVisible($seriesOption->parameter->id, $seriesOption->id) ? hide">
+                            <label>
+                                <input type="checkbox" data-param="{$seriesOption->parameter->id}" data-option="{$seriesOption->id}" onclick="toggleParam(this);" n:attr="checked: $control->isSelected($seriesOption->parameter->id, $seriesOption->id)">
+                                {$seriesOption->name}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                {include #paginator paginator => $control->paginator}
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-bathrooms">
+        <div class="col-sm-4 col-xs-6" n:foreach="$bathrooms as $bathroom">
+            <a href="{plink preview id => $bathroom->id}">
+                <div class="bathroom-main-picture" style="background-image: url('{if $bathroom->mainPicture}{$bathroom->mainPicture->thumbnail(1024, 85)}{else}/image/no-image.png{/if}')"></div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setBathType(element) {
+        let input = $(element);
+        if (input.hasClass('selected')) {
+            return;
+        }
+        $.nette.ajax({
+            url: {link setBathType!},
+            data: {
+                bathType: input.attr('data-option')
+            }
+        });
+    }
+
+    function toggleParam(element) {
+        let input = $(element);
+        $.nette.ajax({
+            url: {link toggleParam!},
+            data: {
+                param: input.attr('data-param'),
+                option: input.attr('data-option')
+            }
+        });
+    }
+</script>
+
+{define bathParamBtn}
+    {varType App\Modules\BathroomModule\Orm\Parameters\BathOption $paramOption}
+    <div n:class="param-filter-btn, $control->isSelected($paramOption->parameter->id, $paramOption->id) ? selected, !$control->isVisible($paramOption->parameter->id, $paramOption->id) ? inactive"
+        data-param="{$paramOption->parameter->id}"
+        data-option="{$paramOption->id}"
+        title="{$paramOption->description}"
+        {if $control->isVisible($paramOption->parameter->id, $paramOption->id)}onclick="toggleParam(this);"{/if}
+    >{$paramOption->name}</div>
+{/define}
+
+{define bathParam}
+    {varType App\Modules\BathroomModule\Orm\Parameters\BathParameter $bathParam}
+    {var App\Modules\BathroomModule\Orm\Parameters\BathOption[] $paramOptions = $bathParam->options->toCollection()->orderBy('order')->fetchAll()}
+    <div class="filter-param-wrapper">
+        <div class="filter-param-name"><b>{$bathParam->name}</b></div>
+        {if count($paramOptions) < 4}
+            {foreach $paramOptions as $paramOption}
+                {include #bathParamBtn paramOption => $paramOption}
+            {/foreach}
+        {else}
+            <div class="filter-group-wrapper">
+                {foreach $paramOptions as $paramOption}
+                    {if $iterator->counter0 && $iterator->counter0 % 3 === 0}</div><div class="filter-group-wrapper">{/if}
+                    {include #bathParamBtn paramOption => $paramOption}
+                {/foreach}
+            </div>
+        {/if}
+    </div>
+{/define}
+
+{define paginator}
+    <div class="paginator">
+        <div class="pull-right">
+            <button n:if="$showCancelFilter" type="button" class="cancel-filter-btn" onclick="$.nette.ajax({link cancelParamFilters!});">ZRUŠIT FILTRY</button>
+            <a n:href="setOrder! type => $control->orderType === $control::ORDER_DEFAULT ? $control::ORDER_POPULARITY : $control::ORDER_DEFAULT" class="ajax btn btn-xs btn-default" style="margin-bottom: 1px;">
+                {if $control->orderType === $control::ORDER_DEFAULT}
+                    Seřadit podle oblíbenosti
+                {else}
+                    Výchozí řazení
+                {/if}
+            </a>
+        </div>
+
+        <div class="items-per-page">
+            <label for="items-per-page-select" class="tool-description">Zobrazit</label>
+            <select id="items-per-page-select" class="select2-ignore" onchange="$.nette.ajax($(this.options[this.selectedIndex]).data('href'));">
+                {foreach $control->itemsPerPageOption as $perPageOption}
+                    <option value="{$perPageOption}" data-href="{link setItemsPerPage!, itemsPerPage => $perPageOption}" {if $paginator->itemsPerPage === $perPageOption}selected{/if}>{$perPageOption}</option>
+                {/foreach}
+            </select>
+        </div>
+
+        <ul class="pagination pagination-sm">
+            {if $paginator->isFirst()}
+                <li class="disabled"><span>|&lt;&lt;</span></li>
+                <li class="disabled"><span>&lt;</span></li>
+            {else}
+                <li><a href="{link paginate! page => 1}" class="ajax"><span>|&lt;&lt;</span></a></li>
+                <li><a href="{link paginate! page => $paginator->page - 1}" class="ajax"><span>&lt;</span></a></li>
+            {/if}
+
+            {foreach $control->getPaginatorSteps() as $step}
+                {if $step === $paginator->page}
+                    <li class="active"><a href="">{$step}</a></li>
+                {else}
+                    <li><a href="{link paginate! page => $step}" class="ajax">{$step}</a></li>
+                {/if}
+
+                {if $iterator->nextValue > $step + 1}
+                    <li class="disabled"><a href="">…</a></li>
+                {/if}
+            {/foreach}
+
+            {if $paginator->isLast()}
+                <li class="disabled"><span>&gt;</span></li>
+                <li class="disabled"><span>&gt;&gt;|</span></li>
+            {else}
+                <li><a href="{link paginate! page => $paginator->page + 1}" class="ajax"><span>&gt;</span></a></li>
+                <li><a href="{link paginate! page => $paginator->pageCount}" class="ajax"><span>&gt;&gt;|</span></a></li>
+            {/if}
+        </ul>
+    </div>
+{/define}

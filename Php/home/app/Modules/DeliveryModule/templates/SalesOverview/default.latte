@@ -1,0 +1,11 @@
+{block content}
+<div>
+    <a n:if="$user->isAllowed(':Delivery:SalesOverview:import')" n:href="import" class="btn btn-secondary">Import dat prodejů</a>
+    <a n:if="$user->isAllowed(':Delivery:SalesOverview:dataAccess')" n:href="dataAccess" class="btn btn-secondary">Přístupy k datům</a>
+    <a n:if="$user->isAdmin()" n:href="sendUpdateNotification" class="btn btn-danger">Odeslat notifikace o aktualizaci</a>
+    <a n:if="$user->isAllowed(':Delivery:SalesData:default')" n:href=":Delivery:SalesData:" class="btn btn-secondary">Datagrid</a>
+    <a n:if="$user->isAllowed(':Delivery:SalesData:plan')" n:href=":Delivery:SalesData:plan" class="btn btn-secondary">Plány prodejů</a>
+    <a n:if="$user->isAllowed(':Delivery:SalesData:export')" n:href=":Delivery:SalesData:export" class="btn btn-secondary">Export dat prodejů</a>
+    <br>
+</div>
+{control salesOverview}

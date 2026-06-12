@@ -11,16 +11,47 @@
     var statusText = Model.Request.Status switch
     {
         (int)Status.New        => "Nová",
-        (int)Status.InProgress => "V procesu",
+        (int)Status.InProgress => "V řešení",
         (int)Status.Resolved   => "Vyřízeno",
         (int)Status.Cancelled  => "Zrušeno",
         (int)Status.Returned => "Vráceno",
+        (int)Status.ToConfirm => "K odsouhlašení",
         _                      => "Neznámý"
     };
 
     var dueDateText = Model.Request.DueDate.HasValue
         ? Model.Request.DueDate.Value.ToString("dd.MM.yyyy")
         : "";
+
+    // Definice Razor funkce pro vykreslení historie (lze zavolat kdekoliv na stránce nebo v Offcanvasu)
+    void RenderHistory(IEnumerable<Jas.Data.JasMtzDb.SrvMaintenanceRequestNote> notes)
+    {
+        var history = notes
+            .Where(n => n.NoteType == (int)MaintenanceRequestNoteType.Repair || n.NoteType == (int)MaintenanceRequestNoteType.Return)
+            .ToList();
+
+        if (history.Any() && history.Exists(n => n.NoteType == (int)MaintenanceRequestNoteType.Return))
+        {
+            <div class="mb-4 p-3 bg-white border rounded">
+                <h6 class="fw-bold mb-3">Historie řešení</h6>
+                <ul class="list-group list-group-flush">
+                    @foreach (var note in history)
+                    {
+                        var typeName = note.NoteType == (int)MaintenanceRequestNoteType.Repair ? "Oprava" : "Vráceno zadavatelem";
+                        var badgeClass = note.NoteType == (int)MaintenanceRequestNoteType.Repair ? "bg-primary" : "bg-warning text-dark";
+
+                        <li class="list-group-item px-0 pt-2 pb-1 border-0 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge @badgeClass">@typeName</span>
+                                <small class="text-muted">@note.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small>
+                            </div>
+                            <p class="mb-1" style="white-space: pre-wrap;">@note.NoteText</p>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    }
 }
 
 <form method="post">
@@ -189,16 +220,10 @@
         <fieldset class="border rounded-3 p-3 mb-4">
             <legend class="float-none w-auto px-2 fw-bold">Řešení</legend>
 
-            @if (Model.Request.Status == (int)Status.New)
+            @if (!Model.IsAdmin || Model.Request.Status is (int)Status.ToConfirm or (int)Status.Resolved or (int)Status.Cancelled )
             {
-                <div class="form-check mb-3">
-                    <input asp-for="InProgress" class="form-check-input" />
-                    <label asp-for="InProgress" class="form-check-label">V procesu</label>
-                </div>
-            }
+                RenderHistory(Model.HistoryNotes);
 
-            @if (Model.Request.Status == (int)Status.ToConfirm)
-            {
                 <div class="mb-3">
                     <label class="form-label fw-bold">@Html.DisplayNameFor(m => m.Request.RepairDescription):</label>
                     <p class="mb-0">@Model.Request.RepairDescription</p>
@@ -235,6 +260,8 @@
             }
             else
             {
+                RenderHistory(Model.HistoryNotes);
+
                 <div class="mb-3">
                     <label asp-for="Request.RepairDescription" class="form-label fw-bold"></label>
                     <textarea asp-for="Request.RepairDescription" class="form-control" rows="4"></textarea>
@@ -245,11 +272,11 @@
                     <div class="col-md-4 mb-2 mb-md-0">
                         <label asp-for="Request.PlannedRepairDate" class="form-label fw-bold"></label>
                         <input asp-for="Request.PlannedRepairDate"
-                               class="form-control"
-                               type="date" id="plannedRepairDateInput"
-                               data-created="@Model.Request.CreatedDate.ToString("yyyy-MM-dd")"
-                               data-user-cat="@Model.Request.RepairCategory"
-                               data-admin-cat="@Model.Request.RepairCategoryAdmin" />
+                                class="form-control"
+                                type="date" id="plannedRepairDateInput"
+                                data-created="@Model.Request.CreatedDate.ToString("yyyy-MM-dd")"
+                                data-user-cat="@Model.Request.RepairCategory"
+                                data-admin-cat="@Model.Request.RepairCategoryAdmin" />
                         <span asp-validation-for="Request.PlannedRepairDate" class="text-danger"></span>
                     </div>
 
@@ -261,34 +288,11 @@
 
                     <div class="col-md-4">
                         <label asp-for="Request.ActualCost" class="form-label fw-bold"></label>
-
-                        @if (Model.Request.Status == (int)Status.InProgress)
-                        {
-                            <input asp-for="Request.ActualCost" class="form-control" type="number" step="1" min="0" />
-                            <span asp-validation-for="Request.ActualCost" class="text-danger"></span>
-                        }
-                        else if (Model.Request.Status != (int)Status.New)
-                        {
-                            <div class="d-flex align-items-baseline">
-                                <span>
-                                    @(Model.Request.ActualCost.HasValue
-                                        ? Model.Request.ActualCost.Value.ToString("N0")
-                                        : "")
-                                </span>
-                                <input type="hidden" asp-for="Request.ActualCost" />
-                            </div>
-                        }
-                        else
-                        {
-                            <input type="hidden" asp-for="Request.ActualCost" />
-                        }
+                        <input asp-for="Request.ActualCost" class="form-control" type="number" step="1" min="0" />
+                        <span asp-validation-for="Request.ActualCost" class="text-danger"></span>
                     </div>
                 </div>
-            }
-
-            @if (isAdmin && (Model.Request.Status == (int)Status.New || Model.Request.Status == (int)Status.InProgress))
-            {
-                // 0 = shodné se zadavatelem, pak běžné enum hodnoty
+                
                 var enumItems = Html.GetEnumSelectList<RepairCategory>();
 
                 var adminItems = new List<SelectListItem>
@@ -298,7 +302,7 @@
                         Text = "Shodné se zadavatelem",
                         Value = "0",
                         Selected = !Model.Request.RepairCategoryAdmin.HasValue ||
-                                   Model.Request.RepairCategoryAdmin.Value == 0
+                                    Model.Request.RepairCategoryAdmin.Value == 0
                     }
                 };
 
@@ -309,7 +313,7 @@
                         Text = it.Text,
                         Value = it.Value,
                         Selected = Model.Request.RepairCategoryAdmin.HasValue &&
-                                   it.Value == Model.Request.RepairCategoryAdmin.Value.ToString()
+                                    it.Value == Model.Request.RepairCategoryAdmin.Value.ToString()
                     });
                 }
 
@@ -324,11 +328,8 @@
                     <span asp-validation-for="Request.RepairCategoryAdmin" class="text-danger"></span>
                 </div>
             }
-            else
-            {
-                <input type="hidden" asp-for="Request.RepairCategoryAdmin" />
-            }
-        </fieldset>
+
+    </fieldset>
     }
     @* ===================== KONEC: REAKCE ADMINA ====================== *@
 
@@ -337,6 +338,8 @@
     {
         <fieldset class="border rounded-3 p-3 mb-4">
             <legend class="float-none w-auto px-2 fw-bold">Vrácení</legend>
+
+            @{RenderHistory(Model.HistoryNotes);}
 
             <div class="mb-3">
                 <label asp-for="Request.ReturnDescription" class="form-label fw-bold">
@@ -357,83 +360,66 @@
     }
     @* ===================== KONEC: ROZHODNUTÍ ZADAVATELE ====================== *@
 
-    <div class="mt-3">
-        @if (Model.Request.Status == (int)Status.InProgress && isAdmin)
+    <div class="mt-3 d-flex flex-wrap gap-2">
+
+        @if (
+            (Model.IsOwner && Model.Request.Status == (int)Status.New) || 
+            (Model.IsAdmin && Model.Request.Status is (int)Status.New or (int)Status.InProgress or (int)Status.Returned)
+        )
         {
-            @* ve stavu V PROCESU – tři tlačítka, Save má vlastní handler *@
             <button type="submit"
                     asp-page-handler="Save"
-                    class="btn btn-primary me-2">
+                    class="btn btn-primary">
                 Uložit
             </button>
+        }
 
+        @if (Model.IsAdmin && Model.Request.Status == (int)Status.New)
+        {
+            <button type="submit"
+                    asp-page-handler="ToProgress"
+                    class="btn btn-info">
+                Do procesu
+            </button>
+        }
+
+        @if (Model.IsAdmin && Model.Request.Status is (int)Status.InProgress or (int)Status.Returned)
+        {
             <button type="submit"
                     asp-page-handler="Resolve"
-                    class="btn btn-success me-2">
-                Předat k odsouhlašení
+                    class="btn btn-success">
+                K odsouhlašení
             </button>
+        }
 
-            @* tlačítko Zrušit otevře potvrzovací dialog *@
+        @if (Model.IsOwner && Model.Request.Status == (int)Status.ToConfirm)
+        {
             <button type="button"
-                    class="btn btn-danger me-2"
+                    class="btn btn-success"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmModal">
+                Potvrdit vyřešení požadavku
+            </button>
+        }
+
+        @if (Model.IsOwner && Model.Request.Status == (int)Status.New)
+        {
+            <button type="button"
+                    class="btn btn-danger"
                     data-bs-toggle="modal"
                     data-bs-target="#cancelConfirmModal">
                 Zrušit požadavek
             </button>
         }
-        else if (Model.Request.Status == (int)Status.ToConfirm)
-        {
-            @* Ve stavu K potvrzení – nic needitujeme, zadavatel může pouze potvrdit *@
-            @if (isOwner)
-            {
-                <button type="button"
-                        class="btn btn-success"
-                        data-bs-toggle="modal"
-                        data-bs-target="#confirmModal">
-                    Potvrdit vyřešení požadavku
-                </button>
-            }
 
-        }
-        else if (Model.Request.Status == (int)Status.Returned && isAdmin)
-        {
-            @* ve stavu VRÁCENO – tlačítko „K odsouhlašení“ *@
-            <button type="submit"
-                    asp-page-handler="ResolveFromReturned"
-                    class="btn btn-success me-2">
-                Předat k odsouhlašení
-            </button>
-
-            <button type="submit"
-                    asp-page-handler="Save"
-                    class="btn btn-primary">
-                Uložit
-            </button>
-        }
-        else
-        {
-            @* v ostatních stavech jen Uložit, ale také přes handler Save *@
-            <button type="submit"
-                    asp-page-handler="Save"
-                    class="btn btn-primary">
-                Uložit
-            </button>
-
-            @* ve stavu NOVÁ dovolíme Zrušit zadavateli i adminovi – s potvrzovacím dialogem *@
-            @if (Model.Request.Status == (int)Status.New && (isOwner || isAdmin))
-            {
-                <button type="button"
-                        class="btn btn-danger ms-2"
-                        data-bs-toggle="modal"
-                        data-bs-target="#cancelConfirmModal">
-                    Zrušit požadavek
-                </button>
-            }
-        }
-
-        <a asp-area="Srv" asp-page="/Index" class="btn btn-secondary ms-2">
+        <a asp-area="Srv" asp-page="/Index" class="btn btn-secondary">
             Zpět na přehled
         </a>
+        <a asp-page="./DetailPrint" asp-route-id="@Model.Request.Id" target="_blank" class="btn btn-outline-info">
+            Tisk
+        </a>
+
+
     </div>
 
     @* Potvrzovací dialog pro zrušení požadavku *@

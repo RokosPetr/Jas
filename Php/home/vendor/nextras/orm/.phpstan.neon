@@ -1,0 +1,25 @@
+includes:
+	- phar://%rootDir%/phpstan.phar/conf/bleedingEdge.neon
+
+parameters:
+	level: max
+	paths:
+		- src
+		- tests/cases
+		- tests/inc
+		- tests/bootstrap.php
+	fileExtensions:
+		- php
+		- phpt
+	earlyTerminatingMethodCalls:
+		Tester\Assert:
+			- fail
+	treatPhpDocTypesAsCertain: false
+	ignoreErrors:
+		- '#Call to static method Tester\\Assert::type\(\).+will always evaluate to true\.#'
+
+services:
+	-
+		class: NextrasTests\Orm\PHPStan\AssertTypeSpecifyingExtension
+		tags:
+			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension

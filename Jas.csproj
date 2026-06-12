@@ -21,6 +21,26 @@
   <ItemGroup>
     <None Include="Areas\Ptg\Pages\_PlateContent.cshtml" />
     <None Include="compilerconfig.json" />
+    <None Include="Php\home\vendor\contributte\forms-multiplier\.github\.kodiak.toml" />
+    <None Include="Php\home\vendor\contributte\forms-multiplier\.github\workflows\main.yaml" />
+    <None Include="Php\home\vendor\contributte\menu-control\.docs\README.md" />
+    <None Include="Php\home\vendor\contributte\pdf\.docs\README.md" />
+    <None Include="Php\home\vendor\contributte\pdf\.github\.kodiak.toml" />
+    <None Include="Php\home\vendor\contributte\pdf\.github\FUNDING.yml" />
+    <None Include="Php\home\vendor\contributte\pdf\.github\workflows\tests.yml" />
+    <None Include="Php\home\vendor\maennchen\zipstream-php\.github\FUNDING.yml" />
+    <None Include="Php\home\vendor\maennchen\zipstream-php\.github\ISSUE_TEMPLATE.md" />
+    <None Include="Php\home\vendor\markbaker\complex\.github\workflows\main.yml" />
+    <None Include="Php\home\vendor\markbaker\matrix\.github\workflows\main.yaml" />
+    <None Include="Php\home\vendor\mpdf\mpdf\.github\CONTRIBUTING.md" />
+    <None Include="Php\home\vendor\mpdf\mpdf\.github\FUNDING.yml" />
+    <None Include="Php\home\vendor\mpdf\mpdf\.github\ISSUE_TEMPLATE\Bug_report.md" />
+    <None Include="Php\home\vendor\mpdf\mpdf\.github\ISSUE_TEMPLATE\config.yml" />
+    <None Include="Php\home\vendor\mpdf\mpdf\.github\ISSUE_TEMPLATE\Feature_request.md" />
+    <None Include="Php\home\vendor\mpdf\mpdf\.github\workflows\coverage.yml" />
+    <None Include="Php\home\vendor\mpdf\mpdf\.github\workflows\cs.yml" />
+    <None Include="Php\home\vendor\mpdf\mpdf\.github\workflows\tests.yml" />
+    <None Include="Php\home\vendor\myclabs\deep-copy\.github\FUNDING.yml" />
     <None Include="wwwroot\css\srv.less" />
   </ItemGroup>
 
@@ -73,7 +93,41 @@
     <Folder Include="Areas\Ptg\Pages\Shared\EditorTemplates\" />
     <Folder Include="Areas\Srv\Pages\Shared\DisplayTemplates\" />
     <Folder Include="Areas\Srv\Pages\Shared\EditorTemplates\" />
+    <Folder Include="Php\home\bin\" />
+    <Folder Include="Php\home\vendor\tracy\tracy\examples\log\" />
+    <Folder Include="Php\www\upload\" />
     <Folder Include="wwwroot\pdf\src\akce-koupelnove-vybaveni-2026\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Php\home\vendor\nextras\dbal\.idea\codeStyles\codeStyleConfig.xml" />
+    <Content Include="Php\home\vendor\nextras\dbal\.idea\codeStyles\Project.xml" />
+    <Content Include="Php\home\vendor\nextras\dbal\.idea\sqldialects.xml" />
+    <Content Include="Php\home\vendor\nextras\orm\.idea\codeStyles\codeStyleConfig.xml" />
+    <Content Include="Php\home\vendor\nextras\orm\.idea\codeStyles\Project.xml" />
+    <Content Include="Php\home\vendor\nextras\orm\.idea\sqldialects.xml" />
+    <Content Include="Ps1\EmailSheduler.ps1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Sql\EmailQueueStand.create.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Sql\sp_ptg_QueueStandChangeEmail.full.alter.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Sql\sp_ptg_QueueStandChangeEmail.alter.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Php\**\*">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\pdf\ptg\**\*">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

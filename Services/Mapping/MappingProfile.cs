@@ -3,7 +3,9 @@ using Jas.Data.JasMtzDb;
 using Jas.Models.Mtz;
 using Jas.Models.Ptg;
 using Jas.Models.Srv;
+using Jas.Models.Jas;
 using Jas.Services.Mapping.Resolvers;
+using System;
 using System.Data;
 
 namespace Jas.Services.Mapping
@@ -26,7 +28,13 @@ namespace Jas.Services.Mapping
 
             CreateMap<IDataRecord, StandCompany>();
             CreateMap<IDataRecord, Plate>();
-            CreateMap<IDataRecord, PlateItem>();
+            CreateMap<IDataRecord, PlateItem>()
+                .ForMember(dest => dest.SeriesItem, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.SeriesItem))))
+                .ForMember(dest => dest.Frost, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.Frost))))
+                .ForMember(dest => dest.Rectification, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.Rectification))))
+                .ForMember(dest => dest.Outlet, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.Outlet))))
+                .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.Discount))))
+                .ForMember(dest => dest.Discarded, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.Discarded))));
 
             // kdyby DB vracela 0/1 místo bit:
             CreateMap<int, bool>().ConvertUsing(v => v != 0);
@@ -37,6 +45,49 @@ namespace Jas.Services.Mapping
             // SRV – mapování entita <-> view‑model
             CreateMap<SrvMaintenanceRequest, SrvMaintenanceRequestModel>()
                 .ReverseMap();
+
+            // Intranet - mapování entita DB <-> view-model
+            CreateMap<Jas.Data.JasDb.GnReward, Jas.Models.Jas.GnReward>()
+                .ForMember(dest => dest.RecordDate, opt => opt.MapFrom(src => src.RecordDate.ToDateTime(TimeOnly.MinValue)));
+        }
+
+        private static bool GetBool(IDataRecord record, string columnName)
+        {
+            var ordinal = GetOrdinal(record, columnName);
+            if (ordinal < 0 || record.IsDBNull(ordinal))
+            {
+                return false;
+            }
+
+            var value = record.GetValue(ordinal);
+
+            return value switch
+            {
+                bool b => b,
+                byte bt => bt != 0,
+                short s => s != 0,
+                int i => i != 0,
+                long l => l != 0,
+                decimal d => d != 0,
+                double db => Math.Abs(db) > double.Epsilon,
+                float f => Math.Abs(f) > float.Epsilon,
+                string str when bool.TryParse(str, out var parsedBool) => parsedBool,
+                string str when decimal.TryParse(str, out var parsedDecimal) => parsedDecimal != 0,
+                _ => Convert.ToBoolean(value)
+            };
+        }
+
+        private static int GetOrdinal(IDataRecord record, string columnName)
+        {
+            for (var i = 0; i < record.FieldCount; i++)
+            {
+                if (string.Equals(record.GetName(i), columnName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }

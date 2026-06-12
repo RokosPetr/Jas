@@ -1,0 +1,58 @@
+{block content}
+<h2>Suma prodeje</h2>
+<h3>{$store}</h3>
+<h3>Rok: {$year}</h3>
+<h3>Měsíc: {$month}</h3>
+<table class="table datagrid-table jambo_table">
+    <thead>
+        <tr>
+            <th style="width: 130px;">Číslo dokladu</th>
+            <th style="width: 200px;">Pobočka</th>
+            <th style="width: 200px;">Pohyb</th>
+            <th style="width: 150px;">Prodej</th>
+            <th style="width: 150px;">Daň</th>
+            <th style="width: 150px;">Nákup</th>
+            <th style="width: 150px;">Hrubý zisk</th>
+            <th><a n:href="exportSumCheck!"><span class="fa fa-download"></span></a></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {var float $totalSum = 0}
+        {var float $totalProfit = 0}
+        <tr n:foreach="$notes as $note" n:class="$note->state === App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote::STATE_RESERVATION || $note->state === App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote::STATE_PREPARATION ? legend_green">
+            <td>{$note->number}</td>
+            <td>{$note->store->name}</td>
+            <td>{$note->movementNumber}</td>
+            {if $note->movementType === App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote::TYPE_CANCEL}
+                <td>{-$note->netSum |number:0,',',' '}</td>
+                <td>{-$note->taxSum |number:0,',',' '}</td>
+                <td>{-$note->buySum |number:0,',',' '}</td>
+                <td>{-$note->profit |number:0,',',' '}</td>
+                {php $totalSum -= $note->netSum}
+                {php $totalProfit -= $note->profit}
+            {else}
+                <td>{$note->netSum |number:0,',',' '}</td>
+                <td>{$note->taxSum |number:0,',',' '}</td>
+                <td>{$note->buySum |number:0,',',' '}</td>
+                <td>{$note->profit |number:0,',',' '}</td>
+                {php $totalSum += $note->netSum}
+                {php $totalProfit += $note->profit}
+            {/if}
+            <td>
+                <a class="side-dialog" data-sd-history="on" href="{plink :Delivery:DeliveryNote:preview id => $note->id}">
+                    <span class="fa fa-search"></span>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td><b>Suma</b></td>
+            <td></td>
+            <td style="text-align: right;">{$totalSum |number:0,',',' '}</td>
+            <td></td>
+            <td></td>
+            <td style="text-align: right;">{$totalProfit |number:0,',',' '}</td>
+            <td>{$notes->count()} položek</td>
+        </tr>
+    </tbody>
+</table>

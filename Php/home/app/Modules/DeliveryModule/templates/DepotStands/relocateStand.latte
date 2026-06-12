@@ -1,0 +1,36 @@
+{varType App\Modules\StockModule\Orm\Stands\StandNote $standNote}
+{block content}
+<div n:if="$presenter->getAction() === 'editRelocation'" class="jas-link-wrapper">
+    <a title="Zpět na relokace" n:href="standRelocations">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na relokace</strong>
+    </a>
+</div>
+{sideDialog}
+    <br>
+    <div class="row" style="margin-bottom: 10px;">
+        <div class="col-md-3 col-sm-3 col-xs-12 text-right"><b>Stojan</b></div>
+        <div class="col-md-9 col-sm-9 col-xs-12 ">{$standNote->stand->title}</div>
+    </div>
+    <div class="row" style="margin-bottom: 10px;">
+        <div class="col-md-3 col-sm-3 col-xs-12 text-right"><b>Od</b></div>
+        <div class="col-md-9 col-sm-9 col-xs-12 ">{$standNote->depot->name}</div>
+    </div>
+    {control relocateStandForm}
+    <script>
+        $(function () {
+            $('#frm-relocateStandForm-target').select2({
+                language: 'cs',
+                ajax: {
+                    url: {link updateDepotSelect!},
+                    type: 'get',
+                    dataType: 'json',
+                    delay: 300,
+                    data: function (params) { return { search: params.term } },
+                    cache: true,
+                },
+                minimumInputLength: 3
+            });
+        })
+    </script>
+{/sideDialog}

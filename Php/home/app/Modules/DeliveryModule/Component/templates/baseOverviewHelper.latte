@@ -1,0 +1,18 @@
+{define dataCell}
+    {varType string $cellClass}
+    {varType int $value}
+    {varType int $compareValue}
+    {varType int $year}
+    {varType int $month}
+    {varType int $mostPastYear}
+    {varType int $producerId}
+    {php $producerId ??= 0}
+    <td class="data-cell {$cellClass}">
+        <a n:tag-if="$producerId && $user->isAllowed(':' . $presenter->name . ':sumCheck')" href="{plink sumCheck producer => $producerId, year => $year, month => $month}" target="_blank">{$value |number:0,',',' '}</a>
+        {if $compareValue && $year !== $mostPastYear && ($year !== intval(date('Y')) || $month < intval(date('n')))}
+            {var float $diff = (($value - $compareValue) / $compareValue) * 100}
+            <br>
+            <span n:class="$diff > 0 ? positive-value : negative-value">{if $diff > 0}+{/if}{$diff |number:1,',',' '} %</span>
+        {/if}
+    </td>
+{/define}

@@ -1,0 +1,420 @@
+System:
+    title: Správa systému
+    presenters:
+        User:
+            title: Sprava uživatelů
+            actions:
+                default: Vypsat uživatelé systému
+                preview: Náhled uživatele systému
+                add: Přidat uživatele systému
+                edit: Úpravit uživatele systému
+                delete: Smazat uživatele systému
+                restore: Obnovit uživatele systému
+                removeBan: Odstranit blokaci uživatele
+                invitationMail: Zaslat pozvánku uživateli systému
+                sentMails: Zobrazit seznam odeslaných emailů
+        Role:
+            title: Správa uživatelských rolí
+            actions:
+                default: Vypsat uživatelské role
+                preview: Náhled uživatelské role
+                add: Přidat uživatelskou roli
+                edit: Úpravit uživatelskou roli
+                delete: Smazat uživatelskou roli
+        Resource:
+            title: Správa zabezpečených zdrojů systému
+            actions:
+                default: Vypsat zabezpečené zdroje systému
+                preview: Náhled zabezpečeného zdroje systému
+                edit: Úpravit popis zabezpečeného zdroje systému
+        MenuItem:
+            title: Správa položek v hlavním menu
+            actions:
+                default: Vypsat položky v hlavním menu
+                add: Přidat položku do hlavního menu
+                edit: Úpravit položku v hlavním menu
+                delete: Smazat položku v hlavním menu
+        Phone:
+            title: Správa tel. čísel uživatelů
+            actions:
+                default: Vypsat tel. čísla uživatelů
+                add: Přidat tel. číslo uživatele
+                edit: Úpravit tel. číslo uživatele
+                delete: Smazat tel. číslo uživatele
+        Store:
+            title: Správa poboček
+            actions:
+                default: Vypsat pobočky
+                preview: Náhled pobočky
+                add: Přidat pobočku
+                edit: Úpravit pobočku
+                select: Vybrat pobocku v rámci aplikace
+        Mail:
+            title: Správa odeslaných emailů
+            actions:
+                default: Vypsat odeslané emaily
+                preview: Náhled emailu
+
+Stock:
+    title: Správa skladů
+    presenters:
+        Stock:
+            title: Správa nabízeného sortimentu
+            actions:
+                default: Vypsat nabízený sortiment
+                edit: Upravit nabízený sortiment
+                editName: Upravit pouze název sortimentu
+                importStatus: Importovat status sortimentu
+                importQuantities: 'Importovat paletová a bal. množství'
+                importNames: Importovat názvy sortimentu
+                exportStocks: Export sortimentu VO
+        MainStorageOrder:
+            title: Správa objednávek velkoskladu
+            actions:
+                default: Vypsat objednávky
+                delete: Smazat objednavku
+                preview: Vypsat položky objednavky
+                deleteItem: Odstranit položku z vytvořené objednavky
+                editItem: Upravit položku na vytvořené objednavce
+                addItem: Přidat položku na vytvořenou objednavku
+                smartOrderStart: Nastavit objednávku dle prodejů
+                salePreview: Zobrazit náhled prodejů v objednávce
+                removeSmartOrderItem: Odebrat položku v objednavce dle prodejů
+                smartOrderFinish: Dokončit objednávku dle prodejů
+                manualOrderStart: Nastavit objednávku manuálně
+                removeManualOrderItem: Odebrat položku v manuální objednavce
+                manualOrderFinish: Dokončit objednávku manuálně
+        Warehouseman:
+            title: Správa skladníků
+            actions:
+                default: Vypsat skladníky
+                add: Přidat skladníka
+                edit: Upravit jméno skladníka
+                delete: 'Smazat (deaktivovat) skladnika'
+                items: Zobrazit tabulku s výkony skladníků
+                addHours: Nastavit pracovní dobu skladníků
+        Producer:
+            title: Správa výrobců
+            actions:
+                default: Vypsat výrobce
+                edit: Upravit výrobce
+                stockGroups: Vypsat druhy zboží výrobce
+                editGroup: Upravit druh zboží výrobce
+        Stand:
+            title: Správa stojanů
+            actions:
+                default: Vypsat stojany
+                preview: Zobrazit náhled stojanu
+                add: Přidat stojan
+                edit: Upravit stojan
+                clone: Duplikovat stojan
+                delete: Smazat stojan
+                restore: Obnovit stojan
+                standNotes: Zobrazit DL se stojany
+                addStandNote: Přidat DL se stojanem
+                editStandNote: Upravit DL se stojanem
+                removeStandNote: Odebrat DL se stojanem
+                cancelRemoveStandNote: Zrušit odebrání DL se stojanem
+                importStandNotes: Importovat DL stojanů
+                standItems: Zobrazit položky kusového stojanu
+                standPlates: Zobrazit plata stojanu
+                plateItems: Zobrazit položky plata stojanu
+                platePreview: Zobrazit náhled plata stojanu
+                addPlate: Přidat plato do stojanu
+                editPlate: Upravit plato stojanu
+                deletePlate: Smazat plato stojanu
+                plateItemPreview: Zobrazit náhled položky stojanu/plata
+                addPlateItem: Přidat položku do stojanu/plata
+                editPlateItem: Upravit položku ve stojanu/platu
+                removePicture: Odstranit obrázek stojanu/plata/položky plata/stojanu
+                deletePlateItem: Smazat položku ve stojanu/platu
+                exportExcel: Exportovat náhled stojanu do Excelu
+                exportPdf: Exportovat náhled stojanu do PDF
+                exportPlatePdf: Exportovat náhled plata do PDF
+                updateStockItemPrice: Aktualizovat ceny produktů na stojanech z MOP
+                plateHistory: Zobrazit historii plat stojanu
+                plateItemHistory: Zobrazit historii položek plata/stojanu
+                restorePlate: Obnovit plato stojanu
+                restorePlateItem: Obnovit položku plata/stojanu
+        Cubicle:
+            title: Správa kójí
+            actions:
+                default: Vypsat kóje
+                preview: Zobrazit náhled kóje
+                add: Přidat kóji
+                edit: Upravit kóji
+                delete: Smazat kóji
+                restore: Obnovit kóji
+                removePicture: Odstranit obrázek kóje
+                exportPdf: Exportovat náhled kóje do PDF
+                cubicleItems: Zobrazit položky v kóji
+                addCubicleItem: Přidat položku do kóje
+                editCubicleItem: Upravit položku v kóji
+                deleteCubicleItem: Odstranit položku v kóji
+        StockItem:
+            title: Správa polozek sortimentu
+            actions:
+                default: Vyhledat položku sortimentu s množstvím na centrálním skladě
+                preview: Náhled položky sortimentu s množstvím na pobočkách
+                variants: Vypsat seznam všech variant s množstvím položky sortimentu na pobočkách
+        ObligatoryItem:
+            title: Správa povinného sortimentu poboček
+            actions:
+                default: Vypsat povinný sortiment poboček
+                add: Přidat položku povinného sortimentu poboček
+                edit: Upravit položku povinného sortimentu poboček
+                delete: Smazat položku povinného sortimentu poboček
+                import: Importovat povinný sortiment poboček pomocí CSV souboru
+        StoreStock:
+            title: Správa sortimentu vybrané pobocky
+            actions:
+                default: Vypsat aktuální sortiment vybrané pobočky
+                obligatoryStock: Vypsat stav povinného sortimentu na pobočce
+                obligatoryItemSectors: Vypsat povinný sortiment na pobočce se sektory
+                missingObligatorySectors: Vypsat povinný sortiment na pobočce bez zadaného sektoru
+                missingObligatorySectorPreview: Zobrazit náhled variant povinného sortimentu bez zadaného sektoru
+                orderItems: Objednat povinný sortiment pobočky
+        StoreSectors:
+            title: Správa sektorů poboček
+            actions:
+                default: Vyhledat sektor probočky
+        CustomGroup:
+            title: Správa vlastních skupin zboží
+            actions:
+                default: Vypsat vlastní skupiny zboží
+                preview: Zobrazit náhled vlastní skupiny zboží
+                add: Vytvožit vlastní skupinu zboží
+                edit: Upravit vlastní skupinu zboží
+                delete: Smazat vlastní skupinu zboží
+        Discount:
+            title: Správa slevových skupin
+            actions:
+                default: Vypsat slevové skupiny
+                edit: Upravit popis slevové skupiny
+                import: Importovat slevové skupiny
+                depots: Vypsat pobočky partnerů ve slevové skupině
+                addDepot: Přidat pobočku partnera do slevové skupiny
+                removeDepot: Odstranit pobočku partnera ze slevové skupiny
+                stockGroups: Vypsat produktové skupiny ve slevové skupině
+                stockItems: Vypsat produkty ve slevové skupině
+
+Delivery:
+    title: Správa dodacích listů a pohybů
+    presenters:
+        DeliveryItem:
+            title: Správa dodacích listů
+            actions:
+                default: Vypsat dodací listy
+                add: Přidat dodací list nebo odběr k dodacímu listu
+                edit: Opravit vytvořeny dodací list
+                delete: Smazat dodací list
+        CustomerComplaint:
+            title: Správa reklamací zákazníků
+            actions:
+                default: Vypsat reklamace zákazníků
+                preview: Zobrazit náhled reklamace s možnosti tisku
+                add: Vytvořit reklamaci zákazníka
+                edit: Opravit reklamaci zákazníka
+                respond: Napsat vyjádření k reklamaci zákazníka
+        DeliveryNote:
+            title: Správa pohybů poboček
+            actions:
+                default: Vypsat pohyby pobočky
+                preview: 'Zobrazit náhled (položky) pohybu'
+                loadingNotes: Zobrazit nevyvezené X dodáky
+                badTransfersIn: Zobrazit chybné příjmové převodky pobočky
+                badTransfersOut: Zobrazit výdejnípřevodky bez příjmových dokladů
+                transferPreview: Zobrazit náhled převodek s chybou
+                checkedBadTransfers: Zobrazit příjmové převodky s chybou označené jako zkontrolováno
+                checkedTransfersOut: Zobrazit výdejní převodky bez příjmových dokladů označené jako zkontrolováno
+                setTransferChecked: Označit převodku s chybou jako zkontrolováno
+                unsetTransferChecked: Zrušit označení převodky s chybou jako zkontrolováno
+                addRemark: Přidat poznámku k dokladu
+                exportBadTransfers: Exportovat převodky z chybou do excelu
+        SalesOverview:
+            title: Správa analýzy prodeje prodejen
+            actions:
+                default: Zobrazit analýzu prodeje prodejen
+                import: Import dat k analýze prodeje prodejen
+                dataAccess: Nastavení přístupu uživatelů k datum analýzy
+                overview: Zobrazit analýzu odběrů prodejny - tabulka
+                overviewGrid: Zobrazit analýzu odběrů prodejny - grid
+                exportOverview: Exportovat tabulku analýzy odběrů do PDF
+                sumCheck: Zobrazit kontrolní součet analýzy prodeje pro daný měsíc a výrobce
+        SalesData:
+            title: Správa dat prodejů prodejen
+            actions:
+                default: Zobrazit grid s daty prodejů prodejen
+                edit: Upravit data prodejů prodejen
+                plan: Upravit plány prodejů prodejen
+                export: Export dat prodejů prodejen
+        TakingsOverview:
+            title: Správa analýzy nákupů
+            actions:
+                default: Zobrazit analýzu nákupů
+        Company:
+            title: Správa partnerů
+            actions:
+                default: Zobrazit seznam partnerů
+                preview: 'Zobrazit náhled partnera (jeho pobocky a skupiny partnera)'
+                takingsIgnore: Nastavit ignorování nákupů ve statistikách
+        DepotStands:
+            title: Správa dodaných stojanů na pobočky partnerů
+            actions:
+                default: Zobrazit seznam dodaných stojanů na pobočce partnera
+                standCheck: Provést kontrolu stojanů na pobočce partnera
+                stockItemStands: Vyhledat produkt na stojanu na pobočce partnera
+                relocateStand: Určit stojan k relokaci
+                cancelRelocateStand: Zrušit označení stojanu k relokaci
+                standRelocations: Zobrazit relokace stojanů
+                editRelocation: Upravit relokaci stojanu
+                confirmRelocation: Potvrdit relokaci
+                addStand: Přiřadit stojan partnerovi
+        Dealer:
+            title: Správa obchodních zástupců
+            actions:
+                overview: Zobrazit analýzu odběrů - tabulka
+                overviewGrid: Zobrazit analýzu odběrů - grid
+                exportOverview: Exportovat tabulku analýzy odběrů do PDF
+                default: Zobrazit seznam obchodních zástupců
+                partners: Přiřadit pobočky partnera obchodnímu zástupci
+                exportPartners: Exportovat pobočky partnerů obchodního zástupce do CSV
+                importPartners: Importovat pobočky partnerů obchodního zástupce z CSV
+                updatePartners: Aktualizovat partnery z MOP
+                sumCheck: Zobrazit kontrolní součet analýzy prodeje pro daný měsíc a výrobce
+        Service:
+            title: Správa služeb
+            actions:
+                default: Zobrazit seznam služeb
+                groups: Zobrazit seznam skupin skužeb
+                edit: Upravit název služby
+                editGroup: Upravit název skupiny služeb
+        OutletOverview:
+            title: Správa statistiky prodeje výprodejových položek
+            actions:
+                default: Zobrazit statistiku prodeje výprodejových položek
+        Depot:
+            title: Správa poboček partnerů velkoobchodu
+            actions:
+                default: Zobrazit pobočky partnerů velkoobchodu
+                preview:  Zobrazit náhled pobočky partnera
+                address: Upravit kontaktní adresu pobočky partnera
+                discounts: Zobrazit slevy pobočky partnera
+                exportDiscounts: Exportovat slevy pobočky partnera do Excelu
+                contacts: Zobrazit kontaktní osoby pobočky partnera
+                addContact: Přidat kontaktní osobu k pobočce partnera
+                editContact: Upravit kontaktní osobu pobočky partnera
+                deleteContact: Smazat kontaktní osobu pobočky partnera
+                restoreContact: Obnovit kontaktní osobu pobočky partnera
+                exportContacts: Exportovat kontaktní osoby poboček partnerů
+
+Transport:
+    title: Správa rozvozů
+    presenters:
+        StoreDriver:
+            title: Správa řidičů maloobchodu
+            actions:
+                default: Zobrazit seznam vozidel
+                add: Přidat řidiče
+                edit: Upravit řidiče
+                delete: Smazat řidiče
+                restore: Obnovit smazaného řidiče
+        StoreCar:
+            title: Správa vozidel maloobchodu
+            actions:
+                default: Zobrazit seznam vozidel
+                add: Přidat vozidlo
+                edit: Upravit vozidlo
+                delete: Smazat vozidlo
+                restore: Obnovit smazané vozidlo
+        StoreTransport:
+            title: Správa rozvozu maloobchodu
+            actions:
+                default: Zobrazit kalendář rozvozu
+                editTransport: Upravit kalendář rozvozu
+                exportTransport: Export rozvozu do Excelu
+                storeTransports: Zobrazit seznam rozvozů
+                preview: Zobrazit náhled rozvozu
+                exportInvalidTransports: Exportovat nevalidní rozvozy
+                transportItems: Zobrazit seznam položek rozvozů
+                setDelivered: Označit položku rozvozu jako doručenou
+                unsetDelivered: Zrušit označení položky rozvozu jako doručenou
+                driverDayPlan: Zobrazit denní rozvoz řidiče
+                selectDriver: Vybrat řidiče v denním rozvozu řidičů
+                occupancy: Zobrazit vytíženost rozvozů maloobchodu
+                foreignDeliveryNotes: Vkládat do rozvozů poboček dodací listy z jiných poboček
+
+
+Bathroom:
+    title: Správa virtuální koupelny
+    presenters:
+        FilterView:
+            title: Virtuální koupelna
+            actions:
+                default: Zobrazit virtuální koupelnu
+        BathParameter:
+            title: Správa parametrů koupelen
+            actions:
+                default: Zobrazit parametry koupelny
+                add: Přidat parametr koupelny
+                edit: Upravit parametr koupelny
+                delete: Smazat parametr koupelny
+                options: Zobrazit možnosti parametru koupelny
+                addOption: Přidat možnost parametru koupelny
+                editOption: Upravit možnost parametru koupelny
+                deleteOption: Smazat možnost parametru koupelny
+        Bathroom:
+            title: Správa virtuálních koupelen
+            actions:
+                default: Zobrazit virtuální koupelny
+                preview: Zobrazit náhled virtuální koupelny
+                add: Přidat virtuální koupelnu
+                edit: Upravit virtuální koupelnu
+                delete: Smazat virtuální koupelnu
+                restore: Obnovit virtuální koupelnu
+                itemLinks: Upravit odkazové body koupelny
+                addItemLink: Přidat odkazový bod koupelny
+                editItemLink: Upravit odkazový bod koupelny
+                deleteItemLink: Smazat odkazový bod koupelny
+
+Mtz:
+    title: Správa MTZ
+    presenters:
+        MtzItem:
+            title: Správa MTZ položek
+            actions:
+                default: Zobrazit MTZ položky
+                add: Přidat MTZ položku
+                edit: Upravit MTZ položku
+                delete: Smazat MTZ položku
+                restore: Obnovit MTZ položku
+                addMtzGroup: Přidat skupinu MTZ
+                editMtzGroup: Upravit skupinu MTZ
+                deleteMtzGroup: Smazat skupinu MTZ
+        MtzOrders:
+            title: Správa MTZ objednávek
+            actions:
+                default: Zobrazit MTZ objednávky
+                preview: Zobrazit náhled MTZ objednávky
+        MtzShop:
+            title: MTZ Eshop
+            actions:
+                default: Zobrazit MTZ eshop
+                pictureView: Zobrazit náhled MTZ položky
+                basket: Zobrazit košík MTZ eshopu
+                myMtzOrders: Zobrazit vytvořené objednávky
+                myOrderPreview: Zobrazit náhled vytvořené objednávky
+Ptg:
+    title: Správa cenovek a štítků
+    presenters:
+        Ptg:
+            title: Správa cenovek a štítků
+            actions:
+                default: Zobrazit PTG
+Srv:
+    title: Portál závad
+    presenters:
+        Srv:
+            title: Portál závad
+            actions:
+                default: Zobrazit Portál závad

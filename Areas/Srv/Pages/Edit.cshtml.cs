@@ -1,17 +1,21 @@
-using System;
-using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Jas.Data.JasIdentityApp;
 using Jas.Data.JasIdentityDb;
 using Jas.Data.JasMtzDb;
+using Jas.Globals.Srv.Enums;
 using Jas.Models.Srv;
 using Jas.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using StatusEnum = Jas.Globals.Srv.Enums.Status;
-using RepairCategoryEnum = Jas.Globals.Srv.Enums.RepairCategory;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using NoteTypeEnum = Jas.Globals.Srv.Enums.MaintenanceRequestNoteType;
+using RepairCategoryEnum = Jas.Globals.Srv.Enums.RepairCategory;
+using StatusEnum = Jas.Globals.Srv.Enums.Status;
 
 namespace Jas.Areas.Srv.Pages
 {
@@ -26,8 +30,7 @@ namespace Jas.Areas.Srv.Pages
         [BindProperty]
         public SrvMaintenanceRequestModel Request { get; set; } = null!;
 
-        [BindProperty]
-        public bool InProgress { get; set; }
+        public List<SrvMaintenanceRequestNote> HistoryNotes { get; set; } = new();
 
         public bool IsAdmin => User.IsInRole("SRV - admin");
 
@@ -72,63 +75,30 @@ namespace Jas.Areas.Srv.Pages
                 EstimatedCost = entity.EstimatedCost,
                 ActualCost = entity.ActualCost,
                 RepairCategoryAdmin = entity.RepairCategoryAdmin,
-                ReturnDescription = entity.ReturnDescription
+                ReturnDescription = null
             };
 
             // po mapování:
             if (Request.Status == (int)StatusEnum.Returned)
             {
                 // textarea pro nové vyjádření bude prázdná
-                Request.ReturnDescription = null;
+                Request.RepairDescription = null;
             }
-
-            InProgress = Request.Status == (int)StatusEnum.InProgress;
 
             // je přihlášený uživatel zadavatel?
             IsOwner = _userService.JasUser?.Id == Request.IdUser;
 
-            await LoadDepartmentAsync();
-            await LoadUserNameAsync();   // jméno ZADAVATELE podle IdUser
+            await ReloadPageDataAsync();
+
             return Page();
         }
 
-        // původní OnPostAsync přejmenuj na OnPostSaveAsync
         public async Task<IActionResult> OnPostSaveAsync()
         {
             ModelState.Remove("Request.IdUser");
             ModelState.Remove("Request.IdSolver");
 
-            // znovu dopočítat IsOwner i při POSTu (Request.IdUser je v hidden poli)
             IsOwner = _userService.JasUser?.Id == Request.IdUser;
-
-            // VE STAVU "V PROCESU" PŘI ULOŽENÍ VYŽADOVAT POPIS + PLÁN
-            if (IsAdmin && Request.Status == (int)StatusEnum.InProgress)
-            {
-                if (string.IsNullOrWhiteSpace(Request.RepairDescription))
-                {
-                    ModelState.AddModelError("Request.RepairDescription", "Zadejte popis opravy.");
-                }
-
-                if (!Request.PlannedRepairDate.HasValue)
-                {
-                    ModelState.AddModelError("Request.PlannedRepairDate", "Zadejte plánovaný termín opravy.");
-                }
-            }
-
-            if (IsAdmin && Request.Status == (int)StatusEnum.Returned)
-            {
-                if (string.IsNullOrWhiteSpace(Request.ReturnDescription))
-                {
-                    ModelState.AddModelError("Request.ReturnDescription", "Zadejte nové vyjádření k vrácenému požadavku.");
-                }
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadDepartmentAsync();
-                await LoadUserNameAsync();
-                return Page();
-            }
 
             var entity = await _context.SrvMaintenanceRequests
                 .FirstOrDefaultAsync(r => r.Id == Request.Id);
@@ -138,6 +108,23 @@ namespace Jas.Areas.Srv.Pages
                 return NotFound();
             }
 
+            // validace podle skutečného stavu entity
+            if (IsAdmin && (entity.Status == (int)StatusEnum.InProgress
+                            || entity.Status == (int)StatusEnum.Returned))
+            {
+                if (string.IsNullOrWhiteSpace(Request.RepairDescription))
+                    ModelState.AddModelError("Request.RepairDescription", "Zadejte popis opravy.");
+
+                if (!Request.PlannedRepairDate.HasValue)
+                    ModelState.AddModelError("Request.PlannedRepairDate", "Zadejte plánovaný termín opravy.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await ReloadPageDataAsync();
+                return Page();
+            }
+
             // zadavatel může měnit základní pole jen ve stavu NOVÁ
             bool canEditBasic = IsOwner && entity.Status == (int)StatusEnum.New;
 
@@ -145,26 +132,17 @@ namespace Jas.Areas.Srv.Pages
             {
                 entity.IssueDescription = Request.IssueDescription;
 
-                // uživatel může měnit RepairCategory jen ve stavu NEW
                 if (entity.RepairCategory != Request.RepairCategory)
-                {
                     entity.RepairCategory = Request.RepairCategory;
-                }
-                // POZNÁMKA: žádné ruční přidávání poznámek typu Issue – o to se postará interceptor
             }
 
-            // Admin – ostatní úpravy (obecné uložení)
             if (IsAdmin)
             {
-                // Repair – jen nastavit popis, interceptor vytvoří poznámku
-                if (!string.IsNullOrWhiteSpace(Request.RepairDescription))
-                {
-                    entity.RepairDescription = Request.RepairDescription;
-                }
+                // vždy přenést popis opravy
+                entity.RepairDescription = Request.RepairDescription;
 
-                // Return – ve stavu VRÁCENO jen nastavit popis, interceptor vytvoří poznámku
-                if (entity.Status == (int)StatusEnum.Returned &&
-                    !string.IsNullOrWhiteSpace(Request.ReturnDescription))
+                // ve stavu VRÁCENO vždy přenést nové vyjádření
+                if (entity.Status == (int)StatusEnum.Returned)
                 {
                     entity.ReturnDescription = Request.ReturnDescription;
                 }
@@ -173,22 +151,37 @@ namespace Jas.Areas.Srv.Pages
                 entity.EstimatedCost     = Request.EstimatedCost;
                 entity.ActualCost        = Request.ActualCost;
 
-                // ---- LOGIKA RepairCategoryAdmin + DueDate ----
                 if (Request.RepairCategoryAdmin == 0 ||
                     Request.RepairCategoryAdmin == entity.RepairCategory)
                 {
                     entity.RepairCategoryAdmin = null;
+                    var days = entity.RepairCategory switch
+                    {
+                        (int)RepairCategoryEnum.Light => 60,
+                        (int)RepairCategoryEnum.Serious => 30,
+                        (int)RepairCategoryEnum.Urgent => 5,
+                        _ => 0
+                    };
+                    if (days > 0)
+                    {
+                        entity.DueDate = entity.CreatedDate.AddDays(days);
+                    }
                 }
                 else
                 {
                     entity.RepairCategoryAdmin = Request.RepairCategoryAdmin;
+                    var days = entity.RepairCategoryAdmin switch
+                    {
+                        (int)RepairCategoryEnum.Light => 60,
+                        (int)RepairCategoryEnum.Serious => 30,
+                        (int)RepairCategoryEnum.Urgent => 5,
+                        _ => 0
+                    };
+                    if (days > 0)
+                    {
+                        entity.DueDate = entity.CreatedDate.AddDays(days);
+                    }
                 }
-            }
-
-            // Přepnutí do stavu V procesu
-            if (IsAdmin && InProgress)
-            {
-                entity.Status = (int)StatusEnum.InProgress;
             }
 
             await _context.SaveChangesAsync();
@@ -226,8 +219,7 @@ namespace Jas.Areas.Srv.Pages
 
             if (!ModelState.IsValid)
             {
-                await LoadDepartmentAsync();
-                await LoadUserNameAsync();
+                await ReloadPageDataAsync();
                 return Page();
             }
 
@@ -239,19 +231,14 @@ namespace Jas.Areas.Srv.Pages
                 return NotFound();
             }
 
-            if (entity.Status == (int)StatusEnum.InProgress)
+            if (entity.Status is (int)Status.InProgress or (int)Status.Returned)
             {
-                if (!string.IsNullOrWhiteSpace(Request.RepairDescription))
-                {
-                    // jen nastavíme, interceptor zapíše historii typu Repair
-                    entity.RepairDescription = Request.RepairDescription;
-                }
-
+                // vždy přenést – validace už vyžaduje neprázdný popis
+                entity.RepairDescription = Request.RepairDescription;
                 entity.PlannedRepairDate = Request.PlannedRepairDate;
                 entity.EstimatedCost     = Request.EstimatedCost;
                 entity.ActualCost        = Request.ActualCost;
 
-                // při přepnutí do stavu "K potvrzení" rovnou nastavit datum vyřízení
                 entity.Status      = (int)StatusEnum.ToConfirm;
                 entity.RemovedDate = DateTime.Now;
 
@@ -326,8 +313,7 @@ namespace Jas.Areas.Srv.Pages
 
             if (!ModelState.IsValid)
             {
-                await LoadDepartmentAsync();
-                await LoadUserNameAsync();
+                await ReloadPageDataAsync();
                 return Page();
             }
 
@@ -378,8 +364,7 @@ namespace Jas.Areas.Srv.Pages
 
             if (!ModelState.IsValid)
             {
-                await LoadDepartmentAsync();
-                await LoadUserNameAsync();
+                await ReloadPageDataAsync();
                 return Page();
             }
 
@@ -409,7 +394,11 @@ namespace Jas.Areas.Srv.Pages
                 return NotFound();
             }
 
-            if (entity.Status != (int)StatusEnum.Returned || !IsAdmin)
+            var currentUserId = _userService.JasUser?.Id;
+            var isOwner       = currentUserId == entity.IdUser;
+
+            // Do „K odsouhlašení“ smí jen ADMIN nebo ZADAVATEL, a jen ze stavu VRÁCENO
+            if (entity.Status != (int)StatusEnum.Returned || (!IsAdmin && !isOwner))
             {
                 return Forbid();
             }
@@ -422,35 +411,95 @@ namespace Jas.Areas.Srv.Pages
 
             if (!ModelState.IsValid)
             {
-                await LoadDepartmentAsync();
-                await LoadUserNameAsync();
+                await ReloadPageDataAsync();
                 return Page();
             }
 
-            // přičíst nové vyjádření do ReturnDescription
-            if (!string.IsNullOrWhiteSpace(Request.ReturnDescription))
-            {
-                var now  = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
-                var line = $"{now} - {Request.ReturnDescription.Trim()}";
-                if (string.IsNullOrWhiteSpace(entity.ReturnDescription))
-                {
-                    entity.ReturnDescription = line;
-                }
-                else
-                {
-                    entity.ReturnDescription = entity.ReturnDescription.Trim()
-                                               + Environment.NewLine
-                                               + line;
-                }
-            }
+            // nové vyjádření: nastavíme jako aktuální ReturnDescription
+            // interceptor MaintenanceRequestHistoryInterceptor z toho vytvoří poznámku typu Return
+            entity.ReturnDescription = Request.ReturnDescription;
 
-            entity.Status = (int)StatusEnum.ToConfirm;
+            entity.Status      = (int)StatusEnum.ToConfirm;
             entity.RemovedDate = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
             var filter = GetFilterForStatus(entity.Status);
             return RedirectToPage("/Index", new { filter });
+        }
+
+        // Handler pro tlačítko „Převést na spuštěný"
+        public async Task<IActionResult> OnPostToProgressAsync()
+        {
+            ModelState.Remove("Request.IdUser");
+            ModelState.Remove("Request.IdSolver");
+
+            var entity = await _context.SrvMaintenanceRequests
+                .FirstOrDefaultAsync(r => r.Id == Request.Id);
+
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            // Do „V procesu“ může jen admin a jen z NEW
+            if (!IsAdmin || entity.Status != (int)StatusEnum.New)
+            {
+                return Forbid();
+            }
+
+            if (IsAdmin && entity.Status == (int)StatusEnum.New)
+            {
+                if (string.IsNullOrWhiteSpace(Request.RepairDescription))
+                    ModelState.AddModelError("Request.RepairDescription", "Zadejte popis opravy.");
+
+                if (!Request.PlannedRepairDate.HasValue)
+                    ModelState.AddModelError("Request.PlannedRepairDate", "Zadejte plánovaný termín opravy.");
+
+                if (!Request.EstimatedCost.HasValue)
+                    ModelState.AddModelError("Request.EstimatedCost", "Zadejte plánované náklady opravy.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await ReloadPageDataAsync();
+                return Page();
+            }
+
+            entity.Status = (int)StatusEnum.InProgress;
+            entity.RepairDescription = Request.RepairDescription;
+            entity.PlannedRepairDate = Request.PlannedRepairDate;
+            entity.EstimatedCost = Request.EstimatedCost;
+
+            if (Request.RepairCategoryAdmin == 0 ||
+                Request.RepairCategoryAdmin == entity.RepairCategory)
+            {
+                entity.RepairCategoryAdmin = null;
+            }
+            else
+            {
+                entity.RepairCategoryAdmin = Request.RepairCategoryAdmin;
+            }
+
+            await _context.SaveChangesAsync();
+
+            var filter = GetFilterForStatus(entity.Status);
+            return RedirectToPage("/Index", new { filter });
+        }
+
+        private async Task ReloadPageDataAsync()
+        {
+            await LoadDepartmentAsync();
+            await LoadUserNameAsync();
+
+            if (Request != null && Request.Id > 0)
+            {
+                HistoryNotes = await _context.SrvMaintenanceRequestNotes
+                    .AsNoTracking()
+                    .Where(n => n.IdRequest == Request.Id)
+                    .OrderBy(n => n.CreatedAt)
+                    .ToListAsync();
+            }
         }
 
         private static string GetFilterForStatus(int status) =>

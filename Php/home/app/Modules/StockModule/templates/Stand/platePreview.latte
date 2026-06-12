@@ -1,0 +1,17 @@
+{varType App\Modules\StockModule\Orm\Stands\StandPlate $plate}
+{block content}
+{sideDialog}
+    <div class="stand-preview-wrapper">
+        <a n:if="$user->isAllowed(':Stock:Stand:exportPlatePdf')" n:href="exportPlatePdf id => $plate->id" class="btn btn-default pull-right">PDF</a>
+        <h1>{$plate->stand->title}</h1>
+        <h3>{$plate->order}.{if $plate->orderType} ({$plate->orderType}){/if} {$plate->description}{if $plate->dimension} - {$plate->dimension}{/if}</h3>
+        <div n:if="$plate->picture">
+            <img src="{$plate->picture->src}" alt="{$plate->picture->name}" style="object-fit: contain; width: 300px;">
+        </div>
+        <ol style="margin-top: 5px; padding-left: 30px;">
+            <li n:foreach="$plate->loadItems() as $item" n:class="!$item->isActive ? text-red">
+                <span n:tag-if="$item->photoItem" class="bg-disabled">{$item->item->title}</span>
+            </li>
+        </ol>
+    </div>
+{/sideDialog}

@@ -1,0 +1,10 @@
+{varType App\Modules\StockModule\Orm\MainStorageOrders\MainStorageOrder $order}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na objednávky" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na objednávky</strong>
+    </a>
+</div>
+<h1>{$order->numberLabel}</h1>
+{control mainStorageOrderItems}

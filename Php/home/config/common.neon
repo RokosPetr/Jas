@@ -1,0 +1,67 @@
+parameters:
+
+application:
+	errorPresenter: Error
+	mapping:
+		*: App\Modules\*Module\Presenters\*Presenter
+
+session:
+	expiration: 14 days
+	autoStart: true
+	debugger: true
+
+di:
+	export:
+		parameters: no
+		tags: no
+
+latte:
+    macros:
+        - App\Core\Latte\SideDialogMacroSet::install
+
+extensions:
+    nextras.orm: Nextras\Orm\Bridges\NetteDI\OrmExtension
+    dbal: Nextras\Dbal\Bridges\NetteDI\DbalExtension
+    menu: Contributte\MenuControl\DI\MenuExtension
+    - App\Core\Component\Form\MultiplierExtension
+
+nextras.orm:
+    model: App\Service\OrmModel
+
+menu:
+    topMenu:
+        authorizator: @MenuItemAuthorizator
+        loader: App\Core\Component\Menu\MenuLoader
+        templates:
+            menu: %appDir%/Modules/templates/topMenu.latte
+
+    homepageMenu:
+        authorizator: @MenuItemAuthorizator
+        loader: App\Core\Component\Menu\MenuLoader
+        templates:
+            menu: %appDir%/Modules/templates/homepageMenu.latte
+
+services:
+    MenuItemAuthorizator: App\Core\Component\Menu\MenuItemAuthorizator(@security.user)
+    security.user: App\Core\Security\User
+    nette.latteFactory:
+        setup:
+            - addFilter(floatToHour, @App\Core\Latte\FloatToHourFilter)
+    - App\Core\Router\RouterFactory::createRouter
+    - App\Core\Latte\FloatToHourFilter
+    - App\Core\Security\Authorizator
+    - App\Core\Security\Authenticator
+    - App\Service\Mailer
+    - App\Core\Component\Datagrid\DatagridFactory
+    - App\Core\Component\Menu\MenuLoader
+    - App\Core\Exporter\Exporter
+    - App\Modules\CliModule\Service\WarehouseImporter
+    - App\Modules\CliModule\Service\MovementImporter
+    - App\Modules\CliModule\Service\SalesDataImporter
+    - App\Modules\CliModule\Service\DeliveryServiceImporter
+    - App\Modules\CliModule\Service\Migrator
+    - App\Modules\StockModule\Service\MainStorageOrderService
+    - App\Modules\DeliveryModule\Service\TakingsOverviewCacheService
+    - App\Modules\DeliveryModule\Service\BadTransfersExporter
+    - App\Modules\DeliveryModule\Service\OverviewExporter
+    - App\Modules\TransportModule\Service\StoreTransportService

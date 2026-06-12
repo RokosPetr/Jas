@@ -1,0 +1,10 @@
+{varType App\Modules\DeliveryModule\Orm\Companies\Depot $row}
+{define cell-title}
+    <a n:tag-if="$user->isAllowed(':Delivery:Depot:preview')" href="{plink preview id => $row->id}" class="side-dialog" data-sd-history="on">
+        {$row->title}
+    </a>
+{/define}
+
+{define cell-dealers}
+    {$row->dealers->toCollection()->fetchPairs(null, 'name') |implode:', '}
+{/define}

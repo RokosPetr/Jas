@@ -1,0 +1,204 @@
+{varType App\Modules\DeliveryModule\Component\DealerOverviewFilter $control}
+<div style="margin-bottom: 5px;">
+    <button n:if="$control->show === $control::TABLE_OVERVIEW && $user->isAllowed(':Delivery:Dealer:exportOverview')" id="overview-to-pdf" type="button" class="btn btn-default pull-right">PDF</button>
+    <div class="btn-group" data-toggle="buttons">
+        <label n:class="btn, $control->show === $control::TABLE_OVERVIEW ? btn-secondary : btn-default">
+            <input type="radio" value="1" name="show" onchange="setValue(this)"{if $control->show === $control::TABLE_OVERVIEW} checked{/if}>
+            Tabulka
+        </label>
+        <label n:class="btn, $control->show === $control::GRID_OVERVIEW ? btn-secondary : btn-default">
+            <input type="radio" value="2" name="show" onchange="setValue(this)"{if $control->show === $control::GRID_OVERVIEW} checked{/if}>
+            Grid
+        </label>
+    </div>
+</div>
+
+<div class="overview-control-panel">
+    <div>
+        <div style="width: 80px; display: inline-block;">
+            <label for="dealer-select-filter" style="padding: 5px 0;">Obchodníci:</label>
+        </div>
+        <div style="display: inline-block; width: 350px;">
+            <div class="select2-wrapper">
+                <select name="dealers" id="dealer-select-filter" multiple onchange="setMultiSelect(this)">
+                    <option n:foreach="$dealers as $dealerId => $dealerName" value="{$dealerId}"{if in_array($dealerId, $control->dealers)} selected{/if}>{$dealerName}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div style="width: 80px; display: inline-block;">
+            <label for="year-select-filter" style="padding: 5px 0;">Roky:</label>
+        </div>
+        <div style="display: inline-block; width: 350px; margin-top: 4px;">
+            <div class="select2-wrapper">
+                <select name="years" id="year-select-filter" multiple onchange="setMultiSelect(this)">
+                    {for $year = intval(date('Y')); $year > 2010; $year--}
+                        <option value="{$year}"{if in_array($year, $control->years)} selected{/if}>{$year}</option>
+                    {/for}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div n:if="$control->show === $control::GRID_OVERVIEW" style="padding: 3px 0;">
+        <div style="width: 80px; display: inline-block;">
+            <label for="month-select-filter" style="padding: 5px 0;">Měsíc:</label>
+        </div>
+        <select name="month" class="select2-ignore" id="month-select-filter" onchange="setValue(this)">
+            <option value="0"{if !$control->month} selected{/if}>Vše</option>
+            <option n:foreach="App\Core\Utils\DateTime::CZ_MONTHS as $monthNumber => $monthName" value="{$monthNumber}"{if $monthNumber === $control->month} selected{/if}>{$monthName}</option>
+        </select>
+    </div>
+
+    <div style="padding: 3px 0;">
+        <div style="width: 80px; display: inline-block;">
+            <label for="stock-group-select-filter" style="padding: 5px 0;">Sortiment:</label>
+        </div>
+        <select name="stockGroup" class="select2-ignore" id="stock-group-select-filter" onchange="setValue(this)">
+            <option value="0"{if !$control->stockGroup} selected{/if}>Vše</option>
+            <option n:foreach="$stockGroups as $groupId => $groupName" value="{$groupId}"{if $groupId === $control->stockGroup} selected{/if}>{$groupName}</option>
+        </select>
+    </div>
+
+    <div n:if="$control->stockGroup">
+        <div style="width: 80px; display: inline-block;">
+            <label for="producer-select-filter" style="padding: 5px 0;">Výrobci:</label>
+        </div>
+        <div style="display: inline-block; width: 350px;">
+            <div class="select2-wrapper">
+                <select name="producers" id="producer-select-filter" multiple onchange="setProducers(this)">
+                    <option value="0">Vše</option>
+                    <option n:foreach="$producers as $producerId => $producerName" value="{$producerId}"{if in_array($producerId, $control->producers)} selected{/if}>{$producerName}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div n:if="$control->dealers">
+        <div style="width: 80px; display: inline-block;">
+            <label for="company-select-filter" style="padding: 5px 0;">IČO:</label>
+        </div>
+        <div style="display: inline-block; width: {if $company}320{else}350{/if}px; margin-top: 5px;">
+            <div class="select2-wrapper">
+                <select name="company" id="company-select-filter" class="select2-ignore" onchange="setValue(this)">
+                    <option n:if="!$company" value="0" selected>Vše</option>
+                    <option n:if="$company" value="{$company->id}" selected>{$company->icoString} - {$company->name}</option>
+                </select>
+            </div>
+        </div>
+        <a n:if="$company" n:href="cancelCompany!" class="ajax btn btn-sm btn-secondary">x</a>
+    </div>
+
+    <div n:if="$company && count($depots) > 1" style="padding: 3px 0;">
+        <div style="width: 80px; display: inline-block;">
+            <label for="depot-select-filter" style="padding: 5px 0;">Pobočka:</label>
+        </div>
+        <select name="depot" class="select2-ignore" id="depot-select-filter" onchange="setValue(this)">
+            <option value="0"{if !$control->depot} selected{/if}>Vše</option>
+            <option n:foreach="$depots as $depotId => $depotCity" value="{$depotId}"{if $depotId == $control->depot} selected{/if}>{$depotCity}</option>
+        </select>
+    </div>
+
+    <div n:if="count($control->producers) === 1">
+        <div>
+            <label style="padding: 5px 0;">Rozšířený filtr:</label>
+        </div>
+
+        <div>
+            <div style="width: 80px; display: inline-block;">
+                <label for="series-select-filter" style="padding: 5px 0;">Série:</label>
+            </div>
+            <div style="display: inline-block; width: 350px; margin-top: 5px;">
+                <div class="select2-wrapper">
+                    <select name="stockSeries" id="series-select-filter" onchange="setValue(this)">
+                        <option value="0"{if !$control->stockSeries} selected{/if}>Vše</option>
+                        <option n:foreach="$seriesSets as $seriesId => $seriesName" value="{$seriesId}"{if $seriesId == $control->stockSeries} selected{/if}>{$seriesName}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div n:if="$control->stockSeries">
+            <div style="width: 80px; display: inline-block;">
+                <label for="stock-item-select-filter" style="padding: 5px 0;">Produkt:</label>
+            </div>
+            <div style="display: inline-block; width: 350px; margin-top: 5px;">
+                <div class="select2-wrapper">
+                    <select name="stockItem" id="stock-item-select-filter" class="select2-ignore" onchange="setValue(this)">
+                        <option value="0"{if !$control->stockItem} selected{/if}>Vše</option>
+                        <option n:foreach="$seriesItems as $itemId => $itemName" value="{$itemId}"{if $itemId == $control->stockItem} selected{/if}>{$itemName}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#company-select-filter').select2({
+            language: 'cs',
+            ajax: {
+                url: {link updateCompanySelect!},
+                type: 'get',
+                dataType: 'json',
+                delay: 300,
+                data: function (params) { return { search: params.term } },
+                cache: true,
+            },
+            minimumInputLength: 3
+        });
+
+        $('#stock-item-select-filter').select2({
+            language: 'cs',
+            templateResult: processItemLabel,
+            templateSelection: processItemLabel
+        });
+    })
+
+    function setMultiSelect(multiselect) {
+        var values = [];
+        var name = multiselect.name;
+
+        $(multiselect).select2('data').forEach(function (selectItem) {
+            values.push(selectItem.id);
+        });
+
+        $.nette.ajax({
+            url: {link setMultiselectValues!},
+            data: { name, values }
+        });
+    }
+
+    function setValue(input) {
+        $.nette.ajax({
+            url: {link setValue!},
+            data: {
+                name: input.name,
+                value: input.value
+            }
+        });
+    }
+
+    function setProducers(multiselect) {
+        var values = [];
+
+        $(multiselect).select2('data').forEach(function (selectItem) {
+            values.push(selectItem.id);
+        });
+
+        $.nette.ajax({
+            url: {link setProducers!},
+            data: { values }
+        });
+    }
+
+    function processItemLabel(item) {
+        if (!item.id || item.id === '0') {
+            return item.text;
+        }
+        return item.text.split('#')[2];
+    }
+</script>

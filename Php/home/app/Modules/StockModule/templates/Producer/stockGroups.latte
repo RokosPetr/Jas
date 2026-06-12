@@ -1,0 +1,10 @@
+{varType App\Modules\StockModule\Orm\Producers\Producer $producer}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na výrobce" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na výrobce</strong>
+    </a>
+</div>
+<h1>{$producer->name}</h1>
+{control stockGroups}

@@ -1,0 +1,15 @@
+{varType App\Modules\SystemModule\Orm\Stores\Store $store}
+{block content}
+{sideDialog}
+    <h1>{$store->name}</h1>
+    <br>
+    <div><b>Adresa:</b> {$store->street}, {$store->zipCode}</div>
+    <div><b>Telefon:</b> {$store->phone}</div>
+    <div><b>Email:</b> {$store->email}</div>
+    <div><b>Vedoucí:</b> {$store->manager->name ?? ''}</div>
+    <br>
+    <h4>Uživatelé:</h4>
+    <ul>
+        <li n:foreach="$store->users as $sysUser">{$sysUser->name} ({$sysUser->roles->toCollection()->fetchPairs(null, 'name')|implode:', '})</li>
+    </ul>
+{/sideDialog}

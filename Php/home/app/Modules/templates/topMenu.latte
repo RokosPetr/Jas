@@ -1,0 +1,22 @@
+{varType Contributte\MenuControl\IMenu $menu}
+{varType Contributte\MenuControl\IMenuItemsContainer $itemsParent}
+{varType Contributte\MenuControl\MenuItem $item}
+
+{define menu-branch, $itemsParent}
+    {if $itemsParent->hasVisibleItemsOnMenu()}
+        {foreach $itemsParent->getVisibleItemsOnMenu() as $item}
+            {if $item->getAction() == 'Mtz:MtzShop:default'}
+                <a n:if="$item->isAllowed()" href="{$item->aspnetConfig["mtz"]["url"] . session_id()}" n:class="$item->isActive() ? active">{$item->getRealTitle()}</a>
+            {elseif $item->getAction() == 'Ptg:Ptg:default'}
+                <a n:if="$item->isAllowed()" href="{$item->aspnetConfig["ptg"]["url"] . session_id()}" n:class="$item->isActive() ? active">{$item->getRealTitle()}</a>
+            {elseif $item->getAction() == 'Srv:Srv:default'}
+                <a n:if="$item->isAllowed()" href="{$item->aspnetConfig["srv"]["url"] . session_id()}" n:class="$item->isActive() ? active">{$item->getRealTitle()}</a>
+            {else}
+                <a n:if="$item->isAllowed()" href="{$item->getRealLink()}" n:class="$item->isActive() ? active">{$item->getRealTitle()}</a>
+            {/if}
+            {include menu-branch, $item}
+        {/foreach}
+    {/if}
+{/define}
+
+{include menu-branch, $menu}

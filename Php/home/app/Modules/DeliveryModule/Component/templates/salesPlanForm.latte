@@ -1,0 +1,84 @@
+{varType App\Modules\DeliveryModule\Component\SalesPlanForm $control}
+{varType array $stores}
+{varType App\Modules\DeliveryModule\Orm\SalesData\SalesData[] $lastSalesData}
+{varType App\Modules\DeliveryModule\Orm\SalesData\SalesData[] $futureSalesData}
+<div class="jas-link-wrapper">
+    <a title="Zpět" href="{plink ':Delivery:SalesOverview:'}">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět</strong>
+    </a>
+</div>
+
+<div class="overview-control-panel">
+    <div style="margin-bottom: 10px;">
+        <span style="width: 65px; display: inline-block;"><label for="selected-year-input">Rok</label></span>
+        <select name="year" class="select2-ignore" id="selected-year-input" onchange="setYear(this.value)">
+            {for $i = intval(date('Y')); $i >= 2014; $i--}
+                <option value="{$i}"{if $i === $control->year} selected{/if}>{$i}</option>
+            {/for}
+        </select>
+    </div>
+    <div>
+        <span style="width: 65px; display: inline-block;"><label for="selected-store-input">Pobočka</label></span>
+        <select name="store" class="select2-ignore" id="selected-store-input" onchange="setStore(this.value)">
+            {foreach $stores as $storeId => $storeLabel}
+                <option value="{$storeId}"{if $storeId === $control->store} selected{/if}>{$storeLabel}</option>
+            {/foreach}
+        </select>
+    </div>
+</div>
+<br>
+<div n:snippet="salesPlanForm" class="text-center">
+    <div style="display: inline-block">
+        {form editSalePlanForm}
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="text-center" colspan="3">Plán prodeje</th>
+                        <th class="text-center" colspan="3">Plán hrubého zisku</th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th class="text-center" style="width: 120px;">{$control->year - 1}</th>
+                        <th class="text-center" style="width: 120px;">{$control->year}</th>
+                        <th class="text-center" style="width: 120px;">{$control->year + 1}</th>
+                        <th class="text-center" style="width: 120px;">{$control->year - 1}</th>
+                        <th class="text-center" style="width: 120px;">{$control->year}</th>
+                        <th class="text-center" style="width: 120px;">{$control->year + 1}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr n:foreach="App\Core\Utils\DateTime::CZ_MONTHS as $month => $montLabel">
+                        <td class="text-left">{$montLabel}</td>
+                        <td class="text-center">{isset($lastSalesData[$month]) ? $lastSalesData[$month]->salePlan : 0 |number:'0',',',' '}</td>
+                        <td class="text-center">{input $form['sale']["$month"] style => 'width: 110px;'}</td>
+                        <td class="text-center">{isset($futureSalesData[$month]) ? $futureSalesData[$month]->salePlan : 0 |number:'0',',',' '}</td>
+                        <td class="text-center">{isset($lastSalesData[$month]) ? $lastSalesData[$month]->profitPlan : 0 |number:'0',',',' '}</td>
+                        <td class="text-center">{input $form['profit']["$month"] style => 'width: 110px;'}</td>
+                        <td class="text-center">{isset($futureSalesData[$month]) ? $futureSalesData[$month]->profitPlan : 0 |number:'0',',',' '}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            {input submit class => 'btn btn-secondary'}
+        {/form}
+    </div>
+</div>
+
+<script>
+    function setYear(year) {
+        $.nette.ajax({
+            url: {link setYear!},
+            data: { year }
+        });
+    }
+
+    function setStore(store) {
+        $.nette.ajax({
+            url: {link setStore!},
+            data: { store }
+        });
+    }
+</script>

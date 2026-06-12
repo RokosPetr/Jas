@@ -1,0 +1,330 @@
+{varType array $deliveredTargets}
+{varType array $foreignParts}
+{form storeTransportForm class => 'form-horizontal form-label-left store-transport-form'}
+    <div class="form-group">
+        <div class="col-md-3 col-sm-3 col-xs-12 control-label" style="padding-top: 0"><label>{$selectedDriver}</label></div>
+        <div class="col-md-9 col-sm-9 col-xs-12"><b>{$carTitle}</b></div>
+    </div>
+
+    {var Nette\Forms\Controls\TextInput $dateInput = $form['date']}
+    {var Nette\Forms\Controls\TextInput $timeFromInput = $form['timeFrom']}
+    {var Nette\Forms\Controls\TextInput $timeTillInput = $form['timeTill']}
+
+    {include #formControl control => $form['type'], wrapperClass => 'radio-container'}
+
+    <div class="form-group required">
+        <div class="col-md-3 col-sm-3 col-xs-3">
+            {input $dateInput class => 'form-control dateFormat datepicker no-focus fix-width-100 pull-right', autocomplete => 'off', dateformat => 'd.m.Y', jsdateformat => 'dd.mm.yy'}
+        </div>
+        <div class="col-md-9 col-sm-9 col-xs-9">
+            {input $timeFromInput class => 'form-control select2-ignore fix-width-100 timeFromInput', onchange => 'updateTransportPartSelect();'}
+            -
+            {input $timeTillInput class => 'form-control select2-ignore fix-width-100 timeTillInput', onchange => 'updateTransportPartSelect();'}
+        </div>
+        <div class="col-md-offset-3 col-sm-offset-3 col-xs-offset-3 col-md-9 col-sm-9 col-xs-9">
+            {foreach [$dateInput, $timeFromInput, $timeTillInput] as $dateTimeInput}
+                <span n:foreach="$dateTimeInput->getErrors() as $error" class="help-block text-danger">
+                    <i class="glyphicon glyphicon-exclamation-sign"> </i>
+                    {$error}
+                </span>
+            {/foreach}
+        </div>
+    </div>
+
+    <div class="form-group unavailability-type-wrapper">
+        {include #formControl control => $form['reason'], wrapperClass => 'radio-container'}
+        {include #formControl control => $form['reasonRemark']}
+        <div class="col-md-offset-3">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                {input unavailabilitySubmit class => 'ajax btn btn-secondary'}
+                <div n:ifset="$form['delete']" class="pull-right">{input delete class => 'btn btn-danger confirm-submit'}</div>
+            </div>
+        </div>
+    </div>
+
+    <div n:multiplier="targets" class="form-group transport-type-wrapper">
+        {var Contributte\FormMultiplier\Multiplier $targets = $_multiplier}
+        {var $targetId = $targets['id']->getValue()}
+        <div class="ln_solid ln_solid_dark_grey"></div>
+
+        {foreach $deliveredTargets[$targetId] ?? [] as $deliveredItem}
+            <div class="form-group">
+                <div class="form-group form-group-no-margin required">
+                    <b class="control-label col-md-3 col-sm-3 col-xs-12">Dodací list</b>
+                    <div class="col-md-4 col-sm-6 col-xs-6">
+                        <div class="form-control disabled col-md-6 col-xs-12">{$deliveredItem->store->name}</div>
+                    </div>
+                    <span class="fa fa-check-square-o text-success"></span>
+                </div>
+                <div class="col-md-offset-3 col-sm-offset-3 col-md-9 col-sm-9 col-xs-12">
+                    <div><span class="text-danger">{$deliveredItem->weightError}</span></div>
+                    <div class="form-control disabled fix-width-100">{$deliveredItem->deliveryNote}</div>
+                    <div class="form-control disabled fix-width-100">{$deliveredItem->weight}</div>
+                    <span style="display: inline-block; padding: 0 15px 0 0;">kg</span>
+                </div>
+            </div>
+        {/foreach}
+
+        <div n:multiplier="items" class="target-item-wrapper">
+            {var Contributte\FormMultiplier\Multiplier $items = $_multiplier}
+            {var $itemId = $items['id']->getValue()}
+            {var $showUnsetParts = $items['showUnsetParts']->getValue()}
+            {var $showPartSelects = $items['showPartSelects']->getValue()}
+            {var bool $hideUpdateSubmit = (bool) $items['hideUpdateSubmit']->getValue()}
+            {var bool $hasParts = $items['weight']->getValue() > $carWeightCapacity}
+            {var $showItemControls = !isset($deliveredTargets[$targetId][$itemId])}
+            {var $weightError = $items['weightErrorMsg']->getValue()}
+            <div n:class="form-group, form-group-no-margin, inline-error-msg, !$showItemControls ? hide">
+                <div class="form-group form-group-no-margin required">
+                    {label store class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+                    <div class="col-md-6 col-sm-6 col-xs-11">
+                        {input store class => 'form-control select2-ignore fix-width-204 item-store-input'}
+                        {label year class => 'control-label' /}
+                        {input year class => 'form-control fix-width-80 item-year-input'}
+                    </div>
+                    {btnRemove class => 'ajax btn btn-xs btn-default btn-remove'}
+                </div>
+                <div class="col-md-offset-3 col-sm-offset-3 col-md-9 col-sm-9 col-xs-12">
+                    <div><span class="text-danger">{$weightError}</span></div>
+                    <div><span class="text-danger note-duplicity-error">{$items['deliveryNote']->getError()}</span></div>
+                    {input deliveryNote class => 'form-control fix-width-100 item-note-input'}
+                    {input weight class => 'form-control fix-width-100 item-weight-input'}
+                    <span style="display: inline-block; padding: 0 15px 0 0;">kg</span>
+                    <button class="btn btn-xs btn-secondary" type="button" onclick="loadItemData(this)">
+                        <span class="fa fa-paste" data-toggle="tooltip" title="Vložit dostupná data"></span>
+                    </button>
+                    {input update class => 'ajax update-item-submit btn btn-xs btn-secondary' . ($hideUpdateSubmit ? ' hide' : '')}
+                    {input loadData class => 'ajax hide load-item-data-submit'}
+                </div>
+            </div>
+
+            <div n:class="item-parts-wrapper, !$hasParts || !$hideUpdateSubmit ? hide">
+                <div n:if="$showItemControls && $showUnsetParts > 0" class="col-sm-offset-3" style="padding-left: 10px;">
+                    <span class="text-danger">Počet zbývajících jízd k naplánování: {$showUnsetParts}</span>
+                </div>
+
+                {var int $partCounter = 0}
+                <div n:foreach="$foreignParts[$targetId][$itemId] ?? [] as $foreignPart" n:class="form-group, !$showItemControls ? hide" style="margin: 10px 0;">
+                    <div class="col-md-3 col-sm-3 col-xs-3 text-right"><b>Jízda #{++$partCounter}</b></div>
+                    <div class="col-md-9 col-xs-9">
+                        {$foreignPart->item->target->transport->date |date:'d.m.Y'}
+                        {$foreignPart->item->target->transport->timeFrom |floatToHour}
+                        -
+                        {$foreignPart->item->target->transport->timeTill |floatToHour}
+                    </div>
+                </div>
+
+                {var $foreignPartsData = $items['foreignPartsData']->getValue()}
+                <div n:foreach="($foreignPartsData ? json_decode($foreignPartsData) : []) as $foreignPart" class="form-group" style="margin: 10px 0;">
+                    <div class="col-md-3 col-sm-3 col-xs-3 text-right"><b>Jízda #{++$partCounter}</b></div>
+                    <div class="col-md-9 col-xs-9">{$foreignPart}</div>
+                </div>
+
+                <div n:multiplier="parts" n:class="!$showPartSelects || !$showItemControls ? hide">
+                    <div class="form-group form-group-no-margin">
+                        <div class="control-label col-md-3 col-sm-3 col-xs-3"><b>Jízda #{++$partCounter}</b></div>
+                        <div class="col-md-6 col-sm-6 col-xs-11">
+                            {input type class => 'form-control select2-ignore transport-part-type-select'}
+                        </div>
+                    </div>
+                    {input id}
+                </div>
+            </div>
+
+            {input id}
+            {input showUnsetParts}
+            {input showPartSelects}
+            {input hideUpdateSubmit class => 'hide-update-hidden'}
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-3 col-sm-3 col-xs-1 text-right">{btnCreate items class => 'ajax btn btn-secondary'}</div>
+        </div>
+
+        <div class="form-group">
+            {label $targets['customer'] class => 'control-label col-md-3 col-sm-3 col-xs-11' /}
+            {if !isset($deliveredTargets[$targetId])}
+                {btnRemove class => 'ajax btn btn-xs btn-danger pull-right'}
+            {/if}
+            <div class='col-md-6 col-sm-6 col-xs-12'>
+                {var string $addClass = $targets['customer']->getOption('class')}
+                {input $targets['customer'] class => 'form-control col-md-7 col-xs-12' . ($addClass ? " $addClass" : '')}
+            </div>
+        </div>
+
+        <div class="form-group required{if $targets['name']->hasErrors()} has-error{/if}">
+            {label $targets['name'] class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+            <div class="col-md-6 col-sm-6 col-xs-11">
+                {input $targets['name'] class => 'form-control col-md-7 col-xs-12'}
+                <span n:foreach="$targets['name']->getErrors() as $error" class="help-block">
+                    <i class="glyphicon glyphicon-exclamation-sign"> </i>
+                    {$error}
+                </span>
+            </div>
+            <div class="col-md-2 col-sm-2 col-xs-1" style="padding-left: 0; padding-top: 5px;">
+                <button class="btn btn-xs btn-secondary" type="button" onclick="loadCustomerData(this)">
+                    <span class="fa fa-paste" data-toggle="tooltip" title="Vložit dostupnou adresu"></span>
+                </button>
+                {input loadCustomerData class => 'ajax hide load-customer-data-submit'}
+            </div>
+        </div>
+
+
+        {include #formControl control => $targets['phone']}
+        {include #formControl control => $targets['address']}
+
+        {include #formControl control => $targets['tariff'], controlClass => 'select2-ignore'}
+        {include #formControl control => $targets['payment'], controlClass => 'select2-ignore'}
+        {include #formControl control => $targets['remark']}
+        {input $targets['id']}
+    </div>
+
+    <div class="col-sm-offset-3">
+        <div class="col-md-6 col-sm-6 col-xs-12 form-group transport-type-wrapper">
+            <div>{btnCreate targets class => 'ajax btn btn-secondary '}</div>
+            {input submit class => 'ajax btn btn-secondary'}
+            <div n:ifset="$form['delete']" class="pull-right">{input delete class => 'btn btn-danger confirm-submit'}</div>
+        </div>
+    </div>
+
+    {input cancel class => 'ajax hide cancel-trigger'}
+    {input updateLock class => 'ajax hide update-lock-trigger'}
+    {input id}
+    {input action}
+    {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+{/form}
+
+<script>
+    var confirmDelete = false;
+    var carWeightCapacity = {$carWeightCapacity};
+
+    $('input.confirm-submit').click(function (event) {
+        if (confirmDelete) {
+            confirmDelete = true;
+            return;
+        }
+        event.preventDefault();
+        var submit = $(this);
+        $('<div></div>').dialog({
+            resizable: false,
+            height: 'auto',
+            width: 400,
+            modal: true,
+            closeOnEscape: true,
+            title: 'Potvrzení',
+            open: function () { $(this).html('Opravdu chcete smazat naplánovaný rozvoz?'); },
+            buttons: [
+                {
+                    text: 'Ano',
+                    click: function () {
+                        confirmDelete = true;
+                        submit.click();
+                    }
+                },
+                {
+                    text: 'Ne',
+                    click: function () { $(this).dialog('close'); }
+                }
+            ]
+        });
+        $('.ui-dialog-titlebar-close').html('<span>x</span>');
+    });
+
+    updateTransportPartSelect();
+
+    $('.target-item-wrapper').each(function () {
+        var itemWrapper = $(this);
+        var weightInput = itemWrapper.find('input.item-weight-input');
+        var noteInput = itemWrapper.find('input.item-note-input');
+        var yearInput = itemWrapper.find('input.item-year-input');
+        var storeInput = itemWrapper.find('select.item-store-input');
+        var updateSubmit = itemWrapper.find('input.update-item-submit');
+        var hideUpdateInput = itemWrapper.find('input.hide-update-hidden');
+        var itemPartsWrapper = itemWrapper.find('.item-parts-wrapper');
+        var initWeight = weightInput.val();
+        var initNoteNumber = noteInput.val();
+        var hasItemParts = function () {
+            return weightInput.val() > carWeightCapacity;
+        };
+        var hasChangedParts = function () {
+            return Math.ceil(initWeight / carWeightCapacity) !== Math.ceil(weightInput.val() / carWeightCapacity);
+        };
+        var hasNoteChanged = function () {
+            return noteInput.val() !== initNoteNumber;
+        };
+
+        yearInput.on('input', function () {
+            validateNoteDuplicity();
+        });
+
+        storeInput.on('change', function () {
+            validateNoteDuplicity();
+        });
+
+        noteInput.on('input', function () {
+            validateNoteDuplicity();
+
+            if (!hasItemParts()) {
+                return;
+            }
+
+            if (hasNoteChanged()) {
+                itemPartsWrapper.addClass('hide');
+                updateSubmit.removeClass('hide');
+                hideUpdateInput.val(0);
+                return;
+            }
+
+            if (!hasNoteChanged() && !hasChangedParts()) {
+                itemPartsWrapper.removeClass('hide');
+                updateSubmit.addClass('hide');
+                hideUpdateInput.val(1);
+            }
+        });
+
+        weightInput.on('input', function () {
+            if (!hasItemParts()) {
+                itemPartsWrapper.addClass('hide');
+                updateSubmit.addClass('hide');
+                hideUpdateInput.val(1);
+                return;
+            }
+
+            if (hasChangedParts() || hasNoteChanged()) {
+                itemPartsWrapper.addClass('hide');
+                updateSubmit.removeClass('hide');
+                hideUpdateInput.val(0);
+                return;
+            }
+
+            if (!hasNoteChanged() && !hasChangedParts()) {
+                itemPartsWrapper.removeClass('hide');
+                updateSubmit.addClass('hide');
+                hideUpdateInput.val(1);
+            }
+        });
+    });
+
+    function updateTransportPartSelect() {
+        var timeFrom = $('select.timeFromInput').val() + ':00';
+        var timeTill = $('select.timeTillInput').val() + ':00';
+        var transportSpan = timeFrom + ' - ' + timeTill;
+        $('select.transport-part-type-select option[value="1"]').text('Tato přeprava (' + transportSpan + ')');
+    }
+</script>
+
+{define formControl}
+    {varType Nette\Forms\Controls\BaseControl $control}
+    {varType string $controlClass}
+    {varType string $wrapperClass}
+    <div class="form-group required{if $control->hasErrors()} has-error{/if}">
+        {label $control class => 'control-label col-md-3 col-sm-3 col-xs-12' /}
+        <div n:class="col-md-6, col-sm-6, col-xs-12, isset($wrapperClass) ? $wrapperClass">
+            {input $control class => 'form-control col-md-7 col-xs-12' . (isset($controlClass) ? " $controlClass" : '')}
+            <span n:foreach="$control->getErrors() as $error" class="help-block">
+                <i class="glyphicon glyphicon-exclamation-sign"> </i>
+                {$error}
+            </span>
+        </div>
+    </div>
+{/define}

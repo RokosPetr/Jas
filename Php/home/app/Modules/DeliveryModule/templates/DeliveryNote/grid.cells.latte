@@ -1,0 +1,21 @@
+{varType App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote $row}
+
+{define cell-movementNumber}
+    {$row->movementNumber |padLeft: 4, '0'}
+{/define}
+
+{define cell-netSum}
+    {$row->netSum |number: 0, ',', ' '} Kč
+{/define}
+
+{define cell-store}
+    {$row->store->name}
+{/define}
+
+{define cell-depot}
+    {$row->depot->city ?? '-'}
+{/define}
+
+{define cell-weight}
+    {$row->weight} kg
+{/define}

@@ -1,0 +1,239 @@
+{varType App\Modules\TransportModule\Component\StoreTransportCalendar $control}
+{varType App\Modules\TransportModule\Orm\Cars\StoreCar[] $cars}
+<script>
+    var refreshInterval = null;
+    var lockInterval = null;
+    var formModal = null;
+    var isTransportLock = false;
+
+    $(function () {
+        formModal = $('#transport-form-modal');
+        formModal.on('show.bs.modal', function() {
+            isTransportLock = true;
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+        formModal.on('hide.bs.modal', function() {
+            isTransportLock = false;
+            if (lockInterval) {
+                clearInterval(lockInterval);
+            }
+        });
+
+        // Zruseni formu pri zavreni modalu a update kalendare
+        $('#transport-form-modal button.close').click(function () {
+            $('input[type="submit"].cancel-trigger').click();
+        });
+
+        // Odemceni transportu na backendu
+        $(window).on('unload', function () {
+            if (isTransportLock) {
+                $('input[type="submit"].cancel-trigger').click();
+            }
+        });
+    });
+
+    function setRefreshInterval() {
+        return setInterval(function () { $.nette.ajax({link refresh!}); }, 20000);
+    }
+
+    function setLockInterval() {
+        return setInterval(function () { $('input[type="submit"].update-lock-trigger').click(); }, 30000);
+    }
+
+    function setDate(date) {
+        if (moment(date, 'DD.MM.YYYY', true).isValid()) {
+            $.nette.ajax({
+                url: {link setDate!},
+                data: { date }
+            });
+        }
+    }
+</script>
+
+<div n:snippet="storeTransportCalendar" class="store-transport-wrapper">
+    <h1>Rozvoz maloobchod</h1>
+    <h1>{$transportStores |implode:', '}</h1>
+    <br>
+    <table class="store-transport-table">
+        {var int $columnCount = intval(($control::END_TIME - $control::START_TIME) / $control::TRANSPORT_SPAN) + 1}
+        <thead>
+            {var int $oneThirdColumnCount = floor($columnCount / 3)}
+            <tr>
+                <th colspan="{$oneThirdColumnCount}">
+                    <div style="height: 50px; line-height: 50px;">
+                        <a class="ajax" n:href="modifyWeek! value => -1">
+                        <span class="fa fa-chevron-left" style="vertical-align: middle; font-size: 26px"></span>
+                        <span style="vertical-align: middle;">předchozí týden</span>
+                        </a>
+                    </div>
+                </th>
+                <th colspan="{$columnCount - (2 * $oneThirdColumnCount)}" class="text-center">
+                    <div style="height: 50px; line-height: 50px;">
+                        <span style="cursor: pointer; position: relative;" id="date-picker-trigger">
+                            <span style="vertical-align: middle;">{$control->date->format('W')}. týden</span>
+                            <input type="text" id="date-picker-input" value="{$control->date |date:'d.m.Y'}" onchange="setDate(this.value)">
+                            <span class="fa fa-calendar" style="vertical-align: middle; font-size: 26px"></span>
+                            <span style="vertical-align: middle;">vybrat den</span>
+                        </span>
+                    </div>
+                </th>
+                <th colspan="{$oneThirdColumnCount}" class="text-right">
+                    <div style="height: 50px; line-height: 50px;">
+                        <a class="ajax" n:href="modifyWeek! value => 1">
+                            <span style="vertical-align: middle;">následující týden</span>
+                            <span class="fa fa-chevron-right" style="vertical-align: middle; font-size: 26px"></span>
+                        </a>
+                    </div>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {var \App\Core\Utils\DateTime $date = clone $control->date}
+            {for $j = 1; $j <= $control::MAX_TRANSPORT_DAY; $j++}
+                {var bool $isEditableDate = ((new \DateTime())->modify('-1 day')->setTime(0, 0)) < $date}
+                <tr>
+                    <td class="car-title">{$date::CZ_WEEKDAYS[$j]}</td>
+                    <td colspan="{$columnCount - 1}" class="date-label">{$date |date:'d.m.Y'}</td>
+                    <td></td>
+                </tr>
+                <tr class="time-label-row">
+                    <td class="bold odd-column">čas</td>
+                    <td n:for="$i = $control::START_TIME; $i < $control::END_TIME; $i += $control::TRANSPORT_SPAN" n:class="bold, $i % 2 ? odd-column : even-column">
+                        {$i |floatToHour} - {$i + 1 |floatToHour}
+                    </td>
+                    <td></td>
+                </tr>
+                <tr n:foreach="$cars as $car" n:if="$car->driver" n:class="data-row, $iterator->isLast() ? data-last-row">
+                    {var $hasCarTransport = false}
+                    <td class="car-title">{$car->licensePlate}</td>
+                    {if $date->isHoliday()}
+                        <td colspan="{$columnCount - 1}" class="odd-column">Svátek</td>
+                    {else}
+                        {var int $timeBoxSpan = 0}
+                        {var bool $renderTimebox = true}
+                        {for $i = $control::START_TIME; $i < $control::END_TIME; $i += $control::TRANSPORT_SPAN}
+                            {php $date->setTime($i, 0)}
+                            {var App\Modules\TransportModule\Service\Entity\TimeBox $timeBox = $control->getTimeBox($car->id, $date, $i, $i + $control::TRANSPORT_SPAN)}
+                            {if !$hasCarTransport && $timeBox->hasTransport()}
+                                {php $hasCarTransport = true}
+                            {/if}
+                            {if $timeBox->isStartBox && !$timeBox->isEndBox}
+                                {php $renderTimebox = false; $timeBoxSpan++}
+                            {elseif !$renderTimebox && !$timeBox->isStartBox && !$timeBox->isEndBox}
+                                {php $timeBoxSpan++}
+                            {elseif !$renderTimebox && !$timeBox->isStartBox && $timeBox->isEndBox}
+                                {php $renderTimebox = true; $timeBoxSpan++}
+                            {/if}
+
+                            <td n:if="$renderTimebox" {if $timeBoxSpan}colspan="{$timeBoxSpan}"{/if} n:class="$timeBox->getClass() ? $timeBox->getClass() : ($i % 2 ? odd-column : even-column)">
+                                {if $user->isAllowed(':Transport:StoreTransport:editTransport') && $isEditableDate && !$timeBox->hasTransport()}
+                                    <a class="transport-modal-trigger" href="{plink createTransport! car => $car->id, time => $date->getTimestamp()}"></a>
+                                {/if}
+                                {if $user->isAllowed(':Transport:StoreTransport:editTransport') && $isEditableDate && $timeBox->isEditable()}
+                                    <a class="transport-modal-trigger" href="{plink updateTransport! id => $timeBox->transport->id}" title="x" data-toggle="tooltip" data-template="{include #calendarTooltip transport => $timeBox->transport}" data-html="1"></a>
+                                {/if}
+                                {if (!$isEditableDate || !$user->isAllowed(':Transport:StoreTransport:editTransport')) && $timeBox->hasTransport()}
+                                    <span title="x" data-toggle="tooltip" data-template="{include #calendarTooltip transport => $timeBox->transport}" data-html="1"></span>
+                                {/if}
+                                {if $timeBox->isBlocked && $user->isAllowed(':Transport:StoreTransport:editTransport')}
+                                    <span title="Blokuje {$timeBox->transport->lockedBy->name}" data-toggle="tooltip"></span>
+                                {/if}
+                                {php $timeBoxSpan = 0}
+                            </td>
+                        {/for}
+                    {/if}
+                    <td class="export-icon"><a n:if="$hasCarTransport && $user->isAllowed(':Transport:StoreTransport:exportTransport')" href="{plink exportTransport car => $car->id, time => $date->getTimestamp()}" data-toggle="tooltip" title="export rozvozu">
+                        <span class="fa fa-floppy-o"></span></a>
+                    </td>
+                </tr>
+                {if $j !== $control::MAX_TRANSPORT_DAY}
+                    <tr><td colspan="{$columnCount + 1}" class="empty-row">&nbsp;</td></tr>
+                    <tr><td colspan="{$columnCount + 1}" class="empty-row">&nbsp;</td></tr>
+                {/if}
+                {php $date->modify('+1 day')}
+            {/for}
+        </tbody>
+    </table>
+
+    <script>
+        var datepickerInput = $('#date-picker-input');
+        datepickerInput.datepicker({
+            beforeShowDay: function(date) { return [date.getDay() !== 0, ""]}
+        });
+        $('#date-picker-trigger').click(function () {
+            datepickerInput.datepicker('show');
+        });
+        $('a.transport-modal-trigger').each(function () {
+            var linkElement = $(this);
+            linkElement.click(function (event) {
+                event.preventDefault();
+                $('#transport-loader-wrapper div').addClass('ajax-content-loader');
+                $('#transport-form-wrapper').hide();
+
+                $.nette.ajax({
+                    url: linkElement.attr('href'),
+                    success: function () {
+                        if (lockInterval) {
+                            clearInterval(lockInterval);
+                        }
+
+                        lockInterval = setLockInterval();
+                        $('#transport-loader-wrapper div').removeClass('ajax-content-loader');
+                        $('#transport-form-wrapper').show();
+                    }
+                });
+                formModal.modal({ backdrop: "static" });
+            });
+        });
+
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+        }
+        refreshInterval = setRefreshInterval();
+    </script>
+</div>
+
+{define calendarTooltip}
+    {varType App\Modules\TransportModule\Orm\Transports\StoreTransport $transport}
+    <div class="tooltip">
+        <div class="transport-calendar-tooltip-wrapper">
+            <div class="jas-red-gradient"></div>
+            <div class="transport-calendar-tooltip">
+                {if $transport->type === App\Modules\TransportModule\Orm\Transports\StoreTransport::TYPE_UNAVAILABILITY}
+                    <div><b>{App\Modules\TransportModule\Orm\Transports\StoreTransport::REASONS_LABELS[$transport->reason]}</b></div>
+                    <div>{$transport->reasonRemark |breakLines}</div>
+                {else}
+                    {foreach $transport->targets as $target}
+                        <div><b>{$target->name}</b></div>
+                        <div>
+                            {foreach $target->items as $item}
+                                <s n:tag-if="$item->delivered">{$item->deliveryNoteLabel} ({$item->customer ?? '-'})</s>{sep}, {/sep}
+                            {/foreach}
+                        </div>
+                        <div>{$target->phone}</div>
+                        <div>{$target->address |breakLines}</div>
+                        {sep}<br>{/sep}
+                    {/foreach}
+                    <div n:if="$transport->totalWeight">
+                        <br>
+                        <div>Celková váha: {$transport->totalWeight} kg</div>
+                    </div>
+                {/if}
+                <br>
+                <div>Vytvořil: {$transport->createdBy->name}</div>
+                <div>{$transport->createdAt |date:'d.m.Y H:i'}</div>
+                <div n:if="$transport->updatedBy">Poslední úprava: {$transport->updatedBy->name}</div>
+                <div n:if="$transport->updatedAt">{$transport->updatedAt |date:'d.m.Y H:i'}</div>
+                <div n:if="$transport->errors" class="text-danger">
+                    <br>
+                    <div n:foreach="$transport->errors as $error">{$error}</div>
+                </div>
+            </div>
+            <div class="tooltip-arrow"></div>
+        </div>
+    </div>
+{/define}

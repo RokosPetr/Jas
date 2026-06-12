@@ -1,0 +1,60 @@
+{define setting-form}
+    <div id="dual-select-columns" style="display: inline-block; width: 80%; padding-top: 20px;"></div>
+    <div style="text-align: center; margin-top: 20px;">
+        <button id="save-setting-btn" type="button" class="btn btn-secondary">Uložit nastavení</button>
+        <button id="default-setting-btn" type="button" class="btn btn-secondary">Výchozí zobrazení</button>
+    </div>
+    <div style="text-align: center;">
+        <a href="{link showSetting!}" class="ajax btn btn-danger">Zavřít</a>
+    </div>
+
+    <script>
+        var columnOption = {$columnOption};
+        var selectedColumns = {$selectedColumns};
+        var candidateItems = [];
+        var selectionItems = [];
+
+        for (var column in columnOption) {
+            var item = { id: column, name: columnOption[column] }
+            if (selectedColumns.includes(column)) {
+                selectionItems.push(item);
+            } else {
+                candidateItems.push(item);
+            }
+        }
+
+        var dsl = $('#dual-select-columns').DualSelectList({
+            candidateItems,
+            selectionItems,
+            'leftTitle': 'Sloupce k zobrazení',
+            'rightTitle': 'Bude zobrazeno',
+            'colors': {
+                'itemBackground': '#F2F5F7',
+                'itemHoverBackground': '#73879C',
+                'itemText': '#000000',
+                'itemPlaceholderBorder': '#000000'
+            }
+        });
+
+        $('#save-setting-btn').click(function () {
+            var selectedCols = dsl.getSelection();
+
+            if (selectedCols.length) {
+                $.nette.ajax({
+                    type: 'post',
+                    url: {link saveUserColumns!},
+                    data: {
+                        userColumns: selectedCols.map(selection => selection.id)
+                    }
+                });
+            }
+        });
+
+        $('#default-setting-btn').click(function () {
+            $.nette.ajax({
+                type: 'post',
+                url: {link setDefaultColumns!}
+            });
+        });
+    </script>
+{/define}

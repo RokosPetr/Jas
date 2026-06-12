@@ -1,0 +1,13 @@
+{varType App\Modules\StockModule\Orm\Cubicles\Cubicle $cubicle}
+{varType bool $showPrice}
+<div>
+    <h1>{$cubicle->title}</h1>
+    <div n:if="$cubicle->picture">
+        <img src="{$cubicle->picture->link}" alt="{$cubicle->picture->name}" width="300">
+    </div>
+    <br>
+    <div n:foreach="$cubicle->items as $item" n:class="!$item->item->isActive ? text-red">
+        <div n:tag-if="$showPrice" style="float: left; width: 80%">{$item->item->title}</div>
+        <div n:if="$showPrice" style="float: right; width: 15%; text-align: right;">{$item->item->price |number},- Kč</div>
+    </div>
+</div>

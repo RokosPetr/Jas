@@ -34,5 +34,9 @@
   {
     "outputFile": "wwwroot/css/srv.css",
     "inputFile": "wwwroot/css/srv.less"
+  },
+  {
+    "outputFile": "wwwroot/css/intranet.css",
+    "inputFile": "wwwroot/css/intranet.less"
   }
 ]

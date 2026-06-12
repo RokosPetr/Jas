@@ -1,0 +1,11 @@
+{varType App\Modules\DeliveryModule\Orm\CustomerComplaints\CustomerComplaint $complaint}
+
+<p>Upozornění k nevyřešené reklamaci {$complaint->number} ze dne {$complaint->createdAt |date: 'd.m.Y'}, kterou vytvořil uživatel {$complaint->createdBy->name}</p>
+<p>Reklamující: {$complaint->name}{if $complaint->company} ({$complaint->company}){/if}</p>
+<p>Produkt: {$complaint->item->regNumber} {$complaint->item->name} v množství {$complaint->description['amount'] ?? '?'} {$complaint->item->unit->name ?? '-'}</p>
+<p>Popis vady: {$complaint->description['description'] ?? '?'}</p>
+<p>Požadavek zákazníka: {$complaint->description['request'] ?? '?'}</p>
+<br>
+<p>Do konce reklamace zbývá méně než 10 dnů.</p>
+<br>
+<p>Na tento email neodpovídejte, je pouze informativního charakteru.</p>

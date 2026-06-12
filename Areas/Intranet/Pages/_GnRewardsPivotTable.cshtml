@@ -1,0 +1,80 @@
+@model Jas.Areas.Intranet.Pages.PivotResult
+@using System.Globalization
+
+@{
+    var format = new CultureInfo("cs-CZ");
+}
+
+<div id="pivotSlicersUpdate" style="display:none;" 
+     data-persons="@string.Join("|", Model.AvailablePersons)" 
+     data-years="@string.Join("|", Model.AvailableYears)" 
+     data-months="@string.Join("|", Model.AvailableMonths)"
+     data-stores="@string.Join("|", Model.AvailableStores)">
+</div>
+
+<table class="table pivot-table table-sm mb-0" style="border: 1px solid #999; color: black; background-color: #eaebed;">
+    <thead style="background: #404040; color: white;">
+        <tr>
+            <th style="border: 1px solid #555; padding-left: 10px;">Odměny za GN<br>Období</th>
+            <th style="border: 1px solid #555; text-align: right;">Role<br>Autor GN</th>
+            <th style="border: 1px solid #555; text-align: right;"><br>Prodejce</th>
+            <th style="border: 1px solid #555; text-align: right;"><br>Autor CN</th>
+            <th style="border: 1px solid #555; text-align: right;"><br>Celkem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int s = 0; s < Model.Stores.Count; s++)
+        {
+            var store = Model.Stores[s];
+            var sClass = $"s-{s}";
+            <tr class="fw-bold cursor-pointer @sClass" style="background-color: #a9abad;" onclick="togglePivot('.ch-@sClass', this)">
+                <td style="border: 1px solid white; padding-left: 5px;"><span class="toggle-icon d-inline-block text-center mr-1 pb-1" style="width: 14px; height: 14px; line-height: 12px; border: 1px solid gray; background: white; color: black; font-size: 14px; font-weight: bold; border-radius: 2px;">-</span> @store.Name</td>
+                <td style="border: 1px solid white; text-align: right;">@store.AutorGN.ToString("C0", format)</td>
+                <td style="border: 1px solid white; text-align: right;">@store.Prodejce.ToString("C0", format)</td>
+                <td style="border: 1px solid white; text-align: right;">@store.AutorCN.ToString("C0", format)</td>
+                <td style="border: 1px solid white; text-align: right;">@store.Celkem.ToString("C0", format)</td>
+            </tr>
+            @for (int i = 0; i < store.Persons.Count; i++)
+            {
+                var p = store.Persons[i];
+                var pClass = $"{sClass}-p-{i}";
+                <tr class="fw-bold cursor-pointer ch-@sClass @pClass" style="background-color: #c9cbcd;" onclick="togglePivot('.ch-@pClass', this, true)">
+                    <td style="border: 1px solid white; padding-left: 20px;"><span class="toggle-icon d-inline-block text-center mr-1 pb-1" style="width: 14px; height: 14px; line-height: 12px; border: 1px solid gray; background: white; color: black; font-size: 14px; font-weight: bold; border-radius: 2px;">-</span> @p.Name</td>
+                    <td style="border: 1px solid white; text-align: right;">@p.AutorGN.ToString("C0", format)</td>
+                    <td style="border: 1px solid white; text-align: right;">@p.Prodejce.ToString("C0", format)</td>
+                    <td style="border: 1px solid white; text-align: right;">@p.AutorCN.ToString("C0", format)</td>
+                    <td style="border: 1px solid white; text-align: right;">@p.Celkem.ToString("C0", format)</td>
+                </tr>
+                @for (int j = 0; j < p.Years.Count; j++)
+                {
+                    var y = p.Years[j];
+                    var yClass = $"{pClass}-y-{j}";
+                    <tr class="fw-bold cursor-pointer ch-@sClass ch-@pClass @yClass" style="background-color: #d9dbdd;" onclick="togglePivot('.ch-@yClass', this, true)">
+                        <td style="border: 1px solid white; padding-left: 35px;"><span class="toggle-icon d-inline-block text-center mr-1 pb-1" style="width: 14px; height: 14px; line-height: 12px; border: 1px solid gray; background: white; color: black; font-size: 14px; font-weight: bold; border-radius: 2px;">-</span> @y.Year</td>
+                        <td style="border: 1px solid white; text-align: right;">@y.AutorGN.ToString("C0", format)</td>
+                        <td style="border: 1px solid white; text-align: right;">@y.Prodejce.ToString("C0", format)</td>
+                        <td style="border: 1px solid white; text-align: right;">@y.AutorCN.ToString("C0", format)</td>
+                        <td style="border: 1px solid white; text-align: right;">@y.Celkem.ToString("C0", format)</td>
+                    </tr>
+                    @foreach (var m in y.Months)
+                    {
+                        <tr class="ch-@sClass ch-@pClass ch-@yClass level-month bg-light">
+                            <td style="border: 1px solid white; padding-left: 50px;">@m.Month</td>
+                            <td style="border: 1px solid white; text-align: right;">@m.AutorGN.ToString("C0", format)</td>
+                            <td style="border: 1px solid white; text-align: right;">@m.Prodejce.ToString("C0", format)</td>
+                            <td style="border: 1px solid white; text-align: right;">@m.AutorCN.ToString("C0", format)</td>
+                            <td style="border: 1px solid white; text-align: right;">@m.Celkem.ToString("C0", format)</td>
+                        </tr>
+                    }
+                }
+            }
+        }
+        <tr class="fw-bold" style="background-color: #404040; color: white;">
+            <td style="border: 1px solid #555; padding-left: 10px;">Celkem</td>
+            <td style="border: 1px solid #555; text-align: right;">@Model.GrandTotal.AutorGN.ToString("C0", format)</td>
+            <td style="border: 1px solid #555; text-align: right;">@Model.GrandTotal.Prodejce.ToString("C0", format)</td>
+            <td style="border: 1px solid #555; text-align: right;">@Model.GrandTotal.AutorCN.ToString("C0", format)</td>
+            <td style="border: 1px solid #555; text-align: right;">@Model.GrandTotal.Celkem.ToString("C0", format)</td>
+        </tr>
+    </tbody>
+</table>

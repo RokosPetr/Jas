@@ -55,13 +55,19 @@ public partial class JasMtzDbContext : DbContext
 
     public virtual DbSet<ViPdfCompanyCatalog> ViPdfCompanyCatalogs { get; set; }
 
+    public virtual DbSet<ViPtgItemLastPriceTagChange> ViPtgItemLastPriceTagChanges { get; set; }
+
     public virtual DbSet<ViPtgPdfPtPlate> ViPtgPdfPtPlates { get; set; }
 
     public virtual DbSet<ViPtgStand> ViPtgStands { get; set; }
 
+    public virtual DbSet<ViPtgStandChangeDate> ViPtgStandChangeDates { get; set; }
+
     public virtual DbSet<ViPtgStandCompany> ViPtgStandCompanies { get; set; }
 
     public virtual DbSet<ViPtgStandCompany1> ViPtgStandCompanies1 { get; set; }
+
+    public virtual DbSet<ViPtgStandLastPriceTagChange> ViPtgStandLastPriceTagChanges { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -463,6 +469,7 @@ public partial class JasMtzDbContext : DbContext
                 .HasColumnName("ico");
             entity.Property(e => e.IdMkStand).HasColumnName("id_mk_stand");
             entity.Property(e => e.IdStand).HasColumnName("id_stand");
+            entity.Property(e => e.K2Id).HasColumnName("k2_id");
             entity.Property(e => e.Voj)
                 .HasMaxLength(10)
                 .HasColumnName("voj");
@@ -620,6 +627,35 @@ public partial class JasMtzDbContext : DbContext
             entity.Property(e => e.IdCompany).HasColumnName("id_company");
         });
 
+        modelBuilder.Entity<ViPtgItemLastPriceTagChange>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vi_ptg_item_last_price_tag_change");
+
+            entity.Property(e => e.AbrasionLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.AntislipLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.DescriptionLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.DiscardedLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.DiscountLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.FrostLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.InsertLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.LastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.NameLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.OrigNameLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.OutletLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.OutletQrLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.PriceJasLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.PriceLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.PriceNnLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.QrLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.RectificationLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.RegNumber).HasMaxLength(10);
+            entity.Property(e => e.SizeLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.SurfaceLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.UnitLastChangeDate).HasColumnType("datetime");
+        });
+
         modelBuilder.Entity<ViPtgPdfPtPlate>(entity =>
         {
             entity
@@ -712,6 +748,16 @@ public partial class JasMtzDbContext : DbContext
             entity.Property(e => e.StandProducerName).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<ViPtgStandChangeDate>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vi_ptg_stand_change_dates");
+
+            entity.Property(e => e.Ico).HasMaxLength(8);
+            entity.Property(e => e.Voj).HasMaxLength(10);
+        });
+
         modelBuilder.Entity<ViPtgStandCompany>(entity =>
         {
             entity
@@ -783,6 +829,34 @@ public partial class JasMtzDbContext : DbContext
                 .HasColumnName("second_picture");
             entity.Property(e => e.Type).HasColumnName("type");
             entity.Property(e => e.UnitCount).HasColumnName("unit_count");
+        });
+
+        modelBuilder.Entity<ViPtgStandLastPriceTagChange>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vi_ptg_stand_last_price_tag_change");
+
+            entity.Property(e => e.AbrasionLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.AntislipLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.DescriptionLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.DiscardedLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.DiscountLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.FrostLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.InsertLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.LastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.NameLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.OrigNameLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.OutletLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.OutletQrLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.PriceJasLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.PriceLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.PriceNnLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.QrLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.RectificationLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.SizeLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.SurfaceLastChangeDate).HasColumnType("datetime");
+            entity.Property(e => e.UnitLastChangeDate).HasColumnType("datetime");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -1,0 +1,20 @@
+<div class="store-select-wrapper">
+    <div>
+        <label for="driver-select">Řidič:</label>
+        <select name="driver-select" id="driver-select" class="select2-ignore store-selector">
+            <option n:foreach="$drivers as $id => $name"
+                value="{$id}"
+                data-link="{link changeDriver! id => $id}"
+                {if $id === $selectedDriver}selected{/if}
+            >{$name}</option>
+        </select>
+    </div>
+
+    <script>
+        $('#driver-select').change(function () {
+            var value = $(this).val();
+            location.href = $('#driver-select option[value="' + value + '"]').attr('data-link');
+        });
+    </script>
+    <br>
+</div>

@@ -26,7 +26,7 @@
 
         </div>
 
-        <div class="piece-price-tag-top @(item.Discarded ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr ? " noqr" : "")">
+                <div class="piece-price-tag-top @(item.Discarded ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr || item.Discarded ? " noqr" : "")">
             <div class="size"><span>@item.SizeType1</span></div>
             <img class="symbols" src="@item.SymbolsImage" />
             <div class="price@(item.Discount && !voPrice ? " discount" : "")">
@@ -40,7 +40,7 @@
 
                 </div>
 
-                <div class="piece-price-tag-bottom @(item.Discarded ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr ? " noqr" : "")">
+                <div class="piece-price-tag-bottom @(item.Discarded ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr || item.Discarded ? " noqr" : "")">
                     <img class="qr" src="@item.QrBase64" />
                     <div class="reg"><span>Index: @item.RegNumber</span></div>
                     <div class="dph"><span>Uvedená cena je včetně DPH.</span></div>

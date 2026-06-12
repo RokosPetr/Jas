@@ -1,0 +1,391 @@
+{varType App\Modules\DeliveryModule\Component\BaseOverview $control}
+<script src="/dist/chart.bundle.js"></script>
+
+{snippet overviewFilter}
+    {control overviewFilter}
+{/snippet}
+
+{snippet overviewTable}
+    {import 'baseOverviewHelper.latte'}
+    <div n:if="$producers && $years" class="text-center" style="background-color: rgba(242, 242, 242, 0.5); padding: 30px 0;">
+        <div class="table-responsive" style="overflow-x: auto;">
+            <table class="takings-overview sales-overview floatedTable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th n:foreach="$producers as $producerName" colspan="{count($years)}">{$producerName}</th>
+                        <th colspan="{count($years)}">Celkem</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr class="hover-ignore">
+                        <td>Rok</td>
+                        {for $i = 0; $i < count($producers) + 1; $i++}
+                            <td n:foreach="$years as $year" n:class="$i % 2 ? odd : even"><b>{$year}</b></td>
+                        {/for}
+                    </tr>
+
+                    {var array $tableData = [],
+                        array $rowSums = [],
+                        array $producerIds = array_keys($producers),
+                        int $maxCompareMonth = $hasCurrentYear ? (date('n') - 1)  : 12,
+                        int $mostPastYear = end($years),
+                        int $value = 0,
+                        int $compareValue = 0
+                    }
+
+                    {foreach App\Core\Utils\DateTime::CZ_MONTHS as $month => $monthName}
+                        <tr>
+                            <td>{$monthName |firstUpper}</td>
+                            {foreach $producerIds as $index => $producerId}
+                                {foreach $years as $year}
+                                    {php $tableData[$producerId][$year][$month] ??= $control->loadCellValue($producerId, $year, $month);
+                                        $tableData[$producerId][$mostPastYear][$month] ??= $control->loadCellValue($producerId, $mostPastYear, $month);
+                                        $rowSums[$year][$month] ??= 0;
+                                        $rowSums[$year][$month] += $tableData[$producerId][$year][$month]
+                                    }
+                                    {include #dataCell cellClass => $index % 2 ? 'odd' : 'even', value => $tableData[$producerId][$year][$month], compareValue => $tableData[$producerId][$mostPastYear][$month], year => $year, month => $month, mostPastYear => $mostPastYear, producerId => $producerId}
+                                {/foreach}
+                            {/foreach}
+
+                            {foreach $years as $year}
+                                {include #dataCell cellClass => $index % 2 ? 'even' : 'odd', value => $rowSums[$year][$month], compareValue => $rowSums[$mostPastYear][$month], year => $year, month => $month, mostPastYear => $mostPastYear}
+                            {/foreach}
+                        </tr>
+
+                        {if $month % 3 === 0}
+                            <tr class="sum-row">
+                                <td>Celkem {$month - 2}-{$month}</td>
+                                {foreach $producerIds as $index => $producerId}
+                                    {foreach $years as $year}
+                                        {php $value = $control->getPartSumValue($tableData[$producerId][$year], $month, $maxCompareMonth);
+                                            $compareValue = $control->getPartSumValue($tableData[$producerId][$mostPastYear], $month, $maxCompareMonth)
+                                        }
+                                        {include #dataCell cellClass => $index % 2 ? 'odd' : 'even', value => $value, compareValue => $compareValue, year => $year, month => $month - 2, mostPastYear => $mostPastYear}
+                                    {/foreach}
+                                {/foreach}
+
+                                {foreach $years as $year}
+                                    {php $value = $control->getPartSumValue($rowSums[$year], $month, $maxCompareMonth);
+                                        $compareValue = $control->getPartSumValue($rowSums[$mostPastYear], $month, $maxCompareMonth)
+                                    }
+                                    {include #dataCell cellClass => $index % 2 ? 'even' : 'odd', value => $value, compareValue => $compareValue, year => $year, month => $month - 2, mostPastYear => $mostPastYear}
+                                {/foreach}
+                            </tr>
+                        {/if}
+                    {/foreach}
+
+                    <tr n:if="!($hasCurrentYear && intval(date('n')) === 1)">
+                        <td></td>
+                        {for $i = 0; $i < count($producerIds) + 1; $i++}
+                            <td n:for="$j = 0; $j < count($years); $j++" n:class="$i % 2 ? odd : even">&nbsp;</td>
+                        {/for}
+                    </tr>
+
+                    <tr n:if="!($hasCurrentYear && intval(date('n')) === 1)" class="sum-row">
+                        {var array $produceCompareSums = []}
+                        <td>Celkem 1-{$maxCompareMonth}</td>
+                        {foreach $producerIds as $index => $producerId}
+                            {foreach $years as $year}
+                                {php $produceCompareSums[$year][$producerId] ??= 0}
+                                {for $i = 1; $i <= $maxCompareMonth; $i++}
+                                    {php $produceCompareSums[$year][$producerId] += $tableData[$producerId][$year][$i]}
+                                {/for}
+                            {/foreach}
+                            {foreach $years as $year}
+                                {include #dataCell cellClass => $index % 2 ? 'odd' : 'even', value => $produceCompareSums[$year][$producerId], compareValue => $produceCompareSums[$mostPastYear][$producerId], year => $year, month => 1, mostPastYear => $mostPastYear}
+                            {/foreach}
+                        {/foreach}
+
+                        {foreach $years as $year}
+                            {include #dataCell cellClass => $index % 2 ? 'even' : 'odd', value => array_sum($produceCompareSums[$year]), compareValue => array_sum($produceCompareSums[$mostPastYear]), year => $year, month => 1, mostPastYear => $mostPastYear}
+                        {/foreach}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div n:if="count($producerIds) > 1" class="text-center">
+            <div class="dealer-overview-main-chart"><canvas id="producers-chart"></canvas></div>
+        </div>
+        <div n:if="count($years) > 1" n:foreach="$producerIds as $producerId" class="dealer-overview-chart">
+            <canvas id="producer-{$producerId}-chart"></canvas>
+        </div>
+    </div>
+
+    <form action="{plink exportOverview}" target="_blank" id="chartForm" method="post" class="hide"></form>
+
+    <script n:if="$producers && $years">
+        // Stazeno ze stackoverflow
+        var centerTextPlugin = {
+            beforeDraw: function(chart) {
+                if (chart.config.options.elements.center) {
+                    // Get ctx from string
+                    var ctx = chart.ctx;
+
+                    // Get options from the center object in options
+                    var centerConfig = chart.config.options.elements.center;
+                    var fontStyle = centerConfig.fontStyle || 'Arial';
+                    var txt = centerConfig.text;
+                    var color = centerConfig.color || '#000';
+                    var maxFontSize = centerConfig.maxFontSize || 75;
+                    var sidePadding = centerConfig.sidePadding || 20;
+                    var sidePaddingCalculated = (sidePadding / 100) * (chart.innerRadius * 2)
+                    // Start with a base font of 30px
+                    ctx.font = "30px " + fontStyle;
+
+                    // Get the width of the string and also the width of the element minus 10 to give it 5px side padding
+                    var stringWidth = ctx.measureText(txt).width;
+                    var elementWidth = (chart.innerRadius * 2) - sidePaddingCalculated;
+
+                    // Find out how much the font can grow in width.
+                    var widthRatio = elementWidth / stringWidth;
+                    var newFontSize = Math.floor(30 * widthRatio);
+                    var elementHeight = (chart.innerRadius * 2);
+
+                    // Pick a new font size so it will not be larger than the height of label.
+                    var fontSizeToUse = Math.min(newFontSize, elementHeight, maxFontSize);
+                    var minFontSize = centerConfig.minFontSize;
+                    var lineHeight = centerConfig.lineHeight || 25;
+                    var wrapText = false;
+
+                    if (minFontSize === undefined) {
+                        minFontSize = 20;
+                    }
+
+                    if (minFontSize && fontSizeToUse < minFontSize) {
+                        fontSizeToUse = minFontSize;
+                        wrapText = true;
+                    }
+
+                    // Set font settings to draw it correctly.
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    var centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+                    var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+                    ctx.font = fontSizeToUse + "px " + fontStyle;
+                    ctx.fillStyle = color;
+
+                    if (!wrapText) {
+                        ctx.fillText(txt, centerX, centerY);
+                        return;
+                    }
+
+                    var words = txt.split(' ');
+                    var line = '';
+                    var lines = [];
+
+                    // Break words up into multiple lines if necessary
+                    for (var n = 0; n < words.length; n++) {
+                        var testLine = line + words[n] + ' ';
+                        var metrics = ctx.measureText(testLine);
+                        var testWidth = metrics.width;
+                        if (testWidth > elementWidth && n > 0) {
+                            lines.push(line);
+                            line = words[n] + ' ';
+                        } else {
+                            line = testLine;
+                        }
+                    }
+
+                    // Move the center up depending on line height and number of lines
+                    centerY -= (lines.length / 2) * lineHeight;
+
+                    for (var n = 0; n < lines.length; n++) {
+                        ctx.fillText(lines[n], centerX, centerY);
+                        centerY += lineHeight;
+                    }
+                    //Draw text in center
+                    ctx.fillText(line, centerX, centerY);
+                }
+            }
+        };
+
+        var charts = [];
+
+        {if count($producers) > 1}
+            charts.push(new Chart(
+                document.getElementById('producers-chart'),
+                {
+                    type: 'doughnut',
+                    plugins: [centerTextPlugin, ChartDataLabels],
+                    data: {
+                        labels: {array_values($producers)},
+                        datasets: [
+                            {foreach $years as $year}
+                            {
+                                label: {$year},
+                                data: {array_map(fn(array $producerData) => array_sum($producerData[$year]), $tableData, [])},
+                                backgroundColor: {$producerColors},
+                                hoverOffset: 4
+                            },
+                            {/foreach}
+                        ]
+                    },
+                    options: {
+                        animation: {
+                            animateRotate: false
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Podíl prodeje dle dodavatelů ' + {implode('/', $years)},
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        var totalSum = context.dataset.data.reduce((a,b) => a + b);
+                                        var percentage = Math.round((context.parsed / totalSum) * 1000) / 10;
+                                        return context.dataset.label + ': ' + context.label + ': ' + percentage + ' %';
+                                    }
+                                }
+                            },
+                            legend: {
+                                labels: {
+                                    font: {
+                                        size: 15
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                color: 'black',
+                                font: {
+                                    weight: 'bold'
+                                },
+                                display: function(context) {
+                                    return context.dataIndex === 0;
+                                },
+                                formatter: function(value, context) {
+                                    return context.dataset.label;
+                                }
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                top: 20
+                            }
+                        },
+                        elements: {
+                            center: {
+                                text: ''
+                            }
+                        },
+                        onClick: function (event, elements, chart) {
+                            if (elements.length) {
+                                var dataIndexes = elements[0];
+                                var dataset = chart.data.datasets[dataIndexes.datasetIndex];
+                                var totalSum = dataset.data.reduce((a,b) => a + b);
+                                if (totalSum) {
+                                    var percentage = Math.round((dataset.data[dataIndexes.index] / totalSum) * 1000) / 10;
+                                    chart.options.elements.center.text = percentage + ' %';
+                                }
+                            }
+                        }
+                    }
+                }
+            ));
+        {/if}
+
+        {if count($years) > 1}
+            {foreach $producers as $producerId => $producerName}
+                charts.push(new Chart(
+                    document.getElementById('producer-{$producerId}-chart'),
+                    {
+                        type: 'doughnut',
+                        plugins: [centerTextPlugin],
+                        data: {
+                            labels: {$years},
+                            datasets: [
+                                {
+                                    label: {$producerName},
+                                    data: {$control->getYearCompareSums($tableData[$producerId])},
+                                    backgroundColor: getDataColorSet({count($years)}),
+                                    hoverOffset: 4
+                                },
+                            ]
+                        },
+                        options: {
+                            animation: {
+                                animateRotate: false
+                            },
+                            plugins: {
+                                legend: {
+                                    reverse: true,
+                                    labels: {
+                                        font: {
+                                            size: 15
+                                        }
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Srovnání prodeje ' + {$producerName . ' 1-' . $maxCompareMonth},
+                                    font: {
+                                        size: 16
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            var mostPastYear = {$mostPastYear};
+                                            if (context.label === mostPastYear) {
+                                                return context.label + ': ' + context.formattedValue;
+                                            }
+                                            var mostPastYearValue = context.dataset.data.at(-1);
+                                            var comparePortion = (context.parsed - mostPastYearValue) / mostPastYearValue;
+                                            var comparePercentage = Math.round(comparePortion * 1000) / 10;
+                                            return context.label + ': ' + (comparePercentage > 0 ? '+' : '') + comparePercentage + ' % oproti ' + mostPastYear;
+                                        }
+                                    }
+                                }
+                            },
+                            layout: {
+                                padding: {
+                                    top: 20
+                                }
+                            },
+                            elements: {
+                                center: {
+                                    text: ''
+                                }
+                            },
+                            onClick: function (event, elements, chart) {
+                                if (elements.length) {
+                                    var dataIndexes = elements[0];
+                                    var dataset = chart.data.datasets[dataIndexes.datasetIndex];
+                                    if (dataIndexes.index === (dataset.data.length - 1)) {
+                                        chart.options.elements.center.text = '';
+                                    } else {
+                                        var mostPastYearValue = dataset.data.at(-1);
+                                        if (mostPastYearValue) {
+                                            var comparePortion = (dataset.data[dataIndexes.index] - mostPastYearValue) / mostPastYearValue;
+                                            var comparePercentage = Math.round(comparePortion * 1000) / 10;
+                                            chart.options.elements.center.text = (comparePercentage > 0 ? '+' : '') + comparePercentage + ' %';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ));
+            {/foreach}
+        {/if}
+
+        $(function () {
+            $('#overview-to-pdf').click(function () {
+                var form = $('#chartForm');
+                form.empty();
+                charts.forEach(function (chart) {
+                    var input = $('<input type="text" name="charts[]">');
+                    input.val(chart.toBase64Image());
+                    form.append(input);
+                });
+                form.submit();
+            });
+        })
+    </script>
+{/snippet}

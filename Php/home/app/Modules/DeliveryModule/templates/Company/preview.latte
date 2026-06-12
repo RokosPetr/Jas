@@ -1,0 +1,25 @@
+{varType App\Modules\DeliveryModule\Orm\Companies\Company $company}
+{block content}
+<br>
+{sideDialog}
+    <h1>{$company->ico} - {$company->name}</h1>
+    <table class="table datagrid-table jambo_table">
+        <thead>
+            <tr>
+                <th>JaS pobočka</th>
+                <th>Pobočka partnera</th>
+                <th>Voj</th>
+                <th>Skupina partnerů</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr n:foreach="$company->depots->toCollection()->orderBy(['store->id' => 'ASC', 'group->number' => 'ASC'])->fetchAll() as $depot">
+                <td>{$depot->store->name}</td>
+                <td>{$depot->title ?: $depot->city}</td>
+                <td>{$depot->voj}</td>
+                <td>{$depot->group->numberString ?? '-'}</td>
+            </tr>
+        </tbody>
+    </table>
+{/sideDialog}

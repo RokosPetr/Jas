@@ -1,0 +1,53 @@
+{varType App\Modules\DeliveryModule\Orm\Companies\Depot $depot}
+{block content}
+{var App\Modules\StockModule\Orm\Stands\StandNote[] $standNotes = $depot->loadCurrentStandNotes()}
+<div class="text-center">
+    <h3>{$depot->name}</h3>
+    <br>
+    {form standCheckForm class => table-form}
+        <table class="grey-table">
+            <thead>
+                <tr>
+                    <th n:if="$user->isAllowed(':Stock:Stand:preview')" class="no-bg"></th>
+                    <th>ID</th>
+                    <th>Název</th>
+                    <th>Výrobce</th>
+                    <th>Datum dovozu</th>
+                    <th>DL</th>
+                    <th class="no-bg"></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {foreach $standNotes as $key => $standNote}
+                    <tr n:class="$iterator->isOdd() ? odd : even">
+                        <td n:if="$user->isAllowed(':Stock:Stand:preview')" class="no-bg">
+                            <a n:href=":Stock:Stand:preview id => $standNote->stand->id" class="side-dialog" data-sd-history="on"><span class="fa fa-search"></span></a>
+                        </td>
+                        <td class="pointer">{$standNote->stand->code}</td>
+                        <td class="pointer">{$standNote->stand->name}</td>
+                        <td class="pointer">{$standNote->stand->producerName}</td>
+                        <td class="pointer">{$standNote->date |date:'d.m.Y'}</td>
+                        <td class="pointer">{$standNote->note ?: '-'}</td>
+                        <td class="no-bg">{input $key}</td>
+                    </tr>
+                {/foreach}
+                <tr><td>&nbsp;</td></tr>
+                <tr>
+                    <td></td>
+                    <td colspan="5" style="padding: 0;">{input remark class => form-control}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <br><br>
+        {input submit class => 'btn btn-default'}
+        {input App\Core\Component\Form\BaseForm::PROTECTOR_ID}
+    {/form}
+</div>
+
+<script>
+    $('form td.pointer').click(function () {
+        $(this).parent().find('input[type="checkbox"]').click();
+    });
+</script>

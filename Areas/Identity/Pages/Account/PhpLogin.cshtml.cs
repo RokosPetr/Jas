@@ -31,9 +31,10 @@ namespace Jas.Areas.Identity.Pages.Account
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string ReturnUrl { get; set; }
         [BindProperty(SupportsGet = true)]
         public string? PhpSessId { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string? ReturnUrl { get; set; }
         public string? JsonString { get; set; }
 
         public class PhpUsers
@@ -76,6 +77,10 @@ namespace Jas.Areas.Identity.Pages.Account
                             {
                                 await _signInManager.SignInAsync(user, isPersistent: false);
                                 _httpContextAccessor.HttpContext.Session.SetInt32("ExternalLoggedIn", 1);
+                                if (!string.IsNullOrWhiteSpace(ReturnUrl) && Uri.IsWellFormedUriString(ReturnUrl, UriKind.Absolute))
+                                {
+                                    return Redirect(ReturnUrl);
+                                }
                                 return LocalRedirect("/");
                             }
                         }

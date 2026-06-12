@@ -1,0 +1,23 @@
+php:
+    date.timezone: "Europe/Prague"
+
+parameters:
+    developmentMode: false
+
+dbal:
+    driver: mysqli
+    #driver: sqlsrv
+    #host: localhost
+    #host: uvdb50.active24.cz
+    host: db.r4.active24.cz
+    #host: 194.182.91.29
+    database: mamekoupeu
+    username: mamekoupeu
+    password: n5Y4eScLTE
+    applicationTz: "Europe/Prague"
+    connectionTz: "auto-offset"
+    simpleStorageTz: "Europe/Prague"
+
+tracy:
+    email: rokos@koupelny-jas.cz
+    fromEmail: error@koupelny-jas.cz

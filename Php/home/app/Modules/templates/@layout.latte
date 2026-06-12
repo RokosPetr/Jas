@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="robots" content="noindex,nofollow">
+	<meta name="description" content="" />
+	<meta name="msapplication-TileImage" content="https://www.mamekoupelny.eu/mstile-144x144.png">
+	<meta name="msapplication-TileColor" content="#FE0000">
+	<meta name="application-name" content="Koupelny JaS">
+
+	<title>{$presenter->titles[$presenter->action] ?? 'Koupelny JaS'}</title>
+
+	<!-- favicon iOS Safari -->
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<!-- favicon desktop browser -->
+	<link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64" href="/image/favicon.ico">
+	<link rel="icon" type="image/png" href="/image/touch-icon-chrome.png" sizes="192x192" />
+	<link rel="icon" type="image/png" href="/favicon.png">
+
+	<link rel="stylesheet" type="text/css" href="/dist/main.bundle.css">
+	<script src="/dist/main.bundle.js"></script>
+
+	{ifset htmlHead}{include htmlHead}{/ifset}
+</head>
+
+<body>
+	<header>
+		<!--Logo-->
+		<a n:href="$presenter->getHomeLink()">
+			<div>
+				<img srcset="/image/logo1_small.png 280w, /image/logo1.png 338w"
+					 sizes="(min-width: 991px) 338px, 280px"
+					 src="/image/logo1_small.png"
+				/>
+			</div>
+		</a>
+
+		<div id="top-panel">
+			<!--Nadpis podstranky-->
+			<div id="top-panel-header">{$presenter->titles[$presenter->action] ?? 'Koupelny JaS'}</div>
+			<!--User-->
+			<div id="top-panel-dropdown">
+				<div class="tablet-hidden">
+					<div style="height: 53px;"><img src="/image/uzivatel.png"></div>
+					<div n:if="$user->isLoggedIn()" class="top-panel-username">{$user->getIdentity()->name}</div>
+				</div>
+
+				<div class="screen-hidden">
+					<div n:if="$user->isLoggedIn()" class="top-panel-username">{$user->getIdentity()->name}</div>
+					<div><img src="/image/uzivatel_small.png"></div>
+				</div>
+
+				<div n:if="$user->isLoggedIn() && $presenter instanceof App\Modules\Presenters\BasePresenter" id="top-panel-dropdown-menu">
+					{control topMenu}
+					<a n:href=":System:User:changePassword">Změna hesla</a>
+					<a n:href=":System:User:logout">Odhlásit</a>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<div class="loader-container">
+		<div class="loader"></div>
+	</div>
+
+	<section class="scroll-x">
+		<div n:foreach="$flashes as $flash" class="flash-message flash-message-{$flash->type}">
+			<span class="flash-close-btn" onclick="closeFlashMessage(this);">x</span>
+			{$flash->message}
+		</div>
+		{include content}
+	</section>
+</body>
+
+</html>

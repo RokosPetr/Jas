@@ -1,0 +1,78 @@
+{varType App\Modules\SystemModule\Orm\Files\File $picture}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na kóje" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na kóje</strong>
+    </a>
+</div>
+{control cubicleForm}
+<div n:ifset="$picture" class="text-center">
+    <h4>
+        {$picture->name}
+        <a n:if="$user->isAllowed(':Stock:Cubicle:removePicture')" class="confirmDialog" href="#" title="Smazat obrázek" data-id="{$picture->id}">
+            <img src="/image/smazat1.png" alt="Smazat" width="15" height="15">
+        </a>
+    </h4>
+    <img src="{$picture->src}" alt="{$picture->name}" style="object-fit: contain; width: 468px;">
+</div>
+
+<script>
+    $('#frm-cubicleForm-series').select2({
+        language: 'cs',
+        ajax: {
+            url: '?do=updateSeriesSelect',
+            type: 'post',
+            dataType: 'json',
+            delay: 300,
+            data: function (params) { return { search: params.term } },
+            cache: true,
+        },
+        minimumInputLength: 2,
+    });
+
+    $('#frm-cubicleForm-depot').select2({
+        language: 'cs',
+        ajax: {
+            url: '?do=updatePartnerVOSelect',
+            type: 'post',
+            dataType: 'json',
+            delay: 300,
+            data: function (params) { return { search: params.term } },
+            cache: true,
+        },
+        minimumInputLength: 3,
+    });
+
+    $('a.confirmDialog').click(function (e) {
+        e.preventDefault();
+        var linkElement = $(this);
+
+        $('<div></div>').dialog({
+            resizable: false,
+            height: 'auto',
+            width: 400,
+            modal: true,
+            closeOnEscape: true,
+            title: 'Potvrzení',
+            open: function () { $(this).html('Opravdu chcete odstranit tento obrázek?'); },
+            buttons: [{
+                text: 'Ano',
+                click: function () {
+                    $.nette.ajax({
+                        type: 'post',
+                        url: {plink :Stock:Cubicle:removePicture},
+                        data: {
+                            id: linkElement.attr('data-id')
+                        },
+                        success: function () { location.reload(); }
+                    });
+                }
+            }, {
+                text: 'Ne',
+                click: function () { $(this).dialog('close'); }
+            }]
+        });
+        $('.ui-dialog-titlebar-close').html('<span>x</span>');
+    });
+</script>

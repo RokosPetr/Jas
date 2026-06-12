@@ -1,0 +1,24 @@
+{varType App\Modules\StockModule\Orm\Stands\StandNote $row}
+{define cell-depot}
+    {$row->depot->name}
+    {if (int) $row->depot->companyIcoString === \App\Modules\SystemModule\Orm\Stores\Store::INTERNAL_ICO}
+        ({$row->depot->city})
+    {/if}
+{/define}
+
+{define cell-note}
+    {if $row->note}
+        {$row->note} ({$row->noteDate |date:'d.m.Y'})
+    {else}
+        -
+    {/if}
+{/define}
+
+{define cell-removeDate}
+    {if $row->removeDate}
+        {$row->removeDate |date:'d.m.Y'}
+        {if $row->removeNote}(DL {$row->removeNote}){/if}
+    {else}
+        -
+    {/if}
+{/define}

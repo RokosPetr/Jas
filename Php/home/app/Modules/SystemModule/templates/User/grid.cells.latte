@@ -1,0 +1,4 @@
+{varType App\Modules\SystemModule\Orm\Users\User $row}
+{define cell-roles}
+    {$row->roles->toCollection()->fetchPairs(null, 'name')|implode:', '}
+{/define}

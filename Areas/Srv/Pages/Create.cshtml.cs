@@ -113,7 +113,7 @@ namespace Jas.Areas.Srv.Pages
                 entity.CreatedDate = now;
 
                 // počet dní odvozený od ADMIN kategorie opravy
-                var days = entity.RepairCategoryAdmin switch
+                var days = entity.RepairCategory switch
                 {
                     (int)RepairCategoryEnum.Light   => 60,
                     (int)RepairCategoryEnum.Serious => 30,

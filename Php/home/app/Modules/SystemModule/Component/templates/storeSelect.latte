@@ -1,0 +1,20 @@
+<div class="store-select-wrapper">
+    <div>
+        <label for="store-select">Středisko:</label>
+        <select name="store-select" id="store-select" class="select2-ignore store-selector">
+            <option n:foreach="$stores as $id => $storeName"
+                    value="{$id}"
+                    data-link="{link ChangeStore! id => $id}"
+                    {if $id === $selectedStore}selected{/if}
+            >{$storeName}</option>
+        </select>
+    </div>
+
+    <script>
+        $('#store-select').change(function () {
+            var value = $(this).val();
+            location.href = $('#store-select option[value="' + value + '"]').attr('data-link');
+        });
+    </script>
+    <br>
+</div>

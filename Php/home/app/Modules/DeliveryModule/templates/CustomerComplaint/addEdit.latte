@@ -1,0 +1,8 @@
+{block content}
+{control customerComplaintForm}
+
+<script n:if="$presenter->action === add">
+    $(function () {
+        initProductSearch('frm-customerComplaintForm-item');
+    });
+</script>

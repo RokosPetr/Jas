@@ -106,7 +106,7 @@ namespace Jas.Models.Ptg
                 if (TagName is null) return "";
 
                 string fontPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/fonts/OpenSans-ExtraBold.ttf");
-                return $"font-size: {FontSizeHelper.GetFontSizeForOneLine(TagName.ToUpper(), fontPath, 24f, 360)}px;";
+                return $"font-size: {FontSizeHelper.GetFontSizeForOneLine(TagName.ToUpper(), fontPath, 24f, 355)}px;";
             }
         }
 

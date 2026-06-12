@@ -1,0 +1,9 @@
+{varType \DateTime $date}
+{varType App\Modules\TransportModule\Orm\Transports\StoreTransport[] $transports}
+<p>Nalezené chyby v rozvozech maloobchodu pro den {$date->format('d.m.Y')}:</p>
+<p n:foreach="$transports as $transport">
+    {$transport->car->licensePlate}: {$transport->timeFrom |floatToHour} - {$transport->timeTill |floatToHour}: {$transport->errors |implode:', '}
+</p>
+<p>Koupelny JaS</p>
+<br>
+<p>Email byl vygenerován automaticky, prosím neodpovídejte na něj.</p>

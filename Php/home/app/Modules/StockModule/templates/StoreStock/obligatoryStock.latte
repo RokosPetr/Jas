@@ -1,0 +1,18 @@
+{varType \DateTimeInterface $importAt}
+{varType \DateTimeInterface $nextImportAt}
+{block content}
+<h5 n:ifset="$importAt"><i>Aktuálnost dat: {$importAt |date:'d.m.Y H:i'}, další aktualizace v {$nextImportAt |date:'H:i'}</i></h5>
+<div n:if="$user->isAllowed(':Stock:ObligatoryItem:default') || $user->isAllowed(':Stock:StoreStock:missingObligatorySectors')">
+    <div>
+        <a n:if="$user->isAllowed(':Stock:ObligatoryItem:default')" n:href=":Stock:ObligatoryItem:default" class="btn btn-secondary">Nastavení povinného sortimentu</a>
+        <a n:if="$user->isAllowed(':Stock:StoreStock:missingObligatorySectors')" n:href=":Stock:StoreStock:missingObligatorySectors" class="btn btn-secondary">Sortiment bez sektoru</a>
+        <a n:if="$user->isAllowed(':Stock:StoreStock:obligatoryItemSectors')" n:href=":Stock:StoreStock:obligatoryItemSectors" class="btn btn-secondary">Sektory sortimentu</a>
+    </div>
+    <br>
+</div>
+
+{if $user->isSuperAdmin()}
+    {control storeSelect}
+{/if}
+
+{control storeObligatoryItems}

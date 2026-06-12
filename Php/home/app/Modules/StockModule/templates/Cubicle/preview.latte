@@ -1,0 +1,27 @@
+{varType App\Modules\StockModule\Orm\Cubicles\Cubicle $cubicle}
+{block content}
+{sideDialog}
+    <div class="stand-preview-wrapper">
+        <div n:if="!$cubicle->deleted && $user->isAllowed(':Stock:Cubicle:exportPdf')" class="dropdown pull-right">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" style="margin-bottom: 0; margin-right: 0;">
+                PDF <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a n:href="exportPdf id => $cubicle->id, showPrice => false">Bez cen</a></li>
+                <li class="divider" style="margin: 3px 0;"></li>
+                <li><a n:href="exportPdf id => $cubicle->id, showPrice => true">S cenami</a></li>
+            </ul>
+        </div>
+        <h1>{$cubicle->title}</h1>
+        <div n:if="$cubicle->picture">
+            <img src="{$cubicle->picture->src}" alt="{$cubicle->picture->name}" style="object-fit: contain; width: 300px;">
+        </div>
+        <br>
+        <table>
+            <tr n:foreach="$cubicle->items->toCollection()->orderBy('item->regNumber') as $item" n:class="!$item->item->isActive ? text-red">
+                <td>{$item->item->title}</td>
+                <td style="padding-left: 10px;">{$item->item->price |number:0,',',' '},-</td>
+            </tr>
+        </table>
+    </div>
+{/sideDialog}

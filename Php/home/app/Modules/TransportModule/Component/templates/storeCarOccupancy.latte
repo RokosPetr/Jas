@@ -1,0 +1,135 @@
+{varType App\Modules\TransportModule\Component\StoreCarOccupancy $control}
+{varType App\Modules\TransportModule\Orm\Cars\StoreCar[] $cars}
+
+<div n:snippet="occupancyTableFilter" class="overview-control-panel">
+    <div class="pull-right">
+        <button type="button" onclick="location.href = {link export!};">Export</button>
+    </div>
+
+    <div style="margin-bottom: 0;">
+        <span style="width: 65px; display: inline-block;"><label for="year-filter">Rok:</label></span>
+        <select name="year" class="select2-ignore" id="year-filter" onchange="setYear(this.value);">
+            {for $i = intval(date('Y')); $i >= 2021; $i--}
+                <option value="{$i}"{if $i === $control->year} selected{/if}>{$i}</option>
+            {/for}
+        </select>
+    </div>
+
+    <div style="width: 80px; display: inline-block;">
+        <label for="car-filter" style="padding: 5px 0 0;">Dodávka:</label>
+    </div>
+    <div style="display: inline-block; width: 100%; margin-top: 4px;">
+        <div class="select2-wrapper">
+            <select name="cars" id="car-filter" multiple onchange="setCars(this);">
+                <option value="0">Vše</option>
+                <option n:foreach="$cars as $car" value="{$car->id}"{if in_array($car->id, $control->cars)} selected{/if}>{$car->title}</option>
+            </select>
+        </div>
+    </div>
+
+    <div style="width: 80px; display: inline-block;">
+        <label for="month-filter" style="padding: 5px 0 0;">Měsíc:</label>
+    </div>
+    <div style="display: inline-block; width: 100%; margin-top: 4px;">
+        <div class="select2-wrapper">
+            <select name="months" id="month-filter" multiple onchange="setMonths(this);">
+                <option value="0">Vše</option>
+                <option n:foreach="App\Core\Utils\DateTime::CZ_MONTHS as $month => $name" value="{$month}"{if in_array($month, $control->months)} selected{/if}>{$name}</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div n:snippet="occupancyTable" class="store-transport-wrapper" style="text-align: left;">
+    {var int $colCount = (2 * count($control->months)) + 1 }
+    {var array $occupancy = []}
+    <table id="store-occupancy-table" class="text-center">
+        <tr class="main-head-row">
+            <td colspan="{$colCount}" style="font-size: 18px;"><b>Výtěžnost MO rozvozů {$control->year}</b></td>
+        </tr>
+        <tr><td colspan="{$colCount}">&nbsp;</td></tr>
+        <tr>
+            <td></td>
+            {foreach App\Core\Utils\DateTime::CZ_MONTHS as $month => $montName}
+                {continueIf !in_array($month, $control->months)}
+                <td colspan="2" class="black-cell">{$montName}</td>
+            {/foreach}
+        </tr>
+        <tr>
+            <td></td>
+            {for $i = 0; $i < ($colCount - 1) / 2; $i++}
+                <td class="red-cell">fond PD</td>
+                <td class="red-cell">najeto</td>
+            {/for}
+        </tr>
+        <tr><td colspan="{$colCount}">&nbsp;</td></tr>
+
+        {foreach $cars as $car}
+            {continueIf !in_array($car->id, $control->cars)}
+            <tr>
+                {if $car->homeStore}
+                    <td class="black-cell" style="padding-bottom: 0;"><b>{$car->homeStore->name}</b></td>
+                {else}
+                    <td class="black-cell" rowspan="2"><b>{$car->licensePlate}</b></td>
+                {/if}
+                {var int $monthCounter = 1}
+                {for $month = 1; $month <= 12; $month++}
+                    {continueIf !in_array($month, $control->months)}
+                    {var int $carOccupancy = $car->loadOccupancy($month, $control->year)}
+                    {var int $carTimeFund = $car->loadTimeFund($month, $control->year)}
+                    {php $occupancy[$month] = $carTimeFund ? ($carOccupancy / $carTimeFund) : null}
+                    <td n:class="$monthCounter % 2 ? odd : even">{$carTimeFund}</td>
+                    <td n:class="$monthCounter % 2 ? odd : even">{$carOccupancy}</td>
+                    {php $monthCounter++}
+                {/for}
+            </tr>
+            <tr>
+                <td n:if="$car->homeStore" class="black-cell" style="padding-top: 0;"><b>{$car->licensePlate}</b></td>
+                {php $monthCounter = 1}
+                {for $month = 1; $month <= 12; $month++}
+                    {continueIf !in_array($month, $control->months)}
+                    <td colspan="2" n:class="top-border, $monthCounter % 2 ? odd : even">
+                        {ifset $occupancy[$month]}
+                            {$occupancy[$month] * 100 |number}%
+                        {else}
+                            -
+                        {/ifset}
+                    </td>
+                    {php $monthCounter++}
+                {/for}
+            </tr>
+            <tr><td colspan="{$colCount}">&nbsp;</td></tr>
+        {/foreach}
+    </table>
+</div>
+
+<script>
+    function setYear(year) {
+        $.nette.ajax({
+            url: {link setYear!},
+            data: { year }
+        });
+    }
+
+    function setCars(select) {
+        var cars = [];
+        $(select).select2('data').forEach(function (selectItem) {
+            cars.push(parseInt(selectItem.id));
+        });
+        $.nette.ajax({
+            url: {link setCars!},
+            data: { cars }
+        });
+    }
+
+    function setMonths(select) {
+        var months = [];
+        $(select).select2('data').forEach(function (selectItem) {
+            months.push(parseInt(selectItem.id));
+        });
+        $.nette.ajax({
+            url: {link setMonths!},
+            data: { months }
+        });
+    }
+</script>

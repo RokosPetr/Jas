@@ -1,0 +1,18 @@
+{varType App\Modules\BathroomModule\Orm\Parameters\BathParameter $parameter}
+{varType App\Modules\SystemModule\Orm\Files\File $picture}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na možnosti parametru" n:href="options id => $parameter->id">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na možnosti parametru</strong>
+    </a>
+</div>
+<div class="col-md-offset-3">
+    <h2>Parametr: {$parameter->name}</h2>
+</div>
+{control bathOptionForm}
+<div n:if="$picture" class="text-center">
+    <h4>Foto</h4>
+    <h4>{$picture->name}</h4>
+    <img src="{$picture->src}" alt="{$picture->name}" style="object-fit: contain;">
+</div>

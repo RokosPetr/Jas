@@ -1,0 +1,88 @@
+{block content}
+{if $user->isSuperAdmin()}
+    <h1>{$storeName}</h1>
+{/if}
+{control deliveryItemForm}
+
+<script n:if="$presenter->action === add">
+    var numberInput = $('#frm-deliveryItemForm-number');
+    var issueYearInput = $('#frm-deliveryItemForm-issueYear');
+    var stateRadioWrapper = $('.state-radio-wrapper');
+    var remarkInput = $('#frm-deliveryItemForm-remark');
+    var remarkInputWrapper = remarkInput.closest('.form-group')
+    var saveSubmitButton = $('input[type=submit][name=add]');
+    var continueSubmitButton = $('input[type=submit][name=continue]');
+    var submitButtonsWrapper = saveSubmitButton.parent();
+
+    // Vychozi nastaveni formu
+    var resetForm = function () {
+        stateRadioWrapper.hide();
+        remarkInputWrapper.hide();
+        submitButtonsWrapper.hide();
+    };
+
+    // Nastaveni formu pro pridani noveho dod. listu (po kontrole cisla dod. listu)
+    var setAddForm = function () {
+        stateRadioWrapper.find('input[name="state"][value="1"]').parent().show();
+        stateRadioWrapper.show();
+        remarkInputWrapper.show();
+        stateRadioWrapper.find('input[name="state"][value="3"]').prop('checked', true);
+        remarkInput.val('');
+        saveSubmitButton.val('Uložit');
+        continueSubmitButton.val('Uložit a pokračovat');
+        submitButtonsWrapper.show();
+    };
+
+    // Nastaveni formu na upravu (pridani odberu) dodaciho listu
+    var setUpdateForm = function (remark, state) {
+        if (state !== 1) {
+            stateRadioWrapper.find('input[name="state"][value="1"]').parent().hide();
+        } else {
+            stateRadioWrapper.find('input[name="state"][value="1"]').parent().show();
+        }
+
+        stateRadioWrapper.show();
+        stateRadioWrapper.find('input[name="state"][value="' + state + '"]').prop('checked', true);
+        remarkInputWrapper.show();
+        remarkInput.val(remark);
+        saveSubmitButton.val('Upravit');
+        continueSubmitButton.val('Upravit a pokračovat');
+        submitButtonsWrapper.show();
+    };
+
+    // aktualizace nastaveni formu pri zmene cisla nebo roku vystaveni dod. listu
+    var updateForm = function () {
+        var number = numberInput.val();
+
+        if (number.length < 4 || number.length > 5) {
+            resetForm();
+            return;
+        }
+
+        $.nette.ajax({
+            url: {link GetDeliveryItem!},
+            data: {
+                number: number,
+                issueYear: issueYearInput.val()
+            },
+            success: function (response) {
+                if (!response.result) {
+                    setAddForm();
+                    return;
+                }
+
+                if (response.state === 3) {
+                    resetForm();
+                    Nette.addError(numberInput.get(0), 'Dodací list ' + number + ' byl již kompletně vyvezený');
+                    return;
+                }
+
+                setUpdateForm(response.remark, response.state);
+            }
+        });
+    };
+
+    resetForm();
+    numberInput.on('input', updateForm);
+    issueYearInput.on('change', updateForm);
+</script>

@@ -1,0 +1,5 @@
+{varType App\Modules\BathroomModule\Orm\Parameters\BathParameter $row}
+
+{define cell-options}
+    {$row->options->toCollection()->orderBy('order')->fetchPairs(null, 'name') |implode:', '}
+{/define}

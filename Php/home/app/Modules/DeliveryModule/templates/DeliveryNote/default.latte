@@ -1,0 +1,8 @@
+{varType \DateTimeInterface $importAt}
+{varType \DateTimeInterface $nextImportAt}
+{block content}
+<h5 n:ifset="$importAt"><i>Aktuálnost dat: {$importAt |date:'d.m.Y H:i'}, další aktualizace v {$nextImportAt |date:'H:i'}</i></h5>
+{if $user->isSuperAdmin()}
+    {control storeSelect}
+{/if}
+{control deliveryNotes}

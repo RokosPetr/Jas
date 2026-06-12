@@ -1,0 +1,31 @@
+{varType App\Modules\StockModule\Orm\StockItems\StockItem $stockItem}
+{block content}
+{sideDialog}
+    <h1>{$stockItem->name}</h1>
+    <table>
+        <tr>
+            <td>Reg.číslo: </td>
+            <td>{$stockItem->regNumber}</td>
+        </tr>
+        <tr>
+            <td>Výrobce: </td>
+            <td>{$stockItem->producer->name ?? '???'}</td>
+        </tr>
+        <tr n:if="$stockItem->group">
+            <td>Skupina zboží: </td>
+            <td>{$stockItem->group->name}</td>
+        </tr>
+        <tr>
+            <td>Jednotka: </td>
+            <td>{$stockItem->unit->name ?? '-'}</td>
+        </tr>
+    </table>
+    <br>
+    <b>Maximalní množství jedné varianty na pobočkách:</b>
+    <table>
+        <tr n:foreach="$stores as $id => $name">
+            <td>{$name}: </td>
+            <td>{$storeQuantites[$id] ?? 0}</td>
+        </tr>
+    </table>
+{/sideDialog}

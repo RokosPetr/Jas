@@ -1,0 +1,12 @@
+{varType App\Modules\SystemModule\Orm\Users\User $sysUser}
+{block content}
+{sideDialog}
+    <h1>{$sysUser->name}</h1>
+    <br>
+    <div>
+        <b>Email:</b> {$sysUser->email}
+    </div>
+    <div n:foreach="$sysUser->phones as $phone">
+        <b>{$phone->description}:</b> {$phone->number}
+    </div>
+{/sideDialog}

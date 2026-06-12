@@ -1,0 +1,9 @@
+{varType App\Modules\DeliveryModule\Orm\Companies\Depot $row}
+
+{define cell-store}
+    {$row->store->name}
+{/define}
+
+{define cell-group}
+    {$row->group->numberString ?? '-'}
+{/define}

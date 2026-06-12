@@ -1,0 +1,40 @@
+{
+    "name": "xsuchy09/nette-csv-response",
+    "type": "library",
+    "description": "Nette CSV Response",
+    "homepage": "https://github.com/xsuchy09/nette-csv-response",
+    "license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+    "authors": [
+		{
+            "name": "Ing. Petr Suchý",
+            "email": "suchy@wamos.cz",
+            "role": "Developer"
+        },
+        {
+            "name": "Vladislav Hejda",
+            "email": "hejda@vspdata.cz",
+            "role": "Developer"
+        },
+        {
+            "name": "Ondra Hlaváč",
+            "email": "ondra@hlavac.cz",
+            "role": "Developer"
+        }
+    ],
+	"require": {
+		"php": ">= 7.1",
+		"ext-iconv": "*",
+		"ext-mbstring": "*",
+		"nette/application": "^2.4|^3.0",
+		"nette/http": "^2.4|^3.0",
+		"nette/utils": "^2.4|^3.1"
+	},
+    "autoload": {
+        "psr-4": {
+            "XSuchy09\\Application\\Responses\\": "src/"
+        }
+    },
+	"config": {
+		"sort-packages": true
+	}
+}

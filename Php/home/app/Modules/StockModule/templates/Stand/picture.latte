@@ -1,0 +1,52 @@
+{define picture}
+    {varType App\Modules\SystemModule\Orm\Files\File $picture}
+    {varType string $label}
+    {varType string $repo}
+    <div class="text-center">
+        <h4>{$label}</h4>
+        <h4>
+            {$picture->name}
+            <a n:if="$user->isAllowed(':Stock:Stand:removePicture')" class="confirmDialog" href="#" title="Smazat obrázek" data-id="{$picture->id}" data-repo="{$repo}">
+                <img src="/image/smazat1.png" alt="Smazat" width="15" height="15">
+            </a>
+        </h4>
+        <img src="{$picture->src}" alt="{$picture->name}" style="object-fit: contain; width: 468px;">
+    </div>
+{/define}
+
+{define jsDialog}
+    <script>
+        $('a.confirmDialog').click(function (e) {
+            e.preventDefault();
+            var linkElement = $(this);
+
+            $('<div></div>').dialog({
+                resizable: false,
+                height: 'auto',
+                width: 400,
+                modal: true,
+                closeOnEscape: true,
+                title: 'Potvrzení',
+                open: function () { $(this).html('Opravdu chcete odstranit tento obrázek?'); },
+                buttons: [{
+                    text: 'Ano',
+                    click: function () {
+                        $.nette.ajax({
+                            type: 'post',
+                            url: {plink :Stock:Stand:removePicture},
+                            data: {
+                                id: linkElement.attr('data-id'),
+                                repository: linkElement.attr('data-repo')
+                            },
+                            success: function () { location.reload(); }
+                        });
+                    }
+                }, {
+                    text: 'Ne',
+                    click: function () { $(this).dialog('close'); }
+                }]
+            });
+            $('.ui-dialog-titlebar-close').html('<span>x</span>');
+        });
+    </script>
+{/define}

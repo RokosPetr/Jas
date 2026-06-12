@@ -1,0 +1,9 @@
+{varType App\Modules\DeliveryModule\Orm\SalesData\SalesData $row}
+
+{define cell-store}
+    {App\Modules\DeliveryModule\Component\SalesOverview::SALE_GROUPS[$row->store] ?? $row->store}
+{/define}
+
+{define cell-month}
+    {App\Core\Utils\DateTime::CZ_MONTHS[$row->month]}
+{/define}

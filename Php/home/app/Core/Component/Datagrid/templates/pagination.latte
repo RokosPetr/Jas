@@ -1,0 +1,117 @@
+{var $page = $paginator->getPage();}
+
+{if $paginator->pageCount < 2 }
+    {var $steps = array($page);}
+{else}
+    {php $arr = range(max($paginator->firstPage, $page - 2), min($paginator->lastPage, $page + 2));
+        $count = 2;
+        $quotient = ($paginator->pageCount - 1) / $count;
+
+        for ($i = 0; $i <= $count; $i++) {
+            $arr[] = round($quotient * $i) + $paginator->firstPage;
+        }
+
+        sort($arr);
+        $steps = array_values(array_unique($arr));
+    }
+{/if}
+
+<div class="posr">
+    <div class="left-legend">
+        {if !empty($legends)}
+            <div class="datagrid-legends">
+                <span>|</span>
+                {$translates['legend']}:
+                {foreach $legends as $legend}
+                    <div class="label {$legend->class}"><span class="fa fa-square"></span> {$legend->label}</div>
+                {/foreach}
+            </div>
+        {/if}
+        <div class="pagi-count">
+            <div>
+                {$translates['recordsCountShort']}: {number_format(count($data), 0, '.', ' ')} {$translates['of']} {number_format($paginator->itemCount, 0, '.', ' ')}
+            </div>
+        </div>
+    </div>
+    <div class="grid-paginator">
+        <div class="dataTables_paginate">
+            {if ($gridSetting->showPaginator)}
+                <div class="pagi-items">
+                    <div class="pagi-items-text">Záznamů na stránku</div>
+                    <div class="styled-select">
+                        <select class='form-control rowsOnPageSelect select2-ignore' data-minimum-results-for-search="Infinity"
+                                onChange="$.nette.ajax({ type: 'get', url: $(this.options[this.selectedIndex]).data('href')});">
+                            {foreach $gridSetting->itemsPerPage as $key => $val}
+                                <option value="{$key}" data-href="{link count!, countPerPage => $key}"
+                                        {if $paginator->itemsPerPage == $key} selected {/if}>{$val}
+                                </option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+            {/if}
+            <div>
+                <ul class="pagination">
+                    {var $params = []}
+
+                    {if $paginator->isFirst()}
+                        <li class="paginate_button disabled"><span>|&lt;&lt;</span></li>
+                        <li class="paginate_button disabled"><span>&lt;</span></li>
+                    {else}
+                        <li class="paginate_button first">
+                            {var $params['page'] = 1}
+                            <a href="{link paginate! (expand) $params}" rel="first" class="ajax">
+                                <span>|&lt;&lt;</span>
+                            </a>
+                        </li>
+                        <li class="paginate_button previous">
+                            {var $params['page'] = $paginator->page - 1}
+                            <a href="{link paginate! (expand) $params}" rel="prev" class="ajax">
+                                <span>&lt;</span>
+                            </a>
+                        </li>
+                    {/if}
+
+                    {foreach $steps as $step}
+                        {if $step == $paginator->page}
+                            <li class="paginate_button active">
+                                <a href="">{number_format($step, 0, '.', ' ')}</a>
+                            </li>
+                        {else}
+                            {var $params['page'] = $step}
+                            <li class="paginate_button">
+                                <a href="{link paginate! (expand) $params}" class="ajax">
+                                    {number_format($step, 0, '.', ' ')}
+                                </a>
+                            </li>
+                        {/if}
+
+                        {if $iterator->nextValue > $step + 1}
+                            <li class="paginate_button disabled"><a href="#">…</a></li>
+                        {/if}
+                    {/foreach}
+
+                    {if $paginator->isLast()}
+                        <li class="paginate_button disabled"><span>&gt;</span></li>
+                        <li class="paginate_button disabled"><span>&gt;&gt;|</span></li>
+                    {else}
+                        <li class="paginate_button next">
+                            {var $params['page'] = $paginator->page + 1}
+                            <a href="{link paginate! (expand) $params}" rel="next" class="ajax">
+                                <span>&gt;</span>
+                            </a>
+                        </li>
+                        <li class="paginate_button last">
+                            {var $params['page'] = $paginator->pageCount}
+                            <a href="{link paginate! (expand) $params}" rel="last" class="ajax">
+                                <span>&gt;&gt;|</span>
+                            </a>
+                        </li>
+                  {/if}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="clearfix"></div>

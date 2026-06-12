@@ -1,0 +1,10 @@
+{varType App\Modules\StockModule\Orm\Stands\Stand $stand}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na stojany" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na stojany</strong>
+    </a>
+</div>
+<h2>{$stand->title}</h2>
+{control standNotes}

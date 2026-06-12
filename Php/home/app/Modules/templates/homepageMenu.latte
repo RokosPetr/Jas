@@ -1,0 +1,38 @@
+{varType Contributte\MenuControl\IMenu $menu}
+
+{define menu-branch, $itemsParent}
+    {foreach $itemsParent->getVisibleItemsOnMenu() as $item}
+        {if $item->getAction() == 'Mtz:MtzShop:default'}
+            <a n:if="$item->isAllowed()" href="{$item->aspnetConfig["mtz"]["url"] . session_id()}" class="main-menu-icon-link">
+                <div class="main-menu-link-wrapper">
+                    <div class="main-menu-icon"><span class="fa fa-{$item->getData('icon')}"></span></div>
+                    <div>{$item->getRealTitle()}</div>
+                </div>
+            </a>
+        {elseif $item->getAction() == 'Ptg:Ptg:default'}
+            <a n:if="$item->isAllowed()" href="{$item->aspnetConfig["ptg"]["url"] . session_id()}" class="main-menu-icon-link">
+                <div class="main-menu-link-wrapper">
+                    <div class="main-menu-icon"><span class="fa fa-{$item->getData('icon')}"></span></div>
+                    <div>{$item->getRealTitle()}</div>
+                </div>
+            </a>
+        {elseif $item->getAction() == 'Srv:Srv:default'}
+            <a n:if="$item->isAllowed()" href="{$item->aspnetConfig["srv"]["url"] . session_id()}" class="main-menu-icon-link">
+                <div class="main-menu-link-wrapper">
+                    <div class="main-menu-icon"><span class="fa fa-{$item->getData('icon')}"></span></div>
+                    <div>{$item->getRealTitle()}</div>
+                </div>
+            </a>
+        {else}
+            <a n:if="$item->isAllowed()" href="{$item->getRealLink()}" class="main-menu-icon-link">
+                <div class="main-menu-link-wrapper">
+                    <div class="main-menu-icon"><span class="fa fa-{$item->getData('icon')}"></span></div>
+                    <div>{$item->getRealTitle()}</div>
+                </div>
+            </a>
+        {/if}
+        {include menu-branch, $item}
+    {/foreach}
+{/define}
+
+{include menu-branch, $menu}

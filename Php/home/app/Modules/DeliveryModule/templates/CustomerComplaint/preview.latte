@@ -1,0 +1,139 @@
+{varType App\Modules\DeliveryModule\Orm\CustomerComplaints\CustomerComplaint $complaint}
+{block content}
+<div class="jas-link-wrapper">
+    <a title="Zpět na seznam reklamací" n:href="default">
+        <img width="20" height="20" src="/image/zpet.png">
+        <strong> zpět na seznam reklamací</strong>
+    </a>
+</div>
+
+<div class="text-center"><button class="btn btn-secondary" type="button" onclick="print()">Tisk formuláře</button></div>
+
+<div class="section-to-print">
+    <div class="complaint-protocol" style="overflow-x: auto">
+        <div style="display: flex">
+            <img src="/image/reklamace_header.png" style="width: 50%">
+            <div style="width: 50%; padding-left: 90px; padding-top: 17px;"><b>Koupelny JaS spol. s.r.o.<br>Československé armády 84/37<br>715 00 Ostrava - Michálkovice</b></div>
+        </div>
+
+        <div style="border-top: 1px solid black; padding: 8px 20px;">
+            <h2>Reklamační protokol {$complaint->number} ze dne {$complaint->createdAt |date: 'd.m.Y'}</h2>
+        </div>
+
+        <div style="border-top: 1px solid black; display: flex;">
+            <div style="width: 50%; border-right: 1px dotted black; padding: 12px 20px;"><b>Prodejce:</b><br>Koupelny JaS, spol. s.r.o.<br>
+                {$complaint->store->street}<br>
+                {$complaint->store->zipCode} {$complaint->store->name}<br>
+                {$complaint->store->phone}<br>
+                {$complaint->store->email}
+            </div>
+            <div style="width: 50%; padding: 12px 20px;">
+                <b>Reklamující:</b><br>
+                {$complaint->name}<br>
+                {$complaint->company ?? ''}<br>
+                {$complaint->description['street'] ?? '?'}<br>
+                {$complaint->description['zipCode'] ?? '?'}<br>
+                {$complaint->description['phone'] ?? '?'}<br>
+                {$complaint->description['email'] ?? '?'}
+            </div>
+        </div>
+
+        <div style="border-top: 1px dotted black; padding: 12px 20px;">
+            <div><b>Reklamovaný produkt: </b><br>{$complaint->item->name} v množství {$complaint->description['amount'] ?? '?'} {$complaint->item->unit->name ?? '-'}</div>
+        </div>
+
+        <div style="display: flex; border-top:1px dotted black;">
+            <div style="border-right: 1px dotted black; width: 50%; padding: 12px 20px;"><b>Dodací list / účtenka: </b>{$complaint->description['deliveryItem'] ?? '?'}</div>
+            <div style="width: 50%; padding: 12px 20px;"><b>Faktura: </b>{$complaint->description['bill'] ?? '?'}</div>
+        </div>
+
+        <div style="display: flex; border-top: 1px dotted black;">
+            <div style="width: 50%; border-right: 1px dotted black; padding: 12px 20px;"><b>Datum odběru zboží: </b>{$complaint->description['buyDate'] ?? '?'}</div>
+            <div style="padding: 12px 20px;"><b>Cena: </b>{$complaint->description['price'] ?? '?'} Kč / {$complaint->item->unit->name ?? '-'}</div>
+        </div>
+
+        <div>
+            <div style="border-top: 1px dotted black; padding: 12px 20px;"><b>Popis závady: </b>{$complaint->description['description'] ?? '?'}</div>
+        </div>
+
+        <div>
+            <div style="border-top: 1px dotted black; padding: 12px 20px"><b>Způsob vyřízení reklamace: </b>{$complaint->description['request'] ?? '?'}</div>
+        </div>
+
+        <div style="height:109px; border-top:1px dotted black; display: flex;">
+            <div style="width: 50%;border-right: 1px dotted black; padding: 12px 20px;"><b>Podpis prodejce: </b>{$complaint->createdBy->name}</div>
+            <div style="width: 50%; padding: 12px 20px;"><b>Podpis reklamujícího: </b>{$complaint->name}</div>
+        </div>
+
+        <div style="border-top: 1px dotted black; height:14%;">
+            <div style="padding: 12px 20px;"><b>Vyjádření k reklamaci: </b>
+                {if $complaint->state === $complaint::STATE_RESPONDED}
+                    {$complaint->response}<br><br>
+                    {$complaint->updatedAt |date: 'd.m.Y'} {$complaint->updatedBy->name}
+                {else}
+                    <br><br>
+                {/if}
+            </div>
+        </div>
+
+        <div style="border-top: 1px dotted black; height: 1%;">
+            <div style="padding: 12px 20px;"><b>Vyjádření reklamujícího: </b></div>
+        </div>
+
+        <div style="padding: 0 5px 5px 5px; margin-top: auto; border-top: 1px dotted black;">
+            <div style="font-size: 13px;">
+                *„V případě, že dojde mezi námi a spotřebitelem ke vzniku spotřebitelského sporu z kupní smlouvy nebo ze smlouvy o poskytování služeb, který se nepodaří vyřešit vzájemnou dohodou, může spotřebitel podat návrh na mimosoudní řešení takového sporu určenému subjektu mimosoudního řešení spotřebitelských sporů, kterým je: “Česká obchodní inspekce, Ústřední inspektorát – oddělení ADR, Štěpánská 15, 120 00 Praha 2, Web: adr.coi.cz
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
+<div class="text-center"><button class="btn btn-secondary" type="button" onclick="print()">Tisk formuláře</button></div>
+
+<style>
+    .complaint-protocol {
+        background-color: white;
+        height: 297mm;
+        margin: 1cm;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .section-to-print {
+        display: flex;
+        margin: 0 auto;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 210mm;
+        min-height: 295mm;
+        background: white;
+    }
+
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    @media print {
+        html, body * {
+            visibility: hidden;
+        }
+
+        section {
+            position: static;
+        }
+
+        .section-to-print, .section-to-print * {
+            visibility: visible;
+        }
+
+        .section-to-print {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 295mm;
+            width: 210mm;
+        }
+    }
+</style>

@@ -1,0 +1,114 @@
+{varType App\Modules\DeliveryModule\Orm\DeliveryNotes\DeliveryNote $note}
+{block content}
+{sideDialog}
+    {include #noteItemTable note => $note, heading => 'Vybraný doklad'}
+
+    {var $activeNote = $note}
+    {while $activeNote->parent}
+        {php $activeNote = $activeNote->parent}
+        {include #noteItemTable note => $activeNote, heading => 'Předchozí doklad'}
+    {/while}
+
+    {php $activeNote = $note}
+    {while $activeNote->child}
+        {php $activeNote = $activeNote->child}
+        {include #noteItemTable note => $activeNote, heading => 'Následný doklad'}
+    {/while}
+{/sideDialog}
+
+{define noteItemTable}
+    {if $heading}
+        <h3>{$heading}</h3>
+    {/if}
+    <table>
+        <tr>
+            <td><b>Doklad:</b></td>
+            <td style="padding-left: 5px;">{$note->number}</td>
+        </tr>
+        <tr>
+            <td><b>Pohyb:</b></td>
+            <td style="padding-left: 5px;">{$note->movementNumber|padLeft:4, '0'}</td>
+        </tr>
+        <tr>
+            <td><b>Datum:</b></td>
+            <td style="padding-left: 5px;">{$note->date|date:'d.m.Y'}</td>
+        </tr>
+        <tr>
+            <td><b>Pobočka:</b></td>
+            <td style="padding-left: 5px;">{$note->store->name}</td>
+        </tr>
+        <tr>
+            <td><b>Partner:</b></td>
+            <td style="padding-left: 5px;">{$note->partner}</td>
+        </tr>
+        <tr>
+            <td><b>Skupina partnerů:</b></td>
+            <td style="padding-left: 5px;">{$note->depot->group->number ?? '-'}</td>
+        </tr>
+        <tr n:if="$note->bill">
+            <td><b>Faktura:</b></td>
+            <td style="padding-left: 5px;">{$note->bill}</td>
+        </tr>
+        <tr n:if="$note->depotNote">
+            <td><b>Příjmový doklad:</b></td>
+            <td style="padding-left: 5px;">{$note->depotNote}</td>
+        </tr>
+        <tr>
+            <td><b>Cena (hlavní):</b></td>
+            <td style="padding-left: 5px;">{$note->netSum |number:2 , ',', ' '} Kč</td>
+        </tr>
+        <tr>
+            <td><b>Cena (pomocná):</b></td>
+            <td style="padding-left: 5px;">{$note->grossSum |number:2 , ',', ' '} Kč</td>
+        </tr>
+        <tr>
+            <td><b>Prodejní suma:</b></td>
+            <td style="padding-left: 5px;">{$note->sellSum |number:2 , ',', ' '} Kč</td>
+        </tr>
+        <tr>
+            <td><b>Nákupní suma:</b></td>
+            <td style="padding-left: 5px;">{$note->buySum |number:2 , ',', ' '} Kč</td>
+        </tr>
+    </table>
+
+    <table class="table datagrid-table jambo_table">
+        <thead>
+            <tr>
+                <th>Položka</th>
+                <th>Prodej</th>
+                <th>Nákup</th>
+                <th>Množství</th>
+                <th>Jednotka</th>
+                <th>Prodejní cena</th>
+                <th>Nákupní cena</th>
+                <th>Sleva</th>
+                <th>Daň</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr n:foreach="$note->items as $item">
+                <td>{$item->name}</td>
+                <td class="no-wrap">{$item->sellSum |number:2 , ',', ' '} Kč</td>
+                <td class="no-wrap">{$item->buySum |number:2 , ',', ' '} Kč</td>
+                <td class="no-wrap">{$item->amount |number:2 , ',', ' '}</td>
+                <td class="no-wrap">{$item->unit}</td>
+                <td class="no-wrap">{$item->sellPrice |number:3 , ',', ' '}</td>
+                <td class="no-wrap">{$item->buyPrice |number:3 , ',', ' '}</td>
+                <td class="no-wrap">{$item->discount |number:3 , ',', ' '}</td>
+                <td class="no-wrap">{$item->tax}</td>
+            </tr>
+            <tr n:foreach="$note->services as $noteService">
+                <td class="no-wrap">{$noteService->name}</td>
+                <td class="no-wrap">{$noteService->sellSum |number:2 , ',', ' '} Kč</td>
+                <td>-</td>
+                <td class="no-wrap">{$noteService->amount}</td>
+                <td class="no-wrap">-</td>
+                <td class="no-wrap">{$noteService->sellPrice |number:3 , ',', ' '}</td>
+                <td>-</td>
+                <td class="no-wrap">{$noteService->discount |number:3 , ',', ' '}</td>
+                <td class="no-wrap">{$noteService->tax}</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+{/define}
