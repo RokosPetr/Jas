@@ -17,9 +17,9 @@ public partial class VwDashBoardProdukty
 
     public string? Unit { get; set; }
 
-    public short? Sku { get; set; }
+    public int? Sku { get; set; }
 
-    public short? Psku { get; set; }
+    public int? Psku { get; set; }
 
     public string? Category { get; set; }
 }

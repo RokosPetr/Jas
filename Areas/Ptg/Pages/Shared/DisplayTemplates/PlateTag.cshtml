@@ -44,8 +44,12 @@
                                         <span class="name">@item.TagName.Replace("\u00A0", " ")@(item.Surface is not null && item.Surface.Contains('S') ? " struktura" : "")</span>
                                         <span class="size">@item.SizeType2</span>
                                     </td>
-                                    <td class="price@(item.Discount && !voPrice ? " discount" : "")@(item.Discarded ? " discarded" : "")">
-                                        <span class="price">@(!item.Discarded ? string.Format(new CultureInfo("cs-CZ"), "{0:N0}", voPrice ? item.PriceNn : item.PriceJas) : "VYŘAZENO")</span> <span class="unit">@item.Unit</span>
+                                    <td class="price@(item.Discount && !voPrice ? " discount" : "")@(!item.Discarded || item.ToSellout ? "" : " discarded")">
+                                        @if (item.ToSellout)
+                                        {
+                                            <span class="to-sellout">DO VYPRODÁNÍ</span>
+                                        }
+                                        <span class="price">@(!item.Discarded || item.ToSellout ? string.Format(new CultureInfo("cs-CZ"), "{0:N0}", voPrice ? item.PriceNn : item.PriceJas) : "VYŘAZENO")</span> <span class="unit">@item.Unit</span>
                                     </td>
                                 </tr>
                                 j++;

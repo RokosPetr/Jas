@@ -5,19 +5,19 @@ namespace Jas.Data.JasDb;
 
 public partial class FeedProdukty
 {
-    public string Index { get; set; } = null!;
+    public string? Index { get; set; }
 
     public string? KatalogoveCislo { get; set; }
 
-    public string? CenaBezDph { get; set; }
+    public decimal? CenaBezDph { get; set; }
 
-    public string? Cena { get; set; }
+    public decimal? Cena { get; set; }
 
-    public string? SkladoveMnozstvi { get; set; }
+    public decimal? SkladoveMnozstvi { get; set; }
 
-    public string? Skupina { get; set; }
+    public int? Skupina { get; set; }
 
-    public string? Podskupina { get; set; }
+    public int? Podskupina { get; set; }
 
     public string? Nazev { get; set; }
 
@@ -93,5 +93,25 @@ public partial class FeedProdukty
 
     public string? BarevneProvedeniCela { get; set; }
 
-    public DateTime ImportedAt { get; set; }
+    public string? Jednotka { get; set; }
+
+    public string? VelikostBaleni { get; set; }
+
+    public string? VelikostPalety { get; set; }
+
+    public string? KusuVBaleni { get; set; }
+
+    public string? Rektifikace { get; set; }
+
+    public string? Protiskluz { get; set; }
+
+    public string? Oteruvzdornost { get; set; }
+
+    public string? Mrazuvzdornost { get; set; }
+
+    public string? Tloustka { get; set; }
+
+    public string? RegNumber { get; set; }
+
+    public bool? Outlet { get; set; }
 }

@@ -45,6 +45,10 @@ public partial class JasMtzDbContext : DbContext
 
     public virtual DbSet<PtgStandSearch> PtgStandSearches { get; set; }
 
+    public virtual DbSet<PtgUserStand> PtgUserStands { get; set; }
+
+    public virtual DbSet<PtgUserStandItem> PtgUserStandItems { get; set; }
+
     public virtual DbSet<SrvMaintenanceRequest> SrvMaintenanceRequests { get; set; }
 
     public virtual DbSet<SrvMaintenanceRequestNote> SrvMaintenanceRequestNotes { get; set; }
@@ -498,6 +502,45 @@ public partial class JasMtzDbContext : DbContext
             entity.Property(e => e.Size).HasMaxLength(100);
             entity.Property(e => e.StandProducerAlias).HasMaxLength(200);
             entity.Property(e => e.StandProducerName).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<PtgUserStand>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__ptg_user__3213E83F5D7B4E18");
+
+            entity.ToTable("ptg_user_stand");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Name)
+                .HasMaxLength(200)
+                .HasColumnName("name");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.UserId)
+                .HasMaxLength(450)
+                .HasColumnName("user_id");
+        });
+
+        modelBuilder.Entity<PtgUserStandItem>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__ptg_user__3213E83FC73EDC7D");
+
+            entity.ToTable("ptg_user_stand_item");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdStand).HasColumnName("id_stand");
+            entity.Property(e => e.RegNumber)
+                .HasMaxLength(50)
+                .HasColumnName("reg_number");
+            entity.Property(e => e.SortOrder).HasColumnName("sort_order");
+
+            entity.HasOne(d => d.IdStandNavigation).WithMany(p => p.PtgUserStandItems)
+                .HasForeignKey(d => d.IdStand)
+                .HasConstraintName("FK_ptg_user_stand_item_stand");
         });
 
         modelBuilder.Entity<SrvMaintenanceRequest>(entity =>

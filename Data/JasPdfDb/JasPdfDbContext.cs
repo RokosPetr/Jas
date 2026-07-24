@@ -353,6 +353,9 @@ public partial class JasPdfDbContext : DbContext
             entity.Property(e => e.Discarded).HasColumnName("discarded");
             entity.Property(e => e.Discount).HasColumnName("discount");
             entity.Property(e => e.Frost).HasColumnName("frost");
+            entity.Property(e => e.InStockQuantity)
+                .HasColumnType("decimal(18, 3)")
+                .HasColumnName("in_stock_quantity");
             entity.Property(e => e.Inserted).HasColumnName("inserted");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
@@ -367,6 +370,7 @@ public partial class JasPdfDbContext : DbContext
             entity.Property(e => e.Price).HasColumnName("price");
             entity.Property(e => e.PriceJas).HasColumnName("price_jas");
             entity.Property(e => e.PriceNn).HasColumnName("price_nn");
+            entity.Property(e => e.Psku).HasColumnName("psku");
             entity.Property(e => e.Qr)
                 .HasMaxLength(255)
                 .HasColumnName("qr");
@@ -378,6 +382,7 @@ public partial class JasPdfDbContext : DbContext
             entity.Property(e => e.Surface)
                 .HasMaxLength(3)
                 .HasColumnName("surface");
+            entity.Property(e => e.ToSellout).HasColumnName("to_sellout");
             entity.Property(e => e.TypeOrder).HasColumnName("type_order");
             entity.Property(e => e.Unit)
                 .HasMaxLength(50)

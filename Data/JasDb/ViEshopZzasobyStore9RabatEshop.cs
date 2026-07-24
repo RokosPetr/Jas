@@ -13,9 +13,9 @@ public partial class ViEshopZzasobyStore9RabatEshop
 
     public string? KatalogovéČíslo { get; set; }
 
-    public short Sku { get; set; }
+    public int Sku { get; set; }
 
-    public short Psku { get; set; }
+    public int Psku { get; set; }
 
     public string? Mj { get; set; }
 

@@ -57,6 +57,12 @@ public partial class JasDbContext : DbContext
 
     public virtual DbSet<PovSortVersion> PovSortVersions { get; set; }
 
+    public virtual DbSet<PovSortVoItem> PovSortVoItems { get; set; }
+
+    public virtual DbSet<PovSortVoSummaryCache> PovSortVoSummaryCaches { get; set; }
+
+    public virtual DbSet<PovSortVoVersion> PovSortVoVersions { get; set; }
+
     public virtual DbSet<PtgCustomer> PtgCustomers { get; set; }
 
     public virtual DbSet<PtgRabat> PtgRabats { get; set; }
@@ -99,6 +105,10 @@ public partial class JasDbContext : DbContext
 
     public virtual DbSet<ViPtgPriceTagActive> ViPtgPriceTagActives { get; set; }
 
+    public virtual DbSet<ViPtgPriceTagActiveEshop> ViPtgPriceTagActiveEshops { get; set; }
+
+    public virtual DbSet<ViPtgRegNumber> ViPtgRegNumbers { get; set; }
+
     public virtual DbSet<ViPtgStandChange> ViPtgStandChanges { get; set; }
 
     public virtual DbSet<ViPtgStandChangeDate> ViPtgStandChangeDates { get; set; }
@@ -122,6 +132,12 @@ public partial class JasDbContext : DbContext
     public virtual DbSet<VwSalesSummaryPohybMop> VwSalesSummaryPohybMops { get; set; }
 
     public virtual DbSet<VwSalesSummaryProduktMaster> VwSalesSummaryProduktMasters { get; set; }
+
+    public virtual DbSet<ZboziCategorytext> ZboziCategorytexts { get; set; }
+
+    public virtual DbSet<ZboziShopDepot> ZboziShopDepots { get; set; }
+
+    public virtual DbSet<ZboziShopitem> ZboziShopitems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -174,67 +190,162 @@ public partial class JasDbContext : DbContext
                 .HasNoKey()
                 .ToTable("feed_produkty");
 
-            entity.Property(e => e.BarevneProvedeniCela).HasColumnName("barevne_provedeni_cela");
-            entity.Property(e => e.Barva).HasColumnName("barva");
-            entity.Property(e => e.Baterie).HasColumnName("baterie");
+            entity.Property(e => e.BarevneProvedeniCela)
+                .HasMaxLength(255)
+                .HasColumnName("barevne_provedeni_cela");
+            entity.Property(e => e.Barva)
+                .HasMaxLength(255)
+                .HasColumnName("barva");
+            entity.Property(e => e.Baterie)
+                .HasMaxLength(255)
+                .HasColumnName("baterie");
             entity.Property(e => e.Cena)
-                .HasMaxLength(50)
+                .HasColumnType("decimal(18, 2)")
                 .HasColumnName("cena");
             entity.Property(e => e.CenaBezDph)
-                .HasMaxLength(50)
+                .HasColumnType("decimal(18, 2)")
                 .HasColumnName("cena_bez_dph");
-            entity.Property(e => e.DelkaHadice).HasColumnName("delka_hadice");
-            entity.Property(e => e.DelkaRaminka).HasColumnName("delka_raminka");
-            entity.Property(e => e.Druh).HasColumnName("druh");
-            entity.Property(e => e.Hloubka).HasColumnName("hloubka");
-            entity.Property(e => e.Hmotnost)
-                .HasMaxLength(50)
-                .HasColumnName("hmotnost");
-            entity.Property(e => e.ImportedAt).HasDefaultValueSql("(sysdatetime())");
+            entity.Property(e => e.DelkaHadice)
+                .HasMaxLength(255)
+                .HasColumnName("delka_hadice");
+            entity.Property(e => e.DelkaRaminka)
+                .HasMaxLength(255)
+                .HasColumnName("delka_raminka");
+            entity.Property(e => e.Druh)
+                .HasMaxLength(255)
+                .HasColumnName("druh");
+            entity.Property(e => e.Hloubka)
+                .HasMaxLength(255)
+                .HasColumnName("hloubka");
+            entity.Property(e => e.Hmotnost).HasColumnName("hmotnost");
             entity.Property(e => e.Index)
-                .HasMaxLength(50)
+                .HasMaxLength(10)
                 .HasColumnName("index");
+            entity.Property(e => e.Jednotka)
+                .HasMaxLength(255)
+                .HasColumnName("jednotka");
             entity.Property(e => e.KatalogoveCislo)
-                .HasMaxLength(50)
+                .HasMaxLength(100)
                 .HasColumnName("katalogove_cislo");
-            entity.Property(e => e.Material).HasColumnName("material");
-            entity.Property(e => e.MaterialKartuse).HasColumnName("material_kartuse");
-            entity.Property(e => e.MaterialPolic).HasColumnName("material_polic");
-            entity.Property(e => e.Nazev).HasColumnName("nazev");
-            entity.Property(e => e.Objem).HasColumnName("objem");
-            entity.Property(e => e.OchrannaVrstvaSkla).HasColumnName("ochranna_vrstva_skla");
-            entity.Property(e => e.Odpad).HasColumnName("odpad");
+            entity.Property(e => e.KusuVBaleni)
+                .HasMaxLength(255)
+                .HasColumnName("kusu_v_baleni");
+            entity.Property(e => e.Material)
+                .HasMaxLength(255)
+                .HasColumnName("material");
+            entity.Property(e => e.MaterialKartuse)
+                .HasMaxLength(255)
+                .HasColumnName("material_kartuse");
+            entity.Property(e => e.MaterialPolic)
+                .HasMaxLength(255)
+                .HasColumnName("material_polic");
+            entity.Property(e => e.Mrazuvzdornost)
+                .HasMaxLength(255)
+                .HasColumnName("mrazuvzdornost");
+            entity.Property(e => e.Nazev)
+                .HasMaxLength(255)
+                .HasColumnName("nazev");
+            entity.Property(e => e.Objem)
+                .HasMaxLength(255)
+                .HasColumnName("objem");
+            entity.Property(e => e.OchrannaVrstvaSkla)
+                .HasMaxLength(255)
+                .HasColumnName("ochranna_vrstva_skla");
+            entity.Property(e => e.Odpad)
+                .HasMaxLength(255)
+                .HasColumnName("odpad");
             entity.Property(e => e.Osvetleni).HasColumnName("osvetleni");
-            entity.Property(e => e.Otevirani).HasColumnName("otevirani");
-            entity.Property(e => e.Podskupina)
-                .HasMaxLength(50)
-                .HasColumnName("podskupina");
-            entity.Property(e => e.Povrch).HasColumnName("povrch");
-            entity.Property(e => e.Prepad).HasColumnName("prepad");
-            entity.Property(e => e.Profil).HasColumnName("profil");
-            entity.Property(e => e.Provedeni).HasColumnName("provedeni");
-            entity.Property(e => e.PrumerKartuse).HasColumnName("prumer_kartuse");
-            entity.Property(e => e.Rozmer).HasColumnName("rozmer");
-            entity.Property(e => e.Roztec).HasColumnName("roztec");
-            entity.Property(e => e.Sedatko).HasColumnName("sedatko");
-            entity.Property(e => e.Sirka).HasColumnName("sirka");
+            entity.Property(e => e.Oteruvzdornost)
+                .HasMaxLength(255)
+                .HasColumnName("oteruvzdornost");
+            entity.Property(e => e.Otevirani)
+                .HasMaxLength(255)
+                .HasColumnName("otevirani");
+            entity.Property(e => e.Outlet)
+                .HasComputedColumnSql("(CONVERT([bit],case when [index] like '%os%' OR [index] like '%oo' then (1) else (0) end))", false)
+                .HasColumnName("outlet");
+            entity.Property(e => e.Podskupina).HasColumnName("podskupina");
+            entity.Property(e => e.Povrch)
+                .HasMaxLength(255)
+                .HasColumnName("povrch");
+            entity.Property(e => e.Prepad)
+                .HasMaxLength(255)
+                .HasColumnName("prepad");
+            entity.Property(e => e.Profil)
+                .HasMaxLength(255)
+                .HasColumnName("profil");
+            entity.Property(e => e.Protiskluz)
+                .HasMaxLength(255)
+                .HasColumnName("protiskluz");
+            entity.Property(e => e.Provedeni)
+                .HasMaxLength(255)
+                .HasColumnName("provedeni");
+            entity.Property(e => e.PrumerKartuse)
+                .HasMaxLength(255)
+                .HasColumnName("prumer_kartuse");
+            entity.Property(e => e.RegNumber)
+                .HasMaxLength(10)
+                .HasComputedColumnSql("(case when [index] like '%os' OR [index] like '%oo' then left([index],len([index])-(2)) else [index] end)", false)
+                .HasColumnName("reg_number");
+            entity.Property(e => e.Rektifikace)
+                .HasMaxLength(255)
+                .HasColumnName("rektifikace");
+            entity.Property(e => e.Rozmer)
+                .HasMaxLength(100)
+                .HasColumnName("rozmer");
+            entity.Property(e => e.Roztec)
+                .HasMaxLength(255)
+                .HasColumnName("roztec");
+            entity.Property(e => e.Sedatko)
+                .HasMaxLength(255)
+                .HasColumnName("sedatko");
+            entity.Property(e => e.Sirka)
+                .HasMaxLength(255)
+                .HasColumnName("sirka");
             entity.Property(e => e.SkladoveMnozstvi)
-                .HasMaxLength(50)
+                .HasColumnType("decimal(18, 2)")
                 .HasColumnName("skladove_mnozstvi");
-            entity.Property(e => e.Skupina)
-                .HasMaxLength(50)
-                .HasColumnName("skupina");
-            entity.Property(e => e.Splachovani).HasColumnName("splachovani");
-            entity.Property(e => e.SystemZavirani).HasColumnName("system_zavirani");
+            entity.Property(e => e.Skupina).HasColumnName("skupina");
+            entity.Property(e => e.Splachovani)
+                .HasMaxLength(255)
+                .HasColumnName("splachovani");
+            entity.Property(e => e.SystemZavirani)
+                .HasMaxLength(255)
+                .HasColumnName("system_zavirani");
             entity.Property(e => e.Text).HasColumnName("text");
-            entity.Property(e => e.TloustkaVyplne).HasColumnName("tloustka_vyplne");
-            entity.Property(e => e.TridaPrutoku).HasColumnName("trida_prutoku");
-            entity.Property(e => e.Tvar).HasColumnName("tvar");
-            entity.Property(e => e.Uchytky).HasColumnName("uchytky");
-            entity.Property(e => e.Vybaveni).HasColumnName("vybaveni");
-            entity.Property(e => e.Vypln).HasColumnName("vypln");
-            entity.Property(e => e.Vyska).HasColumnName("vyska");
-            entity.Property(e => e.Zaruka).HasColumnName("zaruka");
+            entity.Property(e => e.Tloustka)
+                .HasMaxLength(255)
+                .HasColumnName("tloustka");
+            entity.Property(e => e.TloustkaVyplne)
+                .HasMaxLength(255)
+                .HasColumnName("tloustka_vyplne");
+            entity.Property(e => e.TridaPrutoku)
+                .HasMaxLength(255)
+                .HasColumnName("trida_prutoku");
+            entity.Property(e => e.Tvar)
+                .HasMaxLength(255)
+                .HasColumnName("tvar");
+            entity.Property(e => e.Uchytky)
+                .HasMaxLength(255)
+                .HasColumnName("uchytky");
+            entity.Property(e => e.VelikostBaleni)
+                .HasMaxLength(255)
+                .HasColumnName("velikost_baleni");
+            entity.Property(e => e.VelikostPalety)
+                .HasMaxLength(255)
+                .HasColumnName("velikost_palety");
+            entity.Property(e => e.Vybaveni)
+                .HasMaxLength(255)
+                .HasColumnName("vybaveni");
+            entity.Property(e => e.Vypln)
+                .HasMaxLength(255)
+                .HasColumnName("vypln");
+            entity.Property(e => e.Vyska)
+                .HasMaxLength(255)
+                .HasColumnName("vyska");
+            entity.Property(e => e.Zaruka)
+                .HasMaxLength(255)
+                .HasColumnName("zaruka");
         });
 
         modelBuilder.Entity<FeedProduktyObrazky>(entity =>
@@ -245,7 +356,7 @@ public partial class JasDbContext : DbContext
 
             entity.Property(e => e.Hlavni).HasColumnName("hlavni");
             entity.Property(e => e.ProduktIndex)
-                .HasMaxLength(50)
+                .HasMaxLength(100)
                 .HasColumnName("produkt_index");
             entity.Property(e => e.Url).HasColumnName("url");
         });
@@ -259,7 +370,7 @@ public partial class JasDbContext : DbContext
             entity.Property(e => e.Klic).HasColumnName("klic");
             entity.Property(e => e.Nazev).HasColumnName("nazev");
             entity.Property(e => e.ProduktIndex)
-                .HasMaxLength(50)
+                .HasMaxLength(100)
                 .HasColumnName("produkt_index");
         });
 
@@ -658,6 +769,71 @@ public partial class JasDbContext : DbContext
             entity.Property(e => e.VersionStatus).HasMaxLength(10);
         });
 
+        modelBuilder.Entity<PovSortVoItem>(entity =>
+        {
+            entity.HasKey(e => e.ItemId);
+
+            entity.ToTable("PovSortVO_Items");
+
+            entity.HasIndex(e => new { e.VersionId, e.ProductId }, "UQ_PovSortVO_Items_VersionId_ProductId").IsUnique();
+
+            entity.Property(e => e.BuyPrice).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.LastModifiedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.MinStockQty).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.PackSize).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.PalletQty).HasColumnType("decimal(18, 4)");
+            entity.Property(e => e.ProductId).HasMaxLength(50);
+
+            entity.HasOne(d => d.Version).WithMany(p => p.PovSortVoItems)
+                .HasForeignKey(d => d.VersionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PovSortVO_Items_Versions");
+        });
+
+        modelBuilder.Entity<PovSortVoSummaryCache>(entity =>
+        {
+            entity.HasKey(e => e.SummaryCacheId);
+
+            entity.ToTable("PovSortVO_SummaryCache");
+
+            entity.Property(e => e.CachedAtUtc).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CachedBy).HasMaxLength(128);
+            entity.Property(e => e.Celkem)
+                .HasColumnType("decimal(18, 4)")
+                .HasColumnName("celkem");
+            entity.Property(e => e.CelkemKčDekorace)
+                .HasColumnType("decimal(18, 4)")
+                .HasColumnName("celkem Kč dekorace");
+            entity.Property(e => e.CelkemKčPlochy)
+                .HasColumnType("decimal(18, 4)")
+                .HasColumnName("celkem Kč plochy");
+            entity.Property(e => e.CelkemPalet).HasColumnName("celkem palet");
+            entity.Property(e => e.CelkemSerií).HasColumnName("celkem serií");
+            entity.Property(e => e.DlažbyPalet).HasColumnName("dlažby palet");
+            entity.Property(e => e.Kategorie).HasMaxLength(255);
+            entity.Property(e => e.KoupelnyPalet).HasColumnName("koupelny palet");
+            entity.Property(e => e.Sortiment).HasMaxLength(255);
+
+            entity.HasOne(d => d.Version).WithMany(p => p.PovSortVoSummaryCaches)
+                .HasForeignKey(d => d.VersionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PovSortVO_SummaryCache_Versions");
+        });
+
+        modelBuilder.Entity<PovSortVoVersion>(entity =>
+        {
+            entity.HasKey(e => e.VersionId);
+
+            entity.ToTable("PovSortVO_Versions");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.CreatedBy).HasMaxLength(100);
+            entity.Property(e => e.FinalizedBy).HasMaxLength(100);
+            entity.Property(e => e.LastModifiedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.Note).HasMaxLength(255);
+            entity.Property(e => e.VersionStatus).HasMaxLength(10);
+        });
+
         modelBuilder.Entity<PtgCustomer>(entity =>
         {
             entity.HasKey(e => e.Login);
@@ -989,13 +1165,13 @@ public partial class JasDbContext : DbContext
                 .HasColumnName("druh rabatu");
             entity.Property(e => e.IdVerze).HasColumnName("id_verze");
             entity.Property(e => e.Index)
-                .HasMaxLength(10)
+                .HasMaxLength(7)
                 .HasColumnName("index");
             entity.Property(e => e.KatalogovéČíslo)
-                .HasMaxLength(50)
+                .HasMaxLength(20)
                 .HasColumnName("katalogové číslo");
             entity.Property(e => e.Mj)
-                .HasMaxLength(5)
+                .HasMaxLength(3)
                 .HasColumnName("mj");
             entity.Property(e => e.Název)
                 .HasMaxLength(50)
@@ -1005,7 +1181,7 @@ public partial class JasDbContext : DbContext
                 .HasColumnName("popis podskupiny");
             entity.Property(e => e.Poznámka).HasColumnName("poznámka");
             entity.Property(e => e.Prec)
-                .HasColumnType("decimal(18, 3)")
+                .HasColumnType("numeric(10, 2)")
                 .HasColumnName("prec");
             entity.Property(e => e.Psku).HasColumnName("PSKU");
             entity.Property(e => e.Rabat)
@@ -1013,7 +1189,7 @@ public partial class JasDbContext : DbContext
                 .HasColumnName("rabat");
             entity.Property(e => e.Sku).HasColumnName("SKU");
             entity.Property(e => e.Série)
-                .HasMaxLength(50)
+                .HasMaxLength(26)
                 .HasColumnName("série");
         });
 
@@ -1082,6 +1258,7 @@ public partial class JasDbContext : DbContext
                 .HasColumnName("dlnaz");
             entity.Property(e => e.Dopl)
                 .HasMaxLength(1)
+                .UseCollation("Czech_CS_AS")
                 .HasColumnName("dopl");
             entity.Property(e => e.Jkpov)
                 .HasMaxLength(50)
@@ -1289,6 +1466,46 @@ public partial class JasDbContext : DbContext
             entity.Property(e => e.Unit)
                 .HasMaxLength(50)
                 .HasColumnName("unit");
+        });
+
+        modelBuilder.Entity<ViPtgPriceTagActiveEshop>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vi_ptg_price_tag_active_eshop");
+
+            entity.Property(e => e.Discarded).HasColumnName("discarded");
+            entity.Property(e => e.Discount).HasColumnName("discount");
+            entity.Property(e => e.Outlet).HasColumnName("outlet");
+            entity.Property(e => e.OutletQr).HasColumnName("outlet_qr");
+            entity.Property(e => e.PriceJas)
+                .HasColumnType("decimal(37, 0)")
+                .HasColumnName("price_jas");
+            entity.Property(e => e.PriceNn)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("price_nn");
+            entity.Property(e => e.Qr).HasColumnName("qr");
+            entity.Property(e => e.RegNumber)
+                .HasMaxLength(10)
+                .HasColumnName("reg_number");
+            entity.Property(e => e.ToSellout).HasColumnName("to_sellout");
+            entity.Property(e => e.Unit)
+                .HasMaxLength(11)
+                .HasColumnName("unit");
+        });
+
+        modelBuilder.Entity<ViPtgRegNumber>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vi_ptg_reg_number");
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(200)
+                .HasColumnName("name");
+            entity.Property(e => e.RegNumber)
+                .HasMaxLength(50)
+                .HasColumnName("reg_number");
         });
 
         modelBuilder.Entity<ViPtgStandChange>(entity =>
@@ -1587,6 +1804,67 @@ public partial class JasDbContext : DbContext
             entity.Property(e => e.StatusZbozi).HasMaxLength(50);
             entity.Property(e => e.Typ).HasMaxLength(16);
             entity.Property(e => e.Vyrobce).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<ZboziCategorytext>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("zbozi_categorytext");
+
+            entity.Property(e => e.Categorytext).HasColumnName("categorytext");
+            entity.Property(e => e.ItemId)
+                .HasMaxLength(200)
+                .HasColumnName("item_id");
+        });
+
+        modelBuilder.Entity<ZboziShopDepot>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("zbozi_shop_depots");
+
+            entity.Property(e => e.ItemId)
+                .HasMaxLength(200)
+                .HasColumnName("item_id");
+            entity.Property(e => e.ShopDepot)
+                .HasMaxLength(100)
+                .HasColumnName("shop_depot");
+        });
+
+        modelBuilder.Entity<ZboziShopitem>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("zbozi_shopitem");
+
+            entity.Property(e => e.DeliveryDate)
+                .HasMaxLength(50)
+                .HasColumnName("delivery_date");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Ean)
+                .HasMaxLength(100)
+                .HasColumnName("ean");
+            entity.Property(e => e.Imgurl).HasColumnName("imgurl");
+            entity.Property(e => e.ItemId)
+                .HasMaxLength(200)
+                .HasColumnName("item_id");
+            entity.Property(e => e.Manufacturer).HasColumnName("manufacturer");
+            entity.Property(e => e.Outlet)
+                .HasComputedColumnSql("(CONVERT([bit],case when [productno] like '%os%' OR [productno] like '%oo' then (1) else (0) end))", false)
+                .HasColumnName("outlet");
+            entity.Property(e => e.PriceVat)
+                .HasMaxLength(50)
+                .HasColumnName("price_vat");
+            entity.Property(e => e.Productname).HasColumnName("productname");
+            entity.Property(e => e.Productno)
+                .HasMaxLength(200)
+                .HasColumnName("productno");
+            entity.Property(e => e.RegNumber)
+                .HasMaxLength(200)
+                .HasComputedColumnSql("(case when [productno] like '%os' OR [productno] like '%oo' then left([productno],len([productno])-(2)) else [productno] end)", false)
+                .HasColumnName("reg_number");
+            entity.Property(e => e.Url).HasColumnName("url");
         });
 
         OnModelCreatingPartial(modelBuilder);

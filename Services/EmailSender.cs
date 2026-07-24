@@ -31,9 +31,10 @@ namespace Jas.Services
             try {
                 var client = new SmtpClient(host, port)
                 {
-                    Credentials = new NetworkCredential(userName, password),
                     EnableSsl = enableSSL
                 };
+                if (!string.IsNullOrEmpty(password))
+                    client.Credentials = new NetworkCredential(userName, password);
                 return client.SendMailAsync(
                     new MailMessage(userName, email, subject, htmlMessage) { IsBodyHtml = true }
                 );

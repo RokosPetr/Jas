@@ -1,8 +1,11 @@
-﻿using Jas.Application.Abstractions;
-using Jas.Application.Abstractions.Ptg;
+using Jas.Application.Abstractions;
+using Jas.Data.JasMtzDb;
+using Jas.Data.JasPdfDb;
 using Jas.Helpers;
 using Jas.Models.Ptg;
 using Jas.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -14,20 +17,20 @@ namespace Jas.Areas.Ptg.Pages
 {
     [Area("Ptg")]
     [Authorize(Roles = "PTG - jas,PTG - vo")]
-    public class StandPrintModel : PageModel, IPieceStandModel
+    public class UserStandPrintModel : PageModel, IPieceStandModel
     {
         private readonly IImageStore _imageStore;
-        private readonly IStandDetailReader _standReader;
+        private readonly JasMtzDbContext _mtzDb;
+        private readonly JasPdfDbContext _pdfDb;
         private readonly IPdfService _pdfService;
         private readonly IRazorRenderer _renderer;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        private string? _standHtml;
-
-        public StandPrintModel(IImageStore imageStore, IStandDetailReader standReader, IPdfService pdfService, IRazorRenderer razorRenderer, IWebHostEnvironment webHostEnvironment)
+        public UserStandPrintModel(IImageStore imageStore, JasMtzDbContext mtzDb, JasPdfDbContext pdfDb, IPdfService pdfService, IRazorRenderer razorRenderer, IWebHostEnvironment webHostEnvironment)
         {
             _imageStore = imageStore;
-            _standReader = standReader;
+            _mtzDb = mtzDb;
+            _pdfDb = pdfDb;
             _pdfService = pdfService;
             _renderer = razorRenderer;
             _webHostEnvironment = webHostEnvironment;
@@ -56,6 +59,7 @@ namespace Jas.Areas.Ptg.Pages
         public string? RequestedFileName { get; set; }
 
         public IReadOnlyList<string> ChangeTexts { get; set; } = [];
+        public string UserId { get; private set; } = string.Empty;
 
         public async Task<IActionResult> OnGetAsync(int id, CancellationToken ct)
         {
@@ -85,27 +89,97 @@ namespace Jas.Areas.Ptg.Pages
 
             VoPrice = User.IsInRole("PTG - vo");
 
-            var html = (Stand!.PlatePriceTag && !Stand.PiecePriceTag)
-                ? await _renderer.RenderViewToStringAsync("/Areas/Ptg/Pages/_PlateStandPrint.cshtml", this)
-                : await _renderer.RenderViewToStringAsync("/Areas/Ptg/Pages/_PieceStandPrint.cshtml", this);
+            var html = await _renderer.RenderViewToStringAsync("/Areas/Ptg/Pages/_PieceStandPrint.cshtml", this);
 
             return Content(html, "text/html");
         }
 
         private async Task LoadStandDataAsync(int id, CancellationToken ct)
         {
-            var data = await _standReader.GetAsync(id, ct, ChangeDate);
+            Stand = null;
+            Plates = new List<Plate>();
+            PlateItems = new List<PlateItem>();
+            ChangeTexts = new List<string>();
 
-            Stand = data.Stand;
-            Plates = data.Plates
-                .OrderBy(p => (p.ProductGroupCount + p.RegNumberCount) > (PrintQr ? 15 : 12))
-                .ThenBy(p => p.PlateOrder)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            UserId = userId;
+
+            var userStand = await _mtzDb.PtgUserStands
+                .Include(s => s.PtgUserStandItems)
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId, ct);
+
+            if (userStand is null)
+                return;
+
+            var items = userStand.PtgUserStandItems
+                .OrderBy(i => i.SortOrder)
+                .ThenBy(i => i.RegNumber)
                 .ToList();
-            PlateItems = data.Items;
-            ChangeTexts = data.ChangeTexts?
-                .Where(changeText => !string.IsNullOrWhiteSpace(changeText))
-                .ToList()
-                ?? [];
+
+            var allRegs = items
+                .Select(i => i.RegNumber)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var priceTags = allRegs.Count > 0
+                ? await _pdfDb.PdfPriceTags
+                    .Where(p => allRegs.Contains(p.RegNumber))
+                    .ToDictionaryAsync(p => p.RegNumber, p => p, StringComparer.OrdinalIgnoreCase, ct)
+                : new Dictionary<string, PdfPriceTag>(StringComparer.OrdinalIgnoreCase);
+
+            Stand = new StandCompany
+            {
+                IdStand = userStand.Id,
+                Code = userStand.Id.ToString(),
+                Name = userStand.Name,
+                PiecePriceTag = true,
+                PlatePriceTag = false,
+            };
+
+            Plates = new List<Plate>
+            {
+                new Plate
+                {
+                    IdPlate = 1,
+                    IdStand = userStand.Id,
+                    PlateOrder = 0,
+                    RegNumberCount = items.Count,
+                }
+            };
+
+            PlateItems = items
+                .Select((item, index) =>
+                {
+                    priceTags.TryGetValue(item.RegNumber, out var tag);
+                    return new PlateItem
+                    {
+                        IdPlateItem = item.Id,
+                        IdPlate = 1,
+                        RegNumber = item.RegNumber,
+                        ItemName = tag?.Name ?? item.RegNumber,
+                        ItemOrder = index,
+                        TagName = tag?.Name,
+                        TagDescription = tag?.Description,
+                        SizeType1 = tag?.Size,
+                        Price = tag?.Price,
+                        PriceJas = tag?.PriceJas,
+                        PriceNn = tag?.PriceNn,
+                        Unit = tag?.Unit,
+                        Orig_Name = tag?.OrigName,
+                        Frost = tag?.Frost ?? false,
+                        Rectification = tag?.Rectification ?? false,
+                        Antislip = tag?.Antislip,
+                        Abrasion = tag?.Abrasion,
+                        Outlet = tag?.Outlet ?? false,
+                        Surface = tag?.Surface,
+                        Discount = tag?.Discount ?? false,
+                        Discarded = tag?.Discarded ?? false,
+                        ToSellout = tag?.InStockQuantity > 10 && tag?.Psku is 18 or 19 or 20 or 21 or 45,
+                        TypeOrder = tag?.TypeOrder ?? 0,
+                        Qr = tag?.Qr,
+                    };
+                })
+                .ToList();
         }
 
         private async Task<IActionResult> GetOrCreatePdfFileResultAsync(int id, CancellationToken ct)
@@ -141,15 +215,9 @@ namespace Jas.Areas.Ptg.Pages
 
         private async Task<byte[]> GeneratePdfAsync()
         {
-            _standHtml = (Stand!.PlatePriceTag && !Stand.PiecePriceTag)
-                ? await _renderer.RenderViewToStringAsync("/Areas/Ptg/Pages/_PlateStandPrint.cshtml", this)
-                : await _renderer.RenderViewToStringAsync("/Areas/Ptg/Pages/_PieceStandPrint.cshtml", this);
+            var html = await _renderer.RenderViewToStringAsync("/Areas/Ptg/Pages/_PieceStandPrint.cshtml", this);
 
-            var orientation = (Stand.PlatePriceTag && !Stand.PiecePriceTag)
-                ? DinkToPdf.Orientation.Landscape
-                : DinkToPdf.Orientation.Portrait;
-
-            return _pdfService.ConvertHtmlToPdf(_standHtml, orientation);
+            return _pdfService.ConvertHtmlToPdf(html, DinkToPdf.Orientation.Portrait);
         }
 
         private bool IsCurrentDateRequest()
@@ -175,7 +243,7 @@ namespace Jas.Areas.Ptg.Pages
             var datePart = (ChangeDate ?? DateTime.Today).ToString("yyyyMMdd");
             var qrPart = PrintQr ? "qr" : "noqr";
             var picturesPart = PrintPictures ? "pics" : "nopics";
-            return $"{slug}-{id}-{datePart}-{qrPart}-{picturesPart}.pdf";
+            return $"{slug}-{UserId}-{id}-{datePart}-{qrPart}-{picturesPart}.pdf";
         }
 
         private void ApplyLegacyQueryAliases()
@@ -236,6 +304,5 @@ namespace Jas.Areas.Ptg.Pages
 
             return fileName;
         }
-
     }
 }

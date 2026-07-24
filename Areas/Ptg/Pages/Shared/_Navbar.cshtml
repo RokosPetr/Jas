@@ -66,6 +66,14 @@
                         }
 
                         <li>
+                            <a class="dropdown-item"
+                               asp-area="Ptg"
+                               asp-page="/UserStands">
+                                Moje stojany
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li>
                             <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@($"{Context.Request.Path}{Context.Request.QueryString}")" method="post">
                                 <button class="dropdown-item">Odhlásit se</button>
                             </form>

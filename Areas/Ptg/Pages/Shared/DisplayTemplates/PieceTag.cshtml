@@ -20,27 +20,33 @@
                     @if (item.TagType == 3)
                     {
                         <br />
-            
+
                         <span class="description">@Html.Raw(item.TagDescription.Replace("-", "&#8209;"))</span>
                     }
 
-        </div>
+                </div>
 
-                <div class="piece-price-tag-top @(item.Discarded ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr || item.Discarded ? " noqr" : "")">
-            <div class="size"><span>@item.SizeType1</span></div>
-            <img class="symbols" src="@item.SymbolsImage" />
-            <div class="price@(item.Discount && !voPrice ? " discount" : "")">
-                <span class="price">
-                    @(!item.Discarded
-                                        ? string.Format(new System.Globalization.CultureInfo("cs-CZ"), "{0:N0}", voPrice ? item.PriceNn : item.PriceJas) + ",-"
-                                        : "VYŘAZENO")
+                <div class="piece-price-tag-top @(item.Discarded && !item.ToSellout ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr || item.Discarded ? " noqr" : "")">
+                    <div class="size"><span>@item.SizeType1</span></div>
+                    <img class="symbols" src="@item.SymbolsImage" />
+                    @if (item.ToSellout)
+                    {
+                        <div class="to-sellout" style="right: @((item.SymbolsCount * 20) + 10)px;">
+                            <span>DO VYPRODÁNÍ</span>
+                        </div>
+                    }
+                    <div class="price@(item.Discount && !voPrice ? " discount" : "")">
+                        <span class="price">
+                            @(!item.Discarded || item.ToSellout
+                                                ? string.Format(new System.Globalization.CultureInfo("cs-CZ"), "{0:N0}", voPrice ? item.PriceNn : item.PriceJas) + ",-"
+                                                : "VYŘAZENO")
                         </span>
                         <span class="unit">@item.Unit</span>
                     </div>
 
                 </div>
 
-                <div class="piece-price-tag-bottom @(item.Discarded ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr || item.Discarded ? " noqr" : "")">
+                <div class="piece-price-tag-bottom @(item.Discarded && !item.ToSellout ? "discarded" : "") @((item.PlateQr is null && item.Qr is null) || !printQr || (item.Discarded && !item.ToSellout) ? " noqr" : "")">
                     <img class="qr" src="@item.QrBase64" />
                     <div class="reg"><span>Index: @item.RegNumber</span></div>
                     <div class="dph"><span>Uvedená cena je včetně DPH.</span></div>

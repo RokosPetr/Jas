@@ -1,0 +1,330 @@
+@page
+@model Jas.Areas.Ptg.Pages.UserStandsModel
+@{
+    ViewData["Title"] = "Moje stojany";
+}
+
+@section Styles {
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet" />
+    <style>
+        .image-hover {
+            position: relative;
+            overflow: hidden;
+        }
+        .image-hover img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .image-hover:hover img {
+            transform: scale(1.05);
+        }
+        .image-hover .overlay {
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            text-align: center;
+            padding: 0.35rem 0.4rem;
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+    </style>
+}
+
+<div class="container py-4">
+    <h2 class="mb-4">Moje vlastní stojany</h2>
+
+    @if (TempData["Success"] is string success)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @success
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] is string error)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @error
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @* Nový stojan *@
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Nový stojan</div>
+        <div class="card-body">
+            <form method="post" asp-page-handler="AddStand" class="row g-2 align-items-end">
+                @Html.AntiForgeryToken()
+                <div class="col-sm-8 col-lg-5">
+                    <label class="form-label">Název stojanu</label>
+                    <input name="NewStandName" class="form-control" maxlength="200" placeholder="Název..." required />
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-plus-lg"></i> Vytvořit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.Stands.Any())
+    {
+        <p class="text-muted">Zatím nemáte žádné vlastní stojany. Vytvořte první stojan výše.</p>
+    }
+
+    @foreach (var stand in Model.Stands)
+    {
+        <div class="card mb-4">
+            <div class="card-header d-flex align-items-center gap-2">
+                <button class="btn btn-link p-0 text-decoration-none fw-semibold flex-grow-1 text-start"
+                        type="button" data-bs-toggle="collapse" data-bs-target="#stand-@stand.Id">
+                    @stand.Name
+                    <small class="text-muted fw-normal ms-2">
+                        (@stand.PtgUserStandItems.Count
+                        @(stand.PtgUserStandItems.Count == 1 ? "položka" : stand.PtgUserStandItems.Count < 5 ? "položky" : "položek"))
+                    </small>
+                </button>
+                <a class="btn btn-sm btn-outline-primary"
+                   href="/ptg/user-stand-print/@stand.Id?inline=true"
+                   target="_blank" title="Tisknout PDF">
+                    <i class="bi bi-printer"></i>
+                </a>
+                <button class="btn btn-sm btn-outline-secondary" type="button"
+                        data-bs-toggle="modal" data-bs-target="#renameModal-@stand.Id" title="Přejmenovat">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <form method="post" asp-page-handler="DeleteStand" class="d-inline"
+                      onsubmit="return confirm('Smazat stojan a všechny jeho položky?')">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="standId" value="@stand.Id" />
+                    <button class="btn btn-sm btn-outline-danger" type="submit" title="Smazat stojan">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="collapse show" id="stand-@stand.Id">
+                <div class="card-body">
+
+                    @* Přidat položku *@
+                    <form method="post" asp-page-handler="AddItem" class="mb-3" id="addForm-@stand.Id">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="AddItemStandId" value="@stand.Id" />
+                        <div class="row g-2 align-items-end">
+                            <div class="col-sm-9 col-lg-6">
+                                <label class="form-label form-label-sm">Přidat reg. číslo</label>
+                                <select name="AddItemRegNumbers"
+                                        id="regSelect-@stand.Id"
+                                        class="form-control form-control-sm reg-multi-select"
+                                        multiple
+                                        placeholder="Hledat reg. číslo...">
+                                </select>
+                                <div id="regNotFound-@stand.Id" class="mt-1 small text-danger d-none"></div>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-sm btn-success" type="submit">
+                                    <i class="bi bi-plus-lg"></i> Přidat
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    @* Položky jako karty s obrázky *@
+                    @if (stand.PtgUserStandItems.Any())
+                    {
+                        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
+                            @foreach (var item in stand.PtgUserStandItems.OrderBy(i => i.SortOrder).ThenBy(i => i.RegNumber))
+                            {
+                                var pt = Model.PriceItems.TryGetValue(item.RegNumber, out var p) ? p : null;
+                                var itemName = Model.RegNames.TryGetValue(item.RegNumber, out var n) ? n?.Trim() : null;
+                                var displayName = !string.IsNullOrWhiteSpace(pt?.Name) ? pt!.Name!.Trim() : itemName;
+                                var imgUrl = $"/images/www.koupelny-jas.cz/hlavni-obrazek-produktu/{item.RegNumber}.jpg";
+                                var altText = $"{item.RegNumber} {displayName}";
+                                <div class="col">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="image-hover">
+                                            <a href="@imgUrl" data-lightbox="stand-@stand.Id" data-title="@altText">
+                                                <img src="@imgUrl" alt="@altText"
+                                                     class="img-fluid"
+                                                     onerror="this.src='/images/no-picture.png'">
+                                                <div class="overlay">@item.RegNumber<br />@displayName</div>
+                                            </a>
+                                        </div>
+                                        <div class="card-body p-2">
+                                            <div class="d-flex justify-content-between align-items-start gap-1">
+                                                <div>
+                                                    <div class="font-monospace small fw-semibold">@item.RegNumber</div>
+                                                    <div class="small text-truncate" style="max-width:130px" title="@displayName">@displayName</div>
+                                                    @if (!string.IsNullOrWhiteSpace(pt?.Size))
+                                                    {
+                                                        <div class="text-muted" style="font-size:.75rem">@pt.Size</div>
+                                                    }
+                                                </div>
+                                                <form method="post" asp-page-handler="DeleteItem" class="d-inline flex-shrink-0">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="itemId" value="@item.Id" />
+                                                    <button class="btn btn-sm btn-outline-danger py-0 px-1" type="submit" title="Odebrat">
+                                                        <i class="bi bi-x-lg"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted small mb-0">Stojan je prázdný. Přidejte reg. číslo výše.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* Modal — přejmenovat stojan *@
+        <div class="modal fade" id="renameModal-@stand.Id" tabindex="-1">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <form method="post" asp-page-handler="RenameStand">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="EditStandId" value="@stand.Id" />
+                        <div class="modal-header">
+                            <h5 class="modal-title">Přejmenovat stojan</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input name="EditStandName" class="form-control" maxlength="200"
+                                   value="@stand.Name" required autofocus />
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary btn-sm" type="button" data-bs-dismiss="modal">Zrušit</button>
+                            <button class="btn btn-primary btn-sm" type="submit">Uložit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    <script>
+        function splitTokens(text) {
+            return text.split(/[\s,;\t\r\n]+/).map(function (t) { return t.trim(); }).filter(function (t) { return t.length > 0; });
+        }
+
+        function getAft() {
+            var el = document.querySelector('input[name="__RequestVerificationToken"]');
+            return el ? el.value : '';
+        }
+
+        function bulkValidate(ts, tokens, notFoundDiv) {
+            if (!tokens || tokens.length === 0) return;
+            if (notFoundDiv) { notFoundDiv.className = 'mt-1 small text-danger d-none'; notFoundDiv.textContent = ''; }
+            fetch('/Ptg/RegNumberValidate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': getAft() },
+                body: JSON.stringify({ numbers: tokens })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                (data.found || []).forEach(function (item) {
+                    ts.addOption(item);
+                    ts.addItem(item.value, true);
+                });
+                ts.setTextboxValue('');
+                ts.refreshOptions(false);
+                ts.close();
+                if (data.notFound && data.notFound.length > 0 && notFoundDiv) {
+                    notFoundDiv.textContent = 'Nenalezena: ' + data.notFound.join(', ');
+                    notFoundDiv.className = 'mt-1 small text-danger';
+                }
+            })
+            .catch(function () {
+                if (notFoundDiv) {
+                    notFoundDiv.textContent = 'Chyba při ověřování čísel.';
+                    notFoundDiv.className = 'mt-1 small text-danger';
+                }
+            });
+        }
+
+        document.querySelectorAll('select.reg-multi-select').forEach(function (el) {
+            var standId = el.id.replace('regSelect-', '');
+            var notFoundDiv = document.getElementById('regNotFound-' + standId);
+
+            var ts = new TomSelect(el, {
+                plugins: ['remove_button', 'no_backspace_delete'],
+                valueField: 'value',
+                labelField: 'label',
+                searchField: 'label',
+                placeholder: 'Hledat reg. číslo nebo název...',
+                minChars: 2,
+                maxItems: null,
+                load: function (query, callback) {
+                    if (splitTokens(query).length > 1) { callback([]); return; }
+                    fetch('/Ptg/RegNumberSearch?q=' + encodeURIComponent(query))
+                        .then(function (r) { return r.json(); })
+                        .then(function (data) { callback(data); })
+                        .catch(function () { callback(); });
+                },
+                onItemAdd: function (value) {
+                    var opt = el.querySelector('option[value="' + value + '"]');
+                    if (!opt) { opt = document.createElement('option'); opt.value = value; el.appendChild(opt); }
+                    opt.selected = true;
+                    if (notFoundDiv) notFoundDiv.className = 'mt-1 small text-danger d-none';
+                },
+                onItemRemove: function (value) {
+                    var opt = el.querySelector('option[value="' + value + '"]');
+                    if (opt) opt.selected = false;
+                },
+                render: {
+                    option: function (data) {
+                        var parts = data.label.split(' \u2014 ');
+                        var reg = parts[0];
+                        var name = parts.length > 1 ? parts.slice(1).join(' \u2014 ') : '';
+                        var img = '/images/www.koupelny-jas.cz/hlavni-obrazek-produktu/' + reg + '.jpg';
+                        return '<div class="d-flex align-items-center gap-2">' +
+                               '<img src="' + img + '" style="width:40px;height:40px;object-fit:cover;border-radius:3px" onerror="this.src=\'/images/no-picture.png\'">' +
+                               '<span><span class="fw-semibold font-monospace">' + reg + '</span>' +
+                               (name ? ' <span class="text-muted small">\u2014 ' + name + '</span>' : '') + '</span>' +
+                               '</div>';
+                    },
+                    item: function (data) {
+                        var img = '/images/www.koupelny-jas.cz/hlavni-obrazek-produktu/' + data.value + '.jpg';
+                        return '<span class="d-inline-flex align-items-center gap-1">' +
+                               '<img src="' + img + '" style="width:24px;height:24px;object-fit:cover;border-radius:2px" onerror="this.src=\'/images/no-picture.png\'">' +
+                               '<span class="font-monospace">' + data.value + '</span>' +
+                               '</span>';
+                    }
+                },
+                create: false
+            });
+
+            var inp = ts.control_input;
+
+            // Paste více čísel (Ctrl+V z Excelu / notepadu)
+            inp.addEventListener('paste', function (e) {
+                var text = (e.clipboardData || window.clipboardData).getData('text');
+                var tokens = splitTokens(text);
+                if (tokens.length <= 1) return;
+                e.preventDefault();
+                bulkValidate(ts, tokens, notFoundDiv);
+            });
+
+            // Enter s více čísly v inputu (ručně oddělená mezerou)
+            inp.addEventListener('keydown', function (e) {
+                if (e.key !== 'Enter') return;
+                var tokens = splitTokens(inp.value);
+                if (tokens.length > 1) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    bulkValidate(ts, tokens, notFoundDiv);
+                }
+                // jedno číslo → Tom Select zpracuje sám
+            });
+        });
+    </script>
+}

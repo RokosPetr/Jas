@@ -49,5 +49,11 @@ public partial class PdfPriceTag
 
     public string? Description { get; set; }
 
+    public bool ToSellout { get; set; }
+
+    public decimal? InStockQuantity { get; set; }
+
+    public short? Psku { get; set; }
+
     public virtual ICollection<PdfPtPlateItem> PdfPtPlateItems { get; set; } = new List<PdfPtPlateItem>();
 }

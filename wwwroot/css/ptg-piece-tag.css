@@ -162,3 +162,14 @@ div.piece-price-tag:not(.sanity) .piece-price-tag-head span.name {
   bottom: 0px;
   text-transform: uppercase;
 }
+div.piece-price-tag .to-sellout {
+  position: absolute;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e31f24;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  top: 5px;
+}

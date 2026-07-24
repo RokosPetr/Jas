@@ -1,6 +1,13 @@
-@model Jas.Areas.Ptg.Pages.IPieceStandModel
+@page "/ptg/user-stand-print/{id:int}"
+@model Jas.Areas.Ptg.Pages.UserStandPrintModel
 
-@if (Model.ChangeTexts.Any() && false)
+@{
+    Layout = null;
+}
+
+@await Html.PartialAsync("_PieceStandPrint", Model)
+
+@if (Model.ChangeTexts.Any())
 {
     <div style="page-break-before: always; padding: 24px 32px;">
         <h1>Seznam provedených změn</h1>

@@ -5,9 +5,9 @@ namespace Jas.Data.JasDb;
 
 public partial class FeedProduktyObrazky
 {
-    public string ProduktIndex { get; set; } = null!;
+    public string? ProduktIndex { get; set; }
 
-    public bool Hlavni { get; set; }
+    public bool? Hlavni { get; set; }
 
-    public string Url { get; set; } = null!;
+    public string? Url { get; set; }
 }

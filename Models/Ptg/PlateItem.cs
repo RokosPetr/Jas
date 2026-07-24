@@ -33,6 +33,9 @@ namespace Jas.Models.Ptg
         public string? Surface { get; set; }
         public bool Discount { get; set; }
         public bool Discarded { get; set; }
+        public bool ToSellout { get; set; }
+        public decimal? InStockQuantity { get; set; }
+        public short? Psku { get; set; }
         public string? ProductType { get; set; }
         public int TypeOrder { get; set; }
         public string? Qr { get; set; }
@@ -110,12 +113,24 @@ namespace Jas.Models.Ptg
             }
         }
 
+        public int SymbolsCount
+        {
+            get
+            {
+                int count = 0;
+                if (Frost) count++;
+                if (Surface is not null) count += Surface.Length;
+                if (Antislip is not null) count++;
+                if (Abrasion is not null) count++;
+                if (Rectification) count++;
+                return Math.Min(count, 7);
+            }
+        }
+
         public string? SymbolsImage
         {
             get
             {
-                // --- LOGIKA PRO SBĚR SYMBOLŮ ---
-
                 List<string> symbolKeys = new();
 
                 if (Frost)
@@ -139,11 +154,8 @@ namespace Jas.Models.Ptg
                 if (symbolKeys.Count == 0)
                     return null;
 
-                // max 7 pozic, stejně jako v tvém kódu
                 const int maxSlots = 7;
                 symbolKeys = symbolKeys.Take(maxSlots).ToList();
-
-                // --- TVOJE LOGIKA PRO SKLÁDÁNÍ OBRÁZKŮ ---
 
                 int imageWidth = 64;
                 int imageHeight = 64;

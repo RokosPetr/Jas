@@ -34,7 +34,8 @@ namespace Jas.Services.Mapping
                 .ForMember(dest => dest.Rectification, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.Rectification))))
                 .ForMember(dest => dest.Outlet, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.Outlet))))
                 .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.Discount))))
-                .ForMember(dest => dest.Discarded, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.Discarded))));
+                .ForMember(dest => dest.Discarded, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.Discarded))))
+                .ForMember(dest => dest.ToSellout, opt => opt.MapFrom(src => GetBool(src, nameof(PlateItem.ToSellout))));
 
             // kdyby DB vracela 0/1 místo bit:
             CreateMap<int, bool>().ConvertUsing(v => v != 0);

@@ -182,7 +182,11 @@ app.Use(async (context, next) =>
 
                 queryValues["handler"] = "Pdf";
                 queryValues["changeDateSegment"] = match.Groups["changeDateSegment"].Value;
-                queryValues["ChangeDate"] = DateTime.ParseExact(match.Groups["changeDateSegment"].Value, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                var parsedDate = DateTime.ParseExact(match.Groups["changeDateSegment"].Value, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                if (parsedDate.Date != DateTime.Today)
+                {
+                    queryValues["ChangeDate"] = parsedDate.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                }
                 queryValues["PrintQr"] = (match.Groups["qrPart"].Value.Equals("qr", StringComparison.OrdinalIgnoreCase)).ToString().ToLowerInvariant();
                 queryValues["PrintPictures"] = (match.Groups["picturesPart"].Value.Equals("pics", StringComparison.OrdinalIgnoreCase)).ToString().ToLowerInvariant();
                 queryValues["Inline"] = bool.TrueString.ToLowerInvariant();
