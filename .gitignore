@@ -373,3 +373,4 @@ appsettings.Development.json
 
 # Velke XML feed soubory
 Ps1/*.xml
+Php/www/upload.zip
