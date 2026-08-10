@@ -19,9 +19,9 @@
                 <li><a n:href="exportPdf id => $stand->id, type => 0, showPrice => true">Pobrobné s cenami</a></li>
                 {if $stand->piecePriceTag}
                 <li class="divider" style="margin: 3px 0;"></li>
-                <li><a href="https://koupelnyprokazdeho.cz/PriceTag?company=koupelny-jas&catalog=cenovky-mo&idStand={$stand->id}">Kusové cenovky MO </a></li>
+                <li><a href="http://ptg.koupelnyprokazdeho.cz/files/{$stand->name|webalize}-27792803-{$stand->id}-{date('Ymd')}-qr-nopics.pdf">Kusové cenovky MO</a></li>
                 <li class="divider" style="margin: 3px 0;"></li>
-                <li><a href="https://koupelnyprokazdeho.cz/PriceTag?company=partneri&catalog=cenovky-vo&idStand={$stand->id}">Kusové cenovky VO</a></li>
+                <li><a href="http://ptg.koupelnyprokazdeho.cz/files/{$stand->name|webalize}-00000000-{$stand->id}-{date('Ymd')}-noqr-nopics.pdf">Kusové cenovky VO</a></li>
                 <li class="divider" style="margin: 3px 0;"></li>
                 <li><a href="https://koupelnyprokazdeho.cz/PriceTag?company=partneri&catalog=cenovky-ph&idStand={$stand->id}">Print House</a></li>
                 {/if}

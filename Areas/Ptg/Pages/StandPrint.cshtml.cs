@@ -13,7 +13,7 @@ using System.Globalization;
 namespace Jas.Areas.Ptg.Pages
 {
     [Area("Ptg")]
-    [Authorize(Roles = "PTG - jas,PTG - vo")]
+    [AllowAnonymous]
     public class StandPrintModel : PageModel, IPieceStandModel
     {
         private readonly IImageStore _imageStore;
@@ -54,6 +54,8 @@ namespace Jas.Areas.Ptg.Pages
         public string? ChangeDateSegment { get; set; }
         [BindProperty(SupportsGet = true)]
         public string? RequestedFileName { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string? Ico { get; set; }
 
         public IReadOnlyList<string> ChangeTexts { get; set; } = [];
 
@@ -110,6 +112,15 @@ namespace Jas.Areas.Ptg.Pages
 
         private async Task<IActionResult> GetOrCreatePdfFileResultAsync(int id, CancellationToken ct)
         {
+            if (string.IsNullOrEmpty(Ico) && !(User.Identity?.IsAuthenticated ?? false))
+            {
+                return Challenge();
+            }
+
+            VoPrice = string.IsNullOrEmpty(Ico)
+                ? User.IsInRole("PTG - vo")
+                : !string.Equals(Ico, "27792803", StringComparison.Ordinal);
+
             await LoadStandDataAsync(id, ct);
 
             var fileName = BuildPdfFileName(id);

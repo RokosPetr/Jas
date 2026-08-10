@@ -128,7 +128,7 @@ builder.Services.AddDbContext<JasMtzDbContext>((sp, options) =>
 
 var app = builder.Build();
 var ptgPdfRouteRegex = new Regex(
-    @"^/files/(?<fileName>(?<slug>.+)-(?<id>\d+)-(?<changeDateSegment>\d{8})-(?<qrPart>qr|noqr)-(?<picturesPart>pics|nopics))\.pdf/?$",
+    @"^/files/(?<fileName>(?<slug>.+)-(?<ico>\d{8})-(?<id>\d+)-(?<changeDateSegment>\d{8})-(?<qrPart>qr|noqr)-(?<picturesPart>pics|nopics))\.pdf/?$",
     RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 // Configure the HTTP request pipeline.
@@ -153,15 +153,56 @@ app.Use(async (context, next) =>
         var match = ptgPdfRouteRegex.Match(path);
         if (match.Success)
         {
-            // Ověřit přihlášení před přepsáním cesty
-            var authResult = await context.AuthenticateAsync();
-            if (!authResult.Succeeded)
+            var ico = match.Groups["ico"].Value;
+            var hasIco = !string.IsNullOrEmpty(ico);
+
+            if (!hasIco)
             {
-                var originalUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}";
-                var phpLoginReturnUrl = $"{context.Request.Scheme}://{context.Request.Host}/Identity/Account/PhpLogin?returnUrl={Uri.EscapeDataString(originalUrl)}";
-                var phpLoginUrl = $"https://www.mamekoupelny.eu/system/login/?backUrl={Uri.EscapeDataString(phpLoginReturnUrl)}";
-                context.Response.Redirect(phpLoginUrl);
-                return;
+                // Bez IČO v URL – vyžadovat přihlášení (interní přístup)
+                var authResult = await context.AuthenticateAsync();
+                if (!authResult.Succeeded)
+                {
+                    var originalUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}";
+                    var phpLoginReturnUrl = $"{context.Request.Scheme}://{context.Request.Host}/Identity/Account/PhpLogin?returnUrl={Uri.EscapeDataString(originalUrl)}";
+                    var phpLoginUrl = $"https://www.mamekoupelny.eu/system/login/?backUrl={Uri.EscapeDataString(phpLoginReturnUrl)}";
+                    context.Response.Redirect(phpLoginUrl);
+                    return;
+                }
+            }
+            else
+            {
+                // S IČO – ověřit token, pak id v URL je IdMkStand – vyhledat skutečné IdStand a přesměrovat
+                var expectedToken = app.Configuration["PtgMk:Token"];
+                var requestToken = context.Request.Query["token"].ToString();
+                if (!string.IsNullOrEmpty(expectedToken)
+                    && string.Equals(requestToken, expectedToken, StringComparison.Ordinal)
+                    && int.TryParse(match.Groups["id"].Value, out var idMkStand))
+                {
+                    var pdfDb = context.RequestServices.GetRequiredService<JasPdfDbContext>();
+                    var realId = await pdfDb.PdfPtStands
+                        .Where(s => s.IdMkStand == idMkStand)
+                        .Select(s => (int?)s.Id)
+                        .FirstOrDefaultAsync();
+
+                    if (realId is null)
+                    {
+                        context.Response.StatusCode = 404;
+                        return;
+                    }
+
+                    var correctedPath = path.Replace(
+                        $"-{idMkStand}-",
+                        $"-{realId}-",
+                        StringComparison.Ordinal);
+                    var redirectQuery = QueryHelpers.ParseQuery(context.Request.QueryString.Value ?? string.Empty)
+                        .Where(kvp => !string.Equals(kvp.Key, "token", StringComparison.OrdinalIgnoreCase))
+                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString());
+                    var redirectUrl = redirectQuery.Count > 0
+                        ? correctedPath + QueryString.Create(redirectQuery)
+                        : correctedPath;
+                    context.Response.Redirect(redirectUrl, permanent: false);
+                    return;
+                }
             }
 
             var fileName = match.Groups["fileName"].Value + ".pdf";
@@ -192,6 +233,10 @@ app.Use(async (context, next) =>
                 queryValues["Inline"] = bool.TrueString.ToLowerInvariant();
                 queryValues["ForceSaveToDisk"] = bool.TrueString.ToLowerInvariant();
                 queryValues["RequestedFileName"] = fileName;
+                if (hasIco)
+                {
+                    queryValues["Ico"] = ico;
+                }
 
                 context.Request.Path = $"/ptg/print/{match.Groups["id"].Value}/{match.Groups["changeDateSegment"].Value}";
                 context.Request.QueryString = QueryString.Create(queryValues);
